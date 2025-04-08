@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom"; // <-- updated here
 
 import logoLight from "../assets/darklogo.webp";
 import logoDark from "../assets/white logo.webp";
-
 
 const Navbar = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -12,6 +11,7 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate(); // <-- added this
   const isHome = location.pathname === "/";
 
   const controlNavbar = () => {
@@ -32,7 +32,6 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", controlNavbar);
   }, [lastScrollY]);
 
-  // Disable scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
     return () => {
@@ -40,7 +39,6 @@ const Navbar = () => {
     };
   }, [isMenuOpen]);
 
-  // Close mobile menu when screen resizes to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -102,22 +100,18 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Search */}
+        {/* Login Button */}
         <div className="relative hidden md:block">
-          <input
-            type="text"
-            placeholder="Search courses..."
-            className={`pl-10 pr-4 py-1.5 rounded-md border outline-none ${
+          <button
+            onClick={() => navigate("/login")}
+            className={`px-6 py-2 rounded-md font-semibold transition-colors duration-300 ${
               isScrolled
-                ? "text-black"
-                : "text-white bg-transparent border-white/40 placeholder-white/70"
+                ? "bg-[rgb(0,104,80)] text-white hover:bg-[rgb(0,85,65)]"
+                : "bg-white text-black "
             }`}
-          />
-          <FiSearch
-            className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-              isScrolled ? "text-gray-500" : "text-white"
-            }`}
-          />
+          >
+            Login
+          </button>
         </div>
 
         {/* Hamburger Icon */}
@@ -150,14 +144,17 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {/* Mobile Search */}
-          <div className="relative w-4/5 mt-6">
-            <input
-              type="text"
-              placeholder="Search courses..."
-              className="w-full pl-10 pr-4 py-2 border rounded-md text-black outline-none"
-            />
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          {/* Mobile Login Button */}
+          <div className="mt-6 w-4/5">
+            <button
+              onClick={() => {
+                closeMenu();
+                navigate("/login");
+              }}
+              className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
+            >
+              Login
+            </button>
           </div>
         </div>
       </div>
