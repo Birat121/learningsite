@@ -1,10 +1,10 @@
 import image1 from "../assets/photo1.jpg";
 import image2 from "../assets/photo2.jpg";
 import image3 from "../assets/photo3.jpg";
-import image4 from "../assets/photo4.jpg";
-import image5 from "../assets/photo5.jpg";
-import image6 from "../assets/photo6.jpg";
-import image7 from "../assets/photo7.jpg";
+import image4 from "../assets/photo4.webp";
+import image5 from "../assets/photo5.webp";
+import image6 from "../assets/photo8.webp";
+import image7 from "../assets/photo7.webp";
 
 const dummyCourses = [
   {

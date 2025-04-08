@@ -1,6 +1,5 @@
 import React from 'react';
-import women from '../assets/ka-img.webp';
-import image from '../assets/photo4.jpg'
+import image from '../assets/photo4.webp'
 import { Link } from 'react-router-dom';
 
 const Introduction = () => {
