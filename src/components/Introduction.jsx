@@ -1,5 +1,6 @@
 import React from 'react';
 import women from '../assets/ka-img.webp';
+import image from '../assets/photo4.jpg'
 import { Link } from 'react-router-dom';
 
 const Introduction = () => {
@@ -8,7 +9,7 @@ const Introduction = () => {
       {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10">
         <img
-          src={women}
+          src={image}
           alt="Introduction"
           className="w-[70%] md:w-[95%] lg:w-[60%] h-auto object-cover rounded-md animate-float"
         />
@@ -16,7 +17,7 @@ const Introduction = () => {
 
       {/* Right Side Text */}
       <div className="w-full md:w-1/2 relative z-10 flex flex-col justify-center md:pl-12 text-center md:text-left">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-yellow-500">
+        <h2 className="text-4xl md:text-5xl font-bold mb-4 text-[rgb(0,104,80)]">
           HELLO THERE
         </h2>
         <h3 className="text-lg md:text-xl font-semibold mb-4 text-gray-700">
@@ -37,7 +38,7 @@ const Introduction = () => {
           </p>
           <Link
             to='/courses'
-            className="bg-yellow-500 hover:bg-yellow-600 text-white text-xl font-semibold px-6 py-3 rounded-md transition duration-300 w-max"
+            className="bg-[rgb(0,104,80)] text-white text-xl font-semibold px-6 py-3 rounded-md transition duration-300 w-max"
           >
             Explore Courses
           </Link>

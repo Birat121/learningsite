@@ -59,7 +59,7 @@ const Courses = () => {
           to="/courses" 
           smooth={true} 
           duration={500} 
-          className="inline-block px-8 py-4 text-xl bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition"
+          className="inline-block px-8 py-4 text-xl bg-[rgb(0,104,80)] text-white font-semibold rounded-lg shadow-md  transition"
         >
           Explore Courses
         </Link>

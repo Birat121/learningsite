@@ -14,7 +14,7 @@ const WhyChooseMe = () => {
   return (
     <section className="py-14 px-4 bg-[rgb(0,104,80)]">
       <div className="text-center mb-10">
-        <h2 className="text-3xl sm:text-4xl font-bold text-yellow-400 mb-3">Why Choose Me?</h2>
+        <h2 className="text-3xl sm:text-4xl font-bold text-white mb-3">Why Choose Me?</h2>
         <p className="text-lg sm:text-xl text-white max-w-2xl mx-auto">
           Here’s what I offer to help you succeed in your real estate journey.
         </p>
