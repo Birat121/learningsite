@@ -62,7 +62,7 @@ const FiltersSidebar = ({ filters, setFilters }) => {
       {/* Buttons */}
       <div className="flex justify-between gap-4">
         <button
-          className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 rounded transition"
+          className="flex-1 bg-[rgb(0,104,80)] text-white font-semibold py-2 rounded transition"
           onClick={() => {}}
           disabled
           title="Apply filter functionality not implemented"

@@ -5,22 +5,22 @@ import { Link } from 'react-router-dom'; // Import react-scroll Link
 
 const courses = [
   {
-    icon: <FaBook className="text-indigo-500 text-4xl mb-4" />,
+    icon: <FaBook className="text-[rgb(0,104,80))] text-4xl mb-4" />,
     title: "Real Estate Investing 101",
     description: "Learn the fundamentals of real estate investing, risk management, and portfolio building.",
   },
   {
-    icon: <FaTools className="text-indigo-500 text-4xl mb-4" />,
+    icon: <FaTools className="text-[rgb(0,104,80))] text-4xl mb-4" />,
     title: "Advanced Property Flipping",
     description: "Master the art of flipping properties with real-world strategies and case studies.",
   },
   {
-    icon: <FaBuilding className="text-indigo-500 text-4xl mb-4" />,
+    icon: <FaBuilding className="text-[rgb(0,104,80))] text-4xl mb-4" />,
     title: "Rental Property Mastery",
     description: "Learn how to buy, manage, and profit from rental properties long-term.",
   },
   {
-    icon: <FaChartLine className="text-indigo-500 text-4xl mb-4" />,
+    icon: <FaChartLine className="text-[rgb(0,104,80))] text-4xl mb-4" />,
     title: "Financing & Mortgages",
     description: "Understand mortgage structures, financing deals, and getting the best loan terms.",
   },

@@ -23,32 +23,32 @@ const WhyChooseMe = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto ">
         {[ 
           {
-            icon: <FaChalkboardTeacher className="text-4xl text-yellow-400" />,
+            icon: <FaChalkboardTeacher className="text-4xl text-[rgb(0,104,80))]" />,
             title: 'Expert Real Estate Mentorship',
             desc: 'Receive personalized mentorship tailored to your goals.',
           },
           {
-            icon: <FaSearch className="text-4xl text-yellow-400" />,
+            icon: <FaSearch className="text-4xl text-[rgb(0,104,80))]" />,
             title: 'Comprehensive Investment Courses',
             desc: 'Access real estate investment courses from basics to advanced strategies.',
           },
           {
-            icon: <FaDollarSign className="text-4xl text-yellow-400" />,
+            icon: <FaDollarSign className="text-4xl text-[rgb(0,104,80))]" />,
             title: 'Market Insights & Trends',
             desc: 'Stay up-to-date with the latest real estate market trends.',
           },
           {
-            icon: <FaRegHandshake className="text-4xl text-yellow-400" />,
+            icon: <FaRegHandshake className="text-4xl text-[rgb(0,104,80))]" />,
             title: 'Property Financing Guidance',
             desc: 'Learn about various property financing options.',
           },
           {
-            icon: <FaUsers className="text-4xl text-yellow-400" />,
+            icon: <FaUsers className="text-4xl text-[rgb(0,104,80))]" />,
             title: 'Real Estate Networking',
             desc: 'Get access to a network of industry professionals, including brokers.',
           },
           {
-            icon: <FaFileAlt className="text-4xl text-yellow-400" />,
+            icon: <FaFileAlt className="text-4xl text-[rgb(0,104,80))]" />,
             title: 'Hands-On Experience',
             desc: 'Gain practical knowledge through case studies and live projects.',
           },
@@ -68,7 +68,7 @@ const WhyChooseMe = () => {
       <div className="text-center mt-12">
         <Link
           to='/contact'
-          className="inline-block bg-yellow-400 text-white font-semibold px-8 py-5 rounded-full shadow hover:bg-yellow-500 transition duration-300"
+          className="inline-block bg-white text-[rgb(0,104,80)] font-semibold px-8 py-5 rounded-full shadow transition duration-300"
         >
           Connect With Me
         </Link>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { NavLink, useLocation } from "react-router-dom";
 
+import logoLight from "../assets/darklogo.webp";
+import logoDark from "../assets/white logo.webp";
 
-import logo from "../assets/logo2.jpg";
 
 const Navbar = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -73,19 +74,12 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
         {/* Logo */}
-        <NavLink
-          to="/"
-          className="hover:opacity-80 transition-opacity duration-300"
-        >
-          <div className="flex items-center">
-  <img
-    src={logo}
-    alt="Logo"
-    className="h-22 md:h-28 w-auto object-contain  rounded-2xl shadow-md"
-  />
-</div>
-
-
+        <NavLink to="/" className="hover:opacity-80 transition-opacity duration-300">
+          <img
+            src={isScrolled ? logoDark : isHome ? logoLight : logoLight}
+            alt="Logo"
+            className="h-16 w-auto object-contain"
+          />
         </NavLink>
 
         {/* Desktop Menu */}

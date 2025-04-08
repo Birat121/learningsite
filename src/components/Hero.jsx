@@ -43,7 +43,7 @@ const Hero = () => {
 
         <motion.button
           onClick={scrollToCourses}
-          className="bg-[rgb(0,104,80)] text-white font-semibold px-6 py-3 rounded-full transition duration-300 shadow-md hover:shadow-lg"
+          className="bg-[rgb(0,104,80)] text-xl text-white font-semibold px-6 py-4 rounded-full transition duration-300 shadow-md hover:shadow-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}

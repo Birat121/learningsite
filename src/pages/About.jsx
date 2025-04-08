@@ -98,7 +98,7 @@ const About = () => {
         <div className="text-center">
           <button
             onClick={() => alert('Redirecting to contact page or form!')}
-            className="bg-yellow-400 hover:bg-yellow-500 text-black text-xl font-semibold px-10 py-5 rounded-full transition duration-300"
+            className="bg-[rgb(0,104,80)]  text-white text-xl font-semibold px-10 py-5 rounded-full transition duration-300"
           >
             Get in Touch
           </button>
