@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
-import { NavLink, useLocation, useNavigate } from "react-router-dom"; // <-- updated here
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import logoLight from "../assets/darklogo.webp";
 import logoDark from "../assets/white logo.webp";
@@ -11,7 +11,7 @@ const Navbar = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate(); // <-- added this
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
 
   const controlNavbar = () => {
@@ -57,6 +57,7 @@ const Navbar = () => {
     { to: "/", label: "HOME" },
     { to: "/about", label: "ABOUT US" },
     { to: "/courses", label: "COURSES" },
+    { to: "/why-dubai", label: "WHY US?" }, // New section added here
     { to: "/contact", label: "CONTACT US" },
   ];
 
@@ -107,7 +108,7 @@ const Navbar = () => {
             className={`px-6 py-2 rounded-md font-semibold transition-colors duration-300 ${
               isScrolled
                 ? "bg-[rgb(0,104,80)] text-white hover:bg-[rgb(0,85,65)]"
-                : "bg-white text-black "
+                : "bg-white text-black"
             }`}
           >
             Login

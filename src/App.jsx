@@ -9,6 +9,7 @@ import Courses from './pages/Courses'
 import CourseDetails from './pages/CourseDetail'
 import SignInForm from './pages/Login'
 import ScrollToTop from './components/ScrollToTop'
+import WhyUs from './pages/WhyUs'
 
 function App() {
   
@@ -25,6 +26,7 @@ function App() {
       <Route path='/courses' element={<Courses />} />
       <Route path='/courses/:id' element={<CourseDetails/>} />
       <Route path ='/login' element={<SignInForm/>} />
+      <Route path='/why-dubai' element={<WhyUs/>} />
 
 
     </Routes>

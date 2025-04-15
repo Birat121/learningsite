@@ -24,7 +24,7 @@ const Hero = () => {
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-center items-center min-h-[calc(100vh-64px)] text-center px-4">
         <motion.h1
-          className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg"
+          className="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg leading-snug"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
@@ -33,7 +33,7 @@ const Hero = () => {
         </motion.h1>
 
         <motion.p
-          className="text-xl md:text-xl text-white mb-6 max-w-2xl font-semibold drop-shadow-md"
+          className="text-base sm:text-lg md:text-xl text-white mb-6 max-w-md sm:max-w-xl font-medium drop-shadow-md"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.6 }}
@@ -43,7 +43,7 @@ const Hero = () => {
 
         <motion.button
           onClick={scrollToCourses}
-          className="bg-[rgb(0,104,80)] text-xl text-white font-semibold px-6 py-4 rounded-full transition duration-300 shadow-md hover:shadow-lg"
+          className="bg-[rgb(0,104,80)] text-sm sm:text-base md:text-xl text-white font-semibold px-6 py-3 rounded-full transition duration-300 shadow-md hover:shadow-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1 }}
@@ -53,13 +53,13 @@ const Hero = () => {
 
         {/* Scroll Down Arrow */}
         <motion.div
-          className="absolute bottom-10 animate-bounce cursor-pointer"
+          className="absolute bottom-8 sm:bottom-10 animate-bounce cursor-pointer"
           onClick={scrollToCourses}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
         >
-          <ChevronDown className="text-white w-8 h-8" />
+          <ChevronDown className="text-white w-6 h-6 sm:w-8 sm:h-8" />
         </motion.div>
       </div>
     </section>
