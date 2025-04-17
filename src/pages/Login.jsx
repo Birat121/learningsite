@@ -1,7 +1,59 @@
 import React, { useState } from "react";
+import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
   const [isSignIn, setIsSignIn] = useState(true);
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const url = isSignIn ? "/auth/login" : "/auth/register";
+      const payload = isSignIn
+        ? { email: formData.email, password: formData.password }
+        : formData;
+
+      const res = await axiosInstance.post(url, payload, {
+        withCredentials: true, // if using cookies for auth
+      });
+
+      console.log("Success:", res.data);
+
+      if (isSignIn) {
+        login(res.data.token);
+        navigate("/");
+      }
+
+      setFormData({ name: "", email: "", password: "" });
+      setIsSignIn(true);
+
+
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google"; // Redirect to backend Google OAuth route
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -22,59 +74,54 @@ const AuthPage = () => {
         </div>
 
         <div className="bg-white py-6 px-4 sm:px-8 shadow sm:rounded-lg">
-          <form className="space-y-6" method="POST">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {!isSignIn && (
               <div>
-                <label
-                  htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                   Full Name
                 </label>
                 <input
                   id="name"
                   name="name"
                   type="text"
+                  value={formData.name}
+                  onChange={handleChange}
                   required
                   placeholder="Enter your full name"
-                  className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300"
                 />
               </div>
             )}
 
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                autoComplete="email"
+                value={formData.email}
+                onChange={handleChange}
                 required
                 placeholder="Enter your email address"
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300"
               />
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
                 required
                 placeholder="Enter your password"
-                className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300"
               />
             </div>
 
@@ -83,30 +130,29 @@ const AuthPage = () => {
                 <label className="flex items-center text-sm text-gray-900">
                   <input
                     type="checkbox"
-                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
                   />
                   <span className="ml-2">Remember me</span>
                 </label>
-                <a
-                  href="#"
-                  className="text-sm text-blue-600 hover:text-blue-500 font-medium"
-                >
+                <a href="#" className="text-sm text-blue-600 hover:text-blue-500 font-medium">
                   Forgot your password?
                 </a>
               </div>
             )}
 
+            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-[rgb(0,104,80)] hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,104,80)]"
+                disabled={loading}
+                className="w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-[rgb(0,104,80)] hover:bg-green-800"
               >
-                {isSignIn ? "Sign in" : "Create account"}
+                {loading ? "Please wait..." : isSignIn ? "Sign in" : "Create account"}
               </button>
             </div>
           </form>
 
-          {/* Divider and social sign-in */}
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
@@ -119,34 +165,18 @@ const AuthPage = () => {
               </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-3 gap-3">
-              {/* Social Buttons */}
-              {[
-                {
-                  name: "Facebook",
-                  img: "https://www.svgrepo.com/show/512120/facebook-176.svg",
-                },
-                {
-                  name: "Twitter",
-                  img: "https://www.svgrepo.com/show/513008/twitter-154.svg",
-                },
-                {
-                  name: "Google",
-                  img: "https://www.svgrepo.com/show/475656/google-color.svg",
-                },
-              ].map((provider) => (
-                <a
-                  key={provider.name}
-                  href="#"
-                  className="flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50"
-                >
-                  <img
-                    src={provider.img}
-                    alt={provider.name}
-                    className="h-5 w-5"
-                  />
-                </a>
-              ))}
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={handleGoogleLogin}
+                className="flex justify-center items-center gap-2 px-6 py-2 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50"
+              >
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="h-5 w-5"
+                />
+                <span className="text-sm text-gray-700 font-medium">Google</span>
+              </button>
             </div>
           </div>
         </div>

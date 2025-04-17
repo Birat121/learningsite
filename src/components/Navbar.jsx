@@ -1,29 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-
 import logoLight from "../assets/darklogo.webp";
 import logoDark from "../assets/white logo.webp";
+import { useAuth } from "../context/authContext";
 
 const Navbar = () => {
   const [scrollY, setScrollY] = useState(0);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const isHome = location.pathname === "/";
+  const dropdownRef = useRef(null);
+
+  const { authToken, logout, user } = useAuth();
 
   const controlNavbar = () => {
     const currentScroll = window.scrollY;
     setScrollY(currentScroll);
-
     if (currentScroll > 150) {
       setShowNavbar(currentScroll < lastScrollY);
     } else {
       setShowNavbar(true);
     }
-
     setLastScrollY(currentScroll);
   };
 
@@ -41,25 +44,40 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setIsMenuOpen(false);
-      }
+      if (window.innerWidth >= 768) setIsMenuOpen(false);
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const isScrolled = scrollY > 50;
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
   const closeMenu = () => setIsMenuOpen(false);
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const links = [
     { to: "/", label: "HOME" },
     { to: "/about", label: "ABOUT US" },
     { to: "/courses", label: "COURSES" },
-    { to: "/why-dubai", label: "WHY US?" }, // New section added here
+    { to: "/why-dubai", label: "WHY US?" },
     { to: "/contact", label: "CONTACT US" },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <nav
@@ -73,7 +91,10 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
         {/* Logo */}
-        <NavLink to="/" className="hover:opacity-80 transition-opacity duration-300">
+        <NavLink
+          to="/"
+          className="hover:opacity-80 transition-opacity duration-300"
+        >
           <img
             src={isScrolled ? logoDark : isHome ? logoLight : logoLight}
             alt="Logo"
@@ -101,18 +122,77 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Login Button */}
-        <div className="relative hidden md:block">
-          <button
-            onClick={() => navigate("/login")}
-            className={`px-6 py-2 rounded-md font-semibold transition-colors duration-300 ${
-              isScrolled
-                ? "bg-[rgb(0,104,80)] text-white hover:bg-[rgb(0,85,65)]"
-                : "bg-white text-black"
-            }`}
-          >
-            Login
-          </button>
+        {/* User/Profile Section */}
+        <div className="relative hidden md:block" ref={dropdownRef}>
+          {authToken ? (
+            <div
+              className="cursor-pointer flex items-center space-x-3 relative"
+              onClick={toggleDropdown}
+            >
+              {/* Avatar */}
+              <div className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold uppercase">
+                {user?.name ? user.name.charAt(0) : "U"}
+              </div>
+
+              {/* User Name */}
+              <span className="text-white font-medium">
+                {user?.name || "User"}
+              </span>
+
+              {/* Dropdown */}
+              <div
+                className={`absolute top-full right-0 mt-3 w-56 bg-white shadow-xl rounded-xl border z-50 transition-all duration-200 ${
+                  isDropdownOpen ? "block" : "hidden"
+                }`}
+              >
+                <div className="px-4 py-3 border-b">
+                  <p className="text-sm font-semibold text-gray-800">
+                    {user?.name || "User Name"}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {user?.email || "user@example.com"}
+                  </p>
+                </div>
+                <ul className="p-2 space-y-1">
+                  <li
+                    className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-md"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      navigate("/profile");
+                    }}
+                  >
+                    🧑‍💼 Profile
+                  </li>
+                  <li
+                    className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-md"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      navigate("/courses");
+                    }}
+                  >
+                    📚 Courses
+                  </li>
+                  <li
+                    className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-md"
+                    onClick={handleLogout}
+                  >
+                    🚪 Logout
+                  </li>
+                </ul>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className={`px-6 py-2 rounded-md font-semibold transition-colors duration-300 ${
+                isScrolled
+                  ? "bg-[rgb(0,104,80)] text-white hover:bg-[rgb(0,85,65)]"
+                  : "bg-white text-black"
+              }`}
+            >
+              Login
+            </button>
+          )}
         </div>
 
         {/* Hamburger Icon */}
@@ -145,18 +225,42 @@ const Navbar = () => {
             </NavLink>
           ))}
 
-          {/* Mobile Login Button */}
-          <div className="mt-6 w-4/5">
-            <button
-              onClick={() => {
-                closeMenu();
-                navigate("/login");
-              }}
-              className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
-            >
-              Login
-            </button>
-          </div>
+          {/* Mobile Auth Buttons */}
+          {authToken ? (
+            <div className="mt-6 w-4/5 space-y-2">
+              <button
+                onClick={() => {
+                  closeMenu();
+                  navigate("/profile");
+                }}
+                className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
+              >
+                Profile
+              </button>
+              <button
+                onClick={() => {
+                  logout();
+                  closeMenu();
+                  navigate("/");
+                }}
+                className="w-full px-6 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors duration-300"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="mt-6 w-4/5">
+              <button
+                onClick={() => {
+                  closeMenu();
+                  navigate("/");
+                }}
+                className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
+              >
+                Login
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

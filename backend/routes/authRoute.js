@@ -1,9 +1,38 @@
-import { register, login } from "../controllers/authController";
+import { register, login, logout, getCurrentUser } from "../controllers/authController.js";
 import { Router } from "express";
+import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const authRouter = Router();
 
 authRouter.post("/register", register);
 authRouter.post("/login", login);
+authRouter.post("/logout", logout);
+authRouter.get("/user", getCurrentUser);
+
+
+
+// Google OAuth
+authRouter.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
+authRouter.get("/google/callback", 
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
+    // You can redirect to frontend with token if needed
+    res.redirect(`/success?token=${token}`);
+  }
+);
+
 
 export default authRouter;

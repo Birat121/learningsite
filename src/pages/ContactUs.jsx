@@ -1,13 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 
 const ContactPage = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const formRef = useRef();
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setSuccess("");
+    setError("");
+
+    const form = formRef.current;
+    const formData = new FormData(form);
+
+    const autoReplyParams = {
+      first_name: formData.get("first_name"),
+      user_email: formData.get("user_email"),
+      message: formData.get("message"),
+    };
+
+    emailjs
+      .sendForm("service_jx2m2lv", "template_jygv2as", form, "A_NTgdITLFkCwT63H")
+      .then(() => {
+        // Send Auto-Reply
+        emailjs.send(
+          "service_jx2m2lv",
+          "template_nvvvrf4", // 🔁 Replace with your actual Auto-Reply Template ID
+          autoReplyParams,
+          "A_NTgdITLFkCwT63H"
+        );
+
+        setSuccess("Message sent successfully!");
+        form.reset();
+      })
+      .catch(() => {
+        setError("Failed to send message. Try again later.");
+      });
+  };
 
   return (
     <section className="pt-24 pb-12 px-6 mt-20 bg-white text-gray-800 mb-4">
       <div className="max-w-6xl mx-auto space-y-12">
-
-        {/* Header */}
         <div className="text-center">
           <h1 className="text-4xl font-bold text-green-900 mb-4">Let’s Connect</h1>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">
@@ -15,16 +50,19 @@ const ContactPage = () => {
           </p>
         </div>
 
-        {/* Form and Map */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          
-          {/* Contact Form */}
-          <form className="bg-gray-50 p-6 rounded-xl shadow-md space-y-5">
+          <form
+            ref={formRef}
+            onSubmit={sendEmail}
+            className="bg-gray-50 p-6 rounded-xl shadow-md space-y-5"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700">First Name</label>
                 <input
                   type="text"
+                  name="first_name"
+                  required
                   placeholder="First"
                   className="w-full mt-1 border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                 />
@@ -33,6 +71,8 @@ const ContactPage = () => {
                 <label className="block text-sm font-medium text-gray-700">Last Name</label>
                 <input
                   type="text"
+                  name="last_name"
+                  required
                   placeholder="Last"
                   className="w-full mt-1 border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                 />
@@ -43,6 +83,8 @@ const ContactPage = () => {
               <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
+                name="user_email"
+                required
                 placeholder="example@email.com"
                 className="w-full mt-1 border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
               />
@@ -52,6 +94,7 @@ const ContactPage = () => {
               <label className="block text-sm font-medium text-gray-700">Phone (optional)</label>
               <input
                 type="text"
+                name="phone"
                 placeholder="xxx-xxx-xxxx"
                 className="w-full mt-1 border border-gray-300 px-4 py-2 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
               />
@@ -60,11 +103,16 @@ const ContactPage = () => {
             <div>
               <label className="block text-sm font-medium text-gray-700">Message</label>
               <textarea
+                name="message"
                 rows="4"
+                required
                 placeholder="Type your message ..."
                 className="w-full mt-1 border border-gray-300 px-4 py-2 rounded-md resize-none focus:ring-2 focus:ring-yellow-400 focus:outline-none"
               />
             </div>
+
+            {success && <p className="text-green-600">{success}</p>}
+            {error && <p className="text-red-600">{error}</p>}
 
             <button
               type="submit"
@@ -74,9 +122,7 @@ const ContactPage = () => {
             </button>
           </form>
 
-          {/* Google Map with blur while loading */}
           <div className="relative rounded-xl overflow-hidden shadow-md h-full min-h-[400px]">
-            {/* Blur overlay during map load */}
             {!mapLoaded && (
               <div className="absolute inset-0 bg-gray-200 blur-md animate-pulse z-10"></div>
             )}
@@ -89,9 +135,7 @@ const ContactPage = () => {
               loading="lazy"
               allowFullScreen=""
               referrerPolicy="no-referrer-when-downgrade"
-              className={`w-full h-full transition-all duration-700 ${
-                mapLoaded ? "blur-0" : "blur-sm"
-              }`}
+              className={`w-full h-full transition-all duration-700 ${mapLoaded ? "blur-0" : "blur-sm"}`}
               onLoad={() => setMapLoaded(true)}
             ></iframe>
           </div>

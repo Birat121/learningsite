@@ -62,27 +62,28 @@ const About = () => {
 
         {/* Who Am I Section */}
         <div className="text-center">
-          <h2 className="text-4xl sm:text-5xl font-bold text-green-900 mb-6">Who Am I?</h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-            Hi, I’m Kirren — a real estate mentor, investor, and educator passionate about turning complex property insights into clear, actionable guidance for aspiring professionals.
-          </p>
-        </div>
+  <h2 className="text-3xl sm:text-5xl font-bold text-green-900 mb-6">Who Am I?</h2>
+  <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto">
+    Hi, I’m Kirren — a real estate mentor, investor, and educator passionate about turning complex property insights into clear, actionable guidance for aspiring professionals.
+  </p>
+</div>
 
-        {/* What I Offer */}
-        <div>
-          <h3 className="text-3xl sm:text-4xl font-bold text-green-800 text-center mb-12">What I Offer</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
-            {offerings.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-4 sm:gap-6 bg-white shadow-sm hover:shadow-lg transition-shadow p-6 rounded-lg"
-              >
-                {item.icon}
-                <span className="text-lg sm:text-xl text-gray-800 font-medium">{item.title}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+{/* What I Offer */}
+<div>
+  <h3 className="text-2xl sm:text-4xl font-bold text-green-800 text-center mb-12">What I Offer</h3>
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
+    {offerings.map((item, index) => (
+      <div
+        key={index}
+        className="flex items-center gap-4 sm:gap-6 bg-white shadow-sm hover:shadow-lg transition-shadow p-4 sm:p-6 rounded-lg"
+      >
+        {item.icon}
+        <span className="text-base sm:text-xl text-gray-800 font-medium">{item.title}</span>
+      </div>
+    ))}
+  </div>
+</div>
+
 
         {/* Why Choose Me */}
         <div>

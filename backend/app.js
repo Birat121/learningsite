@@ -1,29 +1,54 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB from "./config/db.js";
+import connectDB from "./utils/db.js";
 import errorHandler from "./middleware/errorHandling.js";
 import authRouter from "./routes/authRoute.js";
+import session from "express-session";
+import passport from "passport";
+import cookieParser from "cookie-parser";
+
+// Load Google Strategy
+import "./controllers/googleAuthController.js";  // <-- Make sure this sets up Passport
 
 dotenv.config();
-
 connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: "http://localhost:5173", // Frontend origin
+  credentials: true,
+}));
+
 app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(errorHandler);
+// Required for Passport session handling
+app.use(session({
+  secret: process.env.SESSION_SECRET || "secretkey",
+  resave: false,
+  saveUninitialized: false,
+}));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Routes
 app.use("/api/auth", authRouter);
 
+// Default test route
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+// Error handler middleware
+app.use(errorHandler);
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${process.env.PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
