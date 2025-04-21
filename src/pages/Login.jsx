@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/authContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
+import toast from "react-hot-toast";
+
+
+
+
 
 const AuthPage = () => {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -27,26 +32,29 @@ const AuthPage = () => {
       const payload = isSignIn
         ? { email: formData.email, password: formData.password }
         : formData;
-
+    
       const res = await axiosInstance.post(url, payload, {
-        withCredentials: true, // if using cookies for auth
+        withCredentials: true,
       });
-
-      console.log("Success:", res.data);
-
+    
+      toast.success(isSignIn ? "Logged in successfully!" : "Account created successfully!");
+    
       if (isSignIn) {
         login(res.data.token);
         navigate("/");
       }
-
+    
       setFormData({ name: "", email: "", password: "" });
       setIsSignIn(true);
-
-
+    
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || "Something went wrong.");
-    } finally {
+      const message = err.response?.data?.message || "Something went wrong.";
+      setError(message);
+      toast.error(message);
+    }
+    
+     finally {
       setLoading(false);
     }
   };

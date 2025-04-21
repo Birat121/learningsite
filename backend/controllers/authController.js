@@ -65,3 +65,70 @@ export const getCurrentUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateUser = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) throw new CustomError("User not found", 404);
+    user.name = name;
+    user.email = email;
+    await user.save();
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate input fields
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    // Verify admin credentials
+    if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({ message: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const payload = { email }; // Include relevant information in the token payload
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: '3d', // Token validity for 3 days
+    });
+
+    // Cookie options
+    const options = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+      httpOnly: true, // Prevents client-side JS access
+      secure: process.env.NODE_ENV === 'production', // Only secure in production
+      sameSite: 'strict', // Prevent CSRF
+    };
+
+    // Send response
+    res
+      .status(200)
+      .cookie('token', token, options)
+      .json({ message: 'Login successful', token }); // Optionally return the token for client-side use
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const adminLogout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+    res.status(200).json({ message: "Admin logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to logout admin", error: error.message });
+  }
+};

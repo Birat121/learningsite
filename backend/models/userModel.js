@@ -15,7 +15,10 @@ const userSchema = new mongoose.Schema({
   },
   googleId: {
     type: String
-  }
+  },
+  enrolledCourses: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "video" } // Array of course IDs
+  ]
 });
 
 const User = mongoose.model("User", userSchema);

@@ -4,6 +4,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logoLight from "../assets/darklogo.webp";
 import logoDark from "../assets/white logo.webp";
 import { useAuth } from "../context/authContext";
+import { toast } from "react-hot-toast";
 
 const Navbar = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -76,8 +77,10 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
+    toast.success("Logged out successfully!");
     navigate("/login");
   };
+  
 
   return (
     <nav
@@ -135,7 +138,11 @@ const Navbar = () => {
               </div>
 
               {/* User Name */}
-              <span className="text-white font-medium">
+              <span
+                className={`${
+                  isScrolled ? "text-black" : "text-white"
+                } font-medium`}
+              >
                 {user?.name || "User"}
               </span>
 
@@ -167,7 +174,7 @@ const Navbar = () => {
                     className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-md"
                     onClick={() => {
                       setIsDropdownOpen(false);
-                      navigate("/courses");
+                      navigate("/enrolledCourse");
                     }}
                   >
                     📚 Courses
@@ -241,8 +248,10 @@ const Navbar = () => {
                 onClick={() => {
                   logout();
                   closeMenu();
+                  toast.success("Logged out successfully!");
                   navigate("/");
                 }}
+                
                 className="w-full px-6 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors duration-300"
               >
                 Logout

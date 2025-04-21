@@ -1,107 +1,83 @@
-import React, { useState } from "react";
+// src/pages/Courses.jsx
+// src/pages/Courses.jsx
+import React, { useEffect, useState } from "react";
+
 import CourseCard from "../components/CourseCard";
 import FiltersSidebar from "../components/FilterOptions";
 import SearchAndSortBar from "../components/SearchAndSort";
 import Pagination from "../components/Pagination";
-import image1 from "../assets/photo1.jpg";
-import image2 from "../assets/photo2.jpg";
-import image3 from "../assets/photo3.jpg";
-import image4 from "../assets/photo4.webp";
-import image5 from "../assets/photo5.webp";
-import image6 from "../assets/photo8.webp";
-import image7 from "../assets/photo7.webp";
+import axiosInstance from "../api/axiosInstance";
 
-const dummyCourses = [
-  {
-    id: 1,
-    title: "Real Estate Investment Basics",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 100,
-    image: image1,
-  },
-  {
-    id: 2,
-    title: "Property Management Essentials",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 150,
-    image: image2,
-  },
-  {
-    id: 3,
-    title: "Advanced Real Estate Strategies",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 200,
-    image: image3,
-  },
-  {
-    id: 4,
-    title: "Flipping Houses for Profit",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 120,
-    image: image4,
-  },
-  {
-    id: 5,
-    title: "Real Estate Marketing Mastery",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 180,
-    image: image5,
-  },
-  {
-    id: 6,
-    title: "Commercial Real Estate 101",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 250,
-    image: image6,
-  },
-  {
-    id: 7,
-    title: "Real Estate for Beginners",
-    author: "Kwk-Admin",
-    students: Math.floor(Math.random() * 500),
-    price: 80,
-    image: image7,
-  },
-];
 
 const Courses = () => {
-  const [filters, setFilters] = useState({ categories: [], price: "" });
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("latest");
-  const [page, setPage] = useState(1);
+  const [courses, setCourses]       = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState("");
+  const [filters, setFilters]       = useState({ categories: [], price: "" });
+  const [search, setSearch]         = useState("");
+  const [sort, setSort]             = useState("latest");
+  const [page, setPage]             = useState(1);
+  const perPage = 9;
 
-  const filtered = dummyCourses.filter((course) => {
-    const matchCategory =
-      filters.categories.length === 0 ||
-      filters.categories.some((cat) => course.title.includes(cat));
-    const matchPrice =
-      filters.price === "" ||
-      (filters.price === "Free" && course.price === 0) ||
-      (filters.price === "Paid" && course.price > 0);
-    const matchSearch = course.title
-      .toLowerCase()
-      .includes(search.toLowerCase());
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/videos/videos");
+        // ensure we only store an array
+        const data = response.data;
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data.videos)
+          ? data.videos
+          : [];
+        setCourses(list);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load courses.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
-    return matchCategory && matchPrice && matchSearch;
-  });
+  // now `courses` is guaranteed an array
+  const processed = courses
+    .filter((c) => {
+      const matchCategory =
+        filters.categories.length === 0 ||
+        filters.categories.some((cat) => c.category?.includes(cat));
+      const matchPrice =
+        filters.price === "" ||
+        (filters.price === "Free" && c.price === 0) ||
+        (filters.price === "Paid" && c.price > 0);
+      const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
+      return matchCategory && matchPrice && matchSearch;
+    })
+    .sort((a, b) => {
+      if (sort === "latest")  return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sort === "oldest")  return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sort === "priceLow")  return a.price - b.price;
+      if (sort === "priceHigh") return b.price - a.price;
+      return 0;
+    });
+
+  const total     = Math.ceil(processed.length / perPage);
+  const paginated = processed.slice((page - 1) * perPage, page * perPage);
+
+  if (loading) return <p className="text-center mt-10">Loading courses…</p>;
+  if (error)   return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 pt-28 pb-16 px-4 md:px-10 mt-14">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* Sidebar - now takes more width */}
-          <div className="md:col-span-3 mt-16 ">
+          <aside className="md:col-span-3 mt-16">
             <FiltersSidebar filters={filters} setFilters={setFilters} />
-          </div>
+          </aside>
 
-          {/* Content - centered better */}
-          <div className="md:col-span-9 space-y-8">
+          <section className="md:col-span-9 space-y-8">
             <SearchAndSortBar
               search={search}
               setSearch={setSearch}
@@ -110,13 +86,13 @@ const Courses = () => {
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((course) => (
-                <CourseCard key={course.id} course={course} />
+              {paginated.map((course) => (
+                <CourseCard key={course._id} course={course} />
               ))}
             </div>
 
-            <Pagination page={page} setPage={setPage} total={3} />
-          </div>
+            <Pagination page={page} setPage={setPage} total={total} />
+          </section>
         </div>
       </div>
     </div>

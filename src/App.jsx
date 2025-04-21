@@ -15,6 +15,16 @@ import AddPage from "./components/Add";
 import ListPage from "./components/List";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicOnlyRoute from "./components/PublicRoute";
+import ProfilePage from "./pages/ProfilePage";
+import AdminRoute from "./components/ProtectedRoute";
+import EnrolledCoursesPage from "./pages/EnrollerdCourse";  
+import CheckoutPage from "./pages/CheckOutPage";
+import { Toaster } from "react-hot-toast";
+import AdminLogin from "./pages/AdminLogin";
+import QuizPage from "./components/QuizPage";
+import QuizList from "./components/quizList";
+
+
 
 function App() {
   const location = useLocation();
@@ -22,8 +32,8 @@ function App() {
 
   return (
     <>
+    <Toaster position="top-center" reverseOrder={false} />
       <ScrollToTop />
-      {/* Conditionally render Navbar and Footer based on the route */}
       {!isAdminPage && <Navbar />}
 
       <Routes>
@@ -34,8 +44,12 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:id" element={<CourseDetails />} />
-        
-        {/* Login Route */}
+        <Route path="/why-dubai" element={<WhyUs />} />
+        <Route path="/checkout/:id" element={<CheckoutPage />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+      
+
+        {/* Auth Routes */}
         <Route
           path="/login"
           element={
@@ -45,24 +59,71 @@ function App() {
           }
         />
 
-        <Route path="/why-dubai" element={<WhyUs />} />
-
-        {/* Admin Routes */}
+        {/* User Protected Routes */}
         <Route
-          path="/admin/dashboard"
+          path="/profile"
           element={
             <PrivateRoute>
-              <AdminPage />
+              <ProfilePage />
             </PrivateRoute>
           }
-        >
-          <Route path="add" element={<AddPage />} />
-          <Route path="list" element={<ListPage />} />
-          {/* Add more routes like ListPage here */}
-        </Route>
+        />
+
+        <Route
+          path="/enrolledCOurse"
+          element={
+            <PrivateRoute>
+              <EnrolledCoursesPage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Admin Protected Routes */}
+        <Route
+  path="/admin/dashboard"
+  element={
+    <AdminRoute>
+      <AdminPage />
+    </AdminRoute>
+  }
+>
+  <Route
+    path="/admin/dashboard/add"
+    element={
+      <AdminRoute>
+        <AddPage />
+      </AdminRoute>
+    }
+  />
+  <Route
+    path="/admin/dashboard/list"
+    element={
+      <AdminRoute>
+        <ListPage />
+      </AdminRoute>
+    }
+  />
+  <Route
+    path="/admin/dashboard/quiz"
+    element={
+      <AdminRoute>
+        <QuizPage />
+      </AdminRoute>
+    }
+  />
+  <Route
+    path="/admin/dashboard/listquiz"
+    element={
+      <AdminRoute>
+        <QuizList />
+      </AdminRoute>
+    }
+  />
+
+</Route>
+
       </Routes>
 
-      {/* Conditionally render Footer based on the route */}
       {!isAdminPage && <Footer />}
     </>
   );

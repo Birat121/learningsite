@@ -14,12 +14,12 @@ export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
 
-  const login = async(token) => {
-    setAuthToken(token);
+  const login = (token, userData) => {
     localStorage.setItem("token", token);
-    await fetch();
-    
+    setAuthToken(token);
+    setUser(userData);
   };
+  
 
   const logout = async() => {
     setAuthToken(null);
@@ -49,3 +49,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;
