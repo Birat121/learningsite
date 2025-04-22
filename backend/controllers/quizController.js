@@ -20,39 +20,55 @@ export const getAllQuizzes = async (req, res) => {
   }
 };
 
-// Get quiz for a specific course
-export const getQuizByCourseId = async (req, res) => {
+export const getQuiz = async (req, res) => {
   try {
-    const { courseId } = req.params;
-    const quizData = await quiz.findOne({ courseId });
+    const quizId = req.params.id;
+    const quizDoc = await quiz.findById(quizId).populate("courseId");
+    if (!quizDoc) return res.status(404).json({ message: "Quiz not found" });
+    res.status(200).json(quizDoc);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-    if (!quizData) {
-      return res.status(404).json({ message: "Quiz not found for this course." });
+// Get quiz for a specific course
+export const updateQuestionInQuiz = async (req, res) => {
+  try {
+    const { quizId, questionIndex } = req.params;
+    const { question, options, correctAnswer } = req.body;
+
+    const quizDoc = await quiz.findById(quizId);
+    if (!quizDoc) return res.status(404).json({ message: "Quiz not found" });
+
+    if (!quizDoc.questions[questionIndex]) {
+      return res.status(404).json({ message: "Question not found" });
     }
 
-    res.status(200).json(quizData);
+    quizDoc.questions[questionIndex] = { question, options, correctAnswer };
+    await quizDoc.save();
+
+    res.status(200).json({ message: "Question updated", quiz: quizDoc });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-export const updateQuiz = async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const updatedQuiz = await quiz.findOneAndUpdate({ courseId }, req.body, {
-      new: true,
-    });
-    res.status(200).json(updatedQuiz);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
-export const deleteQuiz = async (req, res) => {
+export const deleteQuestionInQuiz = async (req, res) => {
   try {
-    const { courseId } = req.params;
-    await quiz.findOneAndDelete({ courseId });
-    res.status(200).json({ message: "Quiz deleted successfully" });
+    const { quizId, questionIndex } = req.params;
+
+    const quizDoc = await quiz.findById(quizId);
+    if (!quizDoc) return res.status(404).json({ message: "Quiz not found" });
+
+    if (!quizDoc.questions[questionIndex]) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    quizDoc.questions.splice(questionIndex, 1);
+    await quizDoc.save();
+
+    res.status(200).json({ message: "Question deleted", quiz: quizDoc });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

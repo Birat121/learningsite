@@ -155,19 +155,52 @@ export const deleteVideo = async (req, res) => {
 
 export const getEnrolledVideos = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const purchases = await Payment.find({ user: userId, paid: true }).populate("videoId");
-    const enrolledCourses = purchases.map(p => ({
-      _id: p.videoId._id,
-      title: p.videoId.title,
-      thumbnail: p.videoId.thumbnailUrl,
-      description: p.videoId.description,
-      price: p.videoId.price,
-      enrolledAt: p.createdAt,
-    }));
+    const userId = req.user.id;
 
-    return res.json(enrolledCourses);
+    const payments = await Payment.find({ userId, status: "success" }).populate("courseId");
+
+    const courses = payments.map((payment) => payment.courseId);
+
+    res.status(200).json({ courses });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error("Fetching enrolled courses failed:", error);
+    res.status(500).json({ message: "Server error while fetching courses" });
+  }
+};
+
+export const postEnrolledVideo = async (req, res) => {
+  try {
+    const { courseId, method, status } = req.body;
+    const userId = req.user.id;
+
+    // Check if course exists
+    const course = await Video.findById(courseId);
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    // Prevent duplicate enrollments
+    const alreadyEnrolled = await Payment.findOne({
+      userId,
+      courseId,
+      status: "success",
+    });
+
+    if (alreadyEnrolled) {
+      return res.status(400).json({ message: "Already enrolled in this course" });
+    }
+
+    // Save payment/enrollment
+    const payment = new Payment({
+      userId,
+      courseId,
+      method: method || "paypal", // default to paypal
+      status: status || "success", // assume payment went through
+    });
+
+    await payment.save();
+
+    res.status(201).json({ message: "Enrollment successful", payment });
+  } catch (error) {
+    console.error("Enrollment error:", error);
+    res.status(500).json({ message: "Server error during enrollment" });
   }
 };

@@ -5,9 +5,6 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 
-
-
-
 const AuthPage = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -60,7 +57,8 @@ const AuthPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "/api/auth/google"; // Redirect to backend Google OAuth route
+    window.location.href = "http://localhost:5000/api/auth/google";
+ // Redirect to backend Google OAuth route
   };
 
   return (

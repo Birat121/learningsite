@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import router from "./routes/videoRoute.js";
 import quizRouter from "./routes/quizRoute.js";
 
+
 // Load Google Strategy
 import "./controllers/googleAuthController.js";  // <-- Make sure this sets up Passport
 
@@ -43,6 +44,7 @@ app.use(passport.session());
 app.use("/api/auth", authRouter);
 app.use("/api/videos", router);
 app.use("/api/quiz", quizRouter);
+
 
 // Default test route
 app.get("/", (req, res) => {

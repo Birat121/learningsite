@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { FaCcVisa, FaCcPaypal, FaMobileAlt, FaMoneyCheckAlt } from "react-icons/fa";
+import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const CheckoutPage = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
-  const [selectedPayment, setSelectedPayment] = useState("card");
+  const [selectedPayment, setSelectedPayment] = useState("paypal");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -21,17 +23,8 @@ const CheckoutPage = () => {
     fetchCourse();
   }, [id]);
 
-  const handleCheckout = async () => {
-    try {
-      await axios.post("/api/checkout", {
-        courseId: id,
-        userId: "USER_ID", // Replace with real auth ID
-        paymentMethod: selectedPayment,
-      });
-      alert("Payment Successful!");
-    } catch (error) {
-      alert("Payment failed.");
-    }
+  const handleCheckout = () => {
+    alert("Only PayPal is available for now.");
   };
 
   if (!course)
@@ -46,20 +39,7 @@ const CheckoutPage = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 py-12">
         {/* Left: Billing Section */}
         <div className="md:col-span-2 bg-white p-8 rounded-3xl shadow-lg">
-          <h2 className="text-3xl font-bold mb-6 text-green-700">
-            Checkout & Payment
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <input
-              className="border border-gray-300 p-3 rounded-lg"
-              placeholder="Full Name"
-            />
-            <input
-              className="border border-gray-300 p-3 rounded-lg"
-              placeholder="Email Address"
-            />
-          </div>
+          <h2 className="text-3xl font-bold mb-6 text-green-700">Checkout & Payment</h2>
 
           <h3 className="text-xl font-semibold mb-4">Select Payment Method</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
@@ -93,25 +73,67 @@ const CheckoutPage = () => {
             />
           </div>
 
-          {selectedPayment === "card" && (
-            <input
-              className="border border-gray-300 p-3 rounded-lg w-full mb-6"
-              placeholder="Card Number"
-            />
+          {selectedPayment === "paypal" && (
+            <div className="my-6">
+              <PayPalButtons
+                style={{ layout: "vertical" }}
+                createOrder={async () => {
+                  try {
+                    const res = await axiosInstance.post("/payment/create-order", {
+                      courseId: id,
+                      price: course.price,
+                    });
+                    return res.data.orderId;
+                  } catch (err) {
+                    console.error("Create order failed", err);
+                    alert("Something went wrong creating the PayPal order.");
+                  }
+                }}
+                onApprove={async (data) => {
+                  try {
+                    const res = await axiosInstance.post("/payment/capture-payment/success", {
+                      orderId: data.orderID,
+                      courseId: id,
+                    });
+
+                    await axiosInstance.post("/videos/videos/enrolled", {
+                      courseId: id,
+                      userId: res.data.userId,
+                      method: "paypal",
+                      status: "success",
+                    });
+
+                    navigate("/enrolledCourse");
+                  } catch (err) {
+                    console.error("Capture failed:", err);
+                    alert("Something went wrong while confirming the payment.");
+                  }
+                }}
+                onCancel={() => {
+                  alert("Payment was cancelled.");
+                }}
+                onError={(err) => {
+                  console.error("PayPal Error:", err);
+                  alert("Payment failed.");
+                }}
+              />
+            </div>
           )}
 
-          <button
-            onClick={handleCheckout}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl text-lg transition-all"
-          >
-            Complete Payment
-          </button>
+          {selectedPayment !== "paypal" && (
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl text-lg transition-all"
+            >
+              Complete Payment
+            </button>
+          )}
         </div>
 
         {/* Right: Course Summary */}
         <div className="bg-white p-6 rounded-3xl shadow-xl">
           <img
-            src={course.thumbnail}
+            src={course.thumbnailUrl}
             alt={course.title}
             className="h-48 w-full object-cover rounded-xl mb-5"
           />
@@ -145,6 +167,3 @@ const PaymentOption = ({ method, selected, onClick, icon, label }) => {
 };
 
 export default CheckoutPage;
-
-
-

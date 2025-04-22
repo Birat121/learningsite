@@ -1,14 +1,14 @@
 import express from "express";
-import { createQuiz, getAllQuizzes, getQuizByCourseId, updateQuiz, deleteQuiz} from "../controllers/quizController.js";
+import { createQuiz, getAllQuizzes, getQuiz, updateQuestionInQuiz, deleteQuestionInQuiz} from "../controllers/quizController.js";
 
 const quizRouter = express.Router();
 
 // Routes for quiz operations
 quizRouter.post("/quizzes", createQuiz); // Create quiz
 quizRouter.get("/quizzes", getAllQuizzes); // Get all quizzes
-quizRouter.get("/quizzes/:courseId", getQuizByCourseId); // Get quiz by course ID
-quizRouter.put("/quizzes/:courseId", updateQuiz); // Update quiz by course ID
-quizRouter.delete("/quizzes/:courseId", deleteQuiz); // Delete quiz by course ID
+quizRouter.get("/quizzes/:courseId", getQuiz); // Get quiz by course ID
+quizRouter.put("/quizzes/:quizId/questions/:questionIndex", updateQuestionInQuiz);
+quizRouter.delete("/quizzes/:quizId/questions/:questionIndex", deleteQuestionInQuiz);
 
 
 export default quizRouter;

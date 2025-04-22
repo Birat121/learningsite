@@ -23,6 +23,8 @@ import { Toaster } from "react-hot-toast";
 import AdminLogin from "./pages/AdminLogin";
 import QuizPage from "./components/QuizPage";
 import QuizList from "./components/quizList";
+import OAuthHandler from "./components/OAuth";
+import PayPalSuccess from "./components/PayPalSuccess";
 
 
 
@@ -47,6 +49,8 @@ function App() {
         <Route path="/why-dubai" element={<WhyUs />} />
         <Route path="/checkout/:id" element={<CheckoutPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/oauth-success" element={<OAuthHandler />} />
+        <Route path="/paypal/success" element={<PayPalSuccess />} />
       
 
         {/* Auth Routes */}

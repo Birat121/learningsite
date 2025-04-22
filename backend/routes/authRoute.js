@@ -33,7 +33,8 @@ authRouter.get("/google/callback",
     });
 
     // You can redirect to frontend with token if needed
-    res.redirect(`/success?token=${token}`);
+    res.redirect(`http://localhost:5173/oauth-success?token=${token}`);
+
   }
 );
 

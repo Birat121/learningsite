@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
-import { createVideo, getVideo, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos } from '../controllers/trainingVideoController.js';
+import { createVideo, getVideo, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,postEnrolledVideo } from '../controllers/trainingVideoController.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.get('/videos/:id', getVideo); // Get video by ID
 router.put('/videos/:id', upload, updateVideo); // Update video
 router.delete('/videos/:id', deleteVideo); // Delete video
 
-router.get('/videos/enrolled', getEnrolledVideos);
+router.get('/videos/enrolled', authMiddleware, getEnrolledVideos);
+router.post('/videos/enrolled', authMiddleware, postEnrolledVideo);
 
 export default router;

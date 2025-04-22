@@ -9,15 +9,22 @@ const QuizList = () => {
 
   const fetchQuizzes = async () => {
     try {
-      const res = await axiosInstance.get("/quiz/quizzes", { withCredentials: true });
-      console.log("Fetched quizzes:", res.data); // Check the structure here
-      if (res.data && Array.isArray(res.data.quizzes)) {
-        setQuizzes(res.data.quizzes); // Ensure this is an array
-      } else {
-        console.error("Expected quizzes data to be an array");
-      }
+      const res = await axiosInstance.get("/quiz/quizzes", {
+        withCredentials: true,
+      });
+
+      console.log("Fetched quizzes response:", res.data);
+
+      // For safety, ensure response is an array or has a quizzes array
+      const fetchedQuizzes = Array.isArray(res.data)
+        ? res.data
+        : res.data?.quizzes || [];
+
+      console.log("Processed quizzes:", fetchedQuizzes);
+      setQuizzes(fetchedQuizzes);
     } catch (err) {
       console.error("Fetch error:", err);
+      toast.error("Failed to fetch quizzes");
     }
   };
 
@@ -25,20 +32,37 @@ const QuizList = () => {
     fetchQuizzes();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this quiz?")) return;
-    await axiosInstance.delete(`/quiz/quizzes/${id}`, { withCredentials: true });
-    toast.success("Quiz deleted");
-    fetchQuizzes();
+  const handleDelete = async (quizId, questionIndex) => {
+    if (!window.confirm("Are you sure you want to delete this question?")) return;
+  
+    try {
+      await axiosInstance.delete(
+        `/quiz/quizzes/${quizId}/questions/${questionIndex}`,
+        { withCredentials: true }
+      );
+      toast.success("Question deleted");
+      fetchQuizzes();
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete question");
+    }
   };
-
+  
   const handleUpdate = async () => {
-    await axiosInstance.put(`/quiz/quizzes/${editQuiz._id}`, editQuiz, {
-      withCredentials: true,
-    });
-    toast.success("Quiz updated");
-    setEditQuiz(null);
-    fetchQuizzes();
+    try {
+      await axiosInstance.put(
+        `/quiz/quizzes/${editQuiz.quizId}/questions/${editQuiz.questionIndex}`,
+        editQuiz,
+        { withCredentials: true }
+      );
+      
+      toast.success("Quiz updated");
+      setEditQuiz(null);
+      fetchQuizzes();
+    } catch (err) {
+      console.error("Update error:", err);
+      toast.error("Failed to update quiz");
+    }
   };
 
   return (
@@ -49,46 +73,53 @@ const QuizList = () => {
           <tr className="bg-gray-100">
             <th className="p-3 text-left">Question</th>
             <th className="p-3 text-left">Options</th>
-            <th className="p-3">Actions</th>
+            <th className="p-3 text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {Array.isArray(quizzes) && quizzes.length > 0 ? (
-            quizzes.map((quiz) => (
-              <tr key={quiz._id} className="border-b">
-                <td className="p-3">{quiz.question}</td>
-                <td className="p-3">
-                  {quiz.options?.map((opt, idx) => (
-                    <div key={idx}>{opt}</div>
-                  ))}
-                </td>
-                <td className="p-3 flex gap-2 justify-center">
-                  <button
-                    onClick={() => setEditQuiz(quiz)}
-                    className="text-blue-600 hover:underline"
-                  >
-                    <Pencil size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(quiz._id)}
-                    className="text-red-600 hover:underline"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="3" className="text-center p-4">
-                No quizzes available.
-              </td>
-            </tr>
-          )}
-        </tbody>
+  {Array.isArray(quizzes) && quizzes.length > 0 ? (
+    quizzes.map((quiz) =>
+      quiz.questions?.map((q, idx) => (
+        <tr key={`${quiz._id}-${idx}`} className="border-b">
+          <td className="p-3">{q.question || "No question"}</td>
+          <td className="p-3">
+            {q.options && q.options.length > 0 ? (
+              q.options.map((opt, i) => <div key={i}>{opt}</div>)
+            ) : (
+              <span className="text-gray-400 italic">No options</span>
+            )}
+          </td>
+          <td className="p-3 flex gap-2 justify-center">
+            <button
+              onClick={() =>
+                setEditQuiz({ ...q, quizId: quiz._id, questionIndex: idx })
+              }
+              className="text-blue-600 hover:underline"
+            >
+              <Pencil size={18} />
+            </button>
+            <button
+              onClick={() => handleDelete(quiz._id, idx)}
+              className="text-red-600 hover:underline"
+            >
+              <Trash2 size={18} />
+            </button>
+          </td>
+        </tr>
+      ))
+    )
+  ) : (
+    <tr>
+      <td colSpan="3" className="text-center p-4 text-gray-500">
+        No quizzes available.
+      </td>
+    </tr>
+  )}
+</tbody>
+
       </table>
 
-      {/* Inline Modal */}
+      {/* Inline Modal for Editing */}
       {editQuiz && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-xl relative">
@@ -106,6 +137,7 @@ const QuizList = () => {
                 setEditQuiz({ ...editQuiz, question: e.target.value })
               }
               className="w-full border p-2 rounded mb-3"
+              placeholder="Enter question"
             />
             {editQuiz.options?.map((opt, idx) => (
               <input
@@ -118,6 +150,7 @@ const QuizList = () => {
                   setEditQuiz({ ...editQuiz, options: newOptions });
                 }}
                 className="w-full border p-2 rounded mb-2"
+                placeholder={`Option ${idx + 1}`}
               />
             ))}
             <button
