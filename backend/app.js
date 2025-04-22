@@ -22,7 +22,11 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: "https://learningsite-zeta.vercel.app/", // Frontend origin
+  origin:[
+  "http://localhost:5173",
+    "http://192.168.101.23:5173", // ← this is your local IP
+    "https://learningsite-zeta.vercel.app"// production
+],
   credentials: true,
 }));
 
