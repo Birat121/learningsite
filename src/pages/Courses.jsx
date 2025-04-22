@@ -1,22 +1,19 @@
-// src/pages/Courses.jsx
-// src/pages/Courses.jsx
 import React, { useEffect, useState } from "react";
-
+import { ClipLoader } from "react-spinners"; // Import the spinner
 import CourseCard from "../components/CourseCard";
 import FiltersSidebar from "../components/FilterOptions";
 import SearchAndSortBar from "../components/SearchAndSort";
 import Pagination from "../components/Pagination";
 import axiosInstance from "../api/axiosInstance";
 
-
 const Courses = () => {
-  const [courses, setCourses]       = useState([]);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState("");
-  const [filters, setFilters]       = useState({ categories: [], price: "" });
-  const [search, setSearch]         = useState("");
-  const [sort, setSort]             = useState("latest");
-  const [page, setPage]             = useState(1);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [filters, setFilters] = useState({ categories: [], price: "" });
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("latest");
+  const [page, setPage] = useState(1);
   const perPage = 9;
 
   useEffect(() => {
@@ -42,7 +39,6 @@ const Courses = () => {
     fetchCourses();
   }, []);
 
-  // now `courses` is guaranteed an array
   const processed = courses
     .filter((c) => {
       const matchCategory =
@@ -56,21 +52,26 @@ const Courses = () => {
       return matchCategory && matchPrice && matchSearch;
     })
     .sort((a, b) => {
-      if (sort === "latest")  return new Date(b.createdAt) - new Date(a.createdAt);
-      if (sort === "oldest")  return new Date(a.createdAt) - new Date(b.createdAt);
-      if (sort === "priceLow")  return a.price - b.price;
+      if (sort === "latest") return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sort === "priceLow") return a.price - b.price;
       if (sort === "priceHigh") return b.price - a.price;
       return 0;
     });
 
-  const total     = Math.ceil(processed.length / perPage);
+  const total = Math.ceil(processed.length / perPage);
   const paginated = processed.slice((page - 1) * perPage, page * perPage);
 
-  if (loading) return <p className="text-center mt-10">Loading courses…</p>;
-  if (error)   return <p className="text-center text-red-500 mt-10">{error}</p>;
+  if (loading) return (
+    <div className="text-center mt-10">
+      <ClipLoader color="#4A90E2" size={50} />
+      <p>Loading courses…</p>
+    </div>
+  );
+  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 pt-28 pb-16 px-4 md:px-10 mt-14">
+    <div className="min-h-screen bg-gray-100 pt-28 pb-16 px-4 md:px-10 mt-18">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           <aside className="md:col-span-3 mt-16">
