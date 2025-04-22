@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../api/axiosInstance";
 
 // Create a context
 const AuthContext = createContext();
@@ -25,12 +25,12 @@ export const AuthProvider = ({ children }) => {
     setAuthToken(null);
     localStorage.removeItem("token");
     setUser(null);
-    await axios.post("http://localhost:5000/api/auth/logout", { withCredentials: true });
+    await axiosInstance.post("/auth/logout", { withCredentials: true });
   };
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/auth/user", { withCredentials: true });
+      const response = await axiosInstance.get("/auth/user", { withCredentials: true });
       setUser(response.data.user);
     } catch (error) {
       console.error(error);
