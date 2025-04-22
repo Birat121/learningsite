@@ -55,7 +55,7 @@ const CourseDetails = () => {
   const fetchQuiz = async () => {
     try {
       setQuizLoading(true);
-      const res = await axiosInstance.get(`/quiz/quizzes/${id}`);
+      const res = await axiosInstance.get(`/api/quiz/quizzes/${id}`);
       setQuiz(res.data);
     } catch (err) {
       console.error("Failed to fetch quiz:", err);
@@ -77,7 +77,7 @@ const CourseDetails = () => {
   const handleBuyNowClick = () => {
     const token = localStorage.getItem("token");
     if (token) {
-      navigate(`/checkout/${id}`);
+      navigate(`/api/checkout/${id}`);
     } else {
       toast.error("Please log in to buy this course.");
       navigate("/login");

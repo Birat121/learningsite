@@ -23,7 +23,7 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get("/videos/videos");
+        const response = await axiosInstance.get("/api/videos/videos");
         // ensure we only store an array
         const data = response.data;
         const list = Array.isArray(data)

@@ -14,7 +14,7 @@ const AdminPage = () => {
 
   const handleLogout = async () => {
     await axiosInstance.post(
-      "/auth/admin/logout",
+      "/api/auth/admin/logout",
       {},
       { withCredentials: true }
     );

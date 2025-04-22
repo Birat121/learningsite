@@ -25,7 +25,7 @@ const AuthPage = () => {
     setError("");
 
     try {
-      const url = isSignIn ? "/auth/login" : "/auth/register";
+      const url = isSignIn ? "/api/auth/login" : "/api/auth/register";
       const payload = isSignIn
         ? { email: formData.email, password: formData.password }
         : formData;

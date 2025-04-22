@@ -17,7 +17,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post("/auth/admin", formData, {
+      const response = await axiosInstance.post("/api//auth/admin", formData, {
         withCredentials: true,
       });
 
