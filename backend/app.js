@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: "https://learningsite-58rssdnio-biratbudhathoki79-gmailcoms-projects.vercel.app/", // Frontend origin
+  origin: "https://learningsite-zeta.vercel.app/", // Frontend origin
   credentials: true,
 }));
 
