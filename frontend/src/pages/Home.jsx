@@ -3,7 +3,7 @@ import Hero from '../components/Hero';
 import Introduction from '../components/Introduction';
 import WhyChooseMe from '../components/ChooseMe';
 import Courses from '../components/CoursesWeOffer';
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet';
 
 const Home = () => {
   return (
