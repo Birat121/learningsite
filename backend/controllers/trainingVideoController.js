@@ -56,15 +56,32 @@ export const getAllVideos = async (req, res) => {
 };
 
 // GET /videos/:id - Fetch a video by ID
-export const getVideo = async (req, res) => {
+export const getVideoBySlug = async (req, res) => {
   try {
-    const video = await Video.findById(req.params.id);
+    const video = await Video.findOne({ slug: req.params.slug });
     if (!video) return res.status(404).json({ error: 'Video not found' });
-    return res.json(video);
+
+    // Add structured data for SEO if needed
+    const jsonLd = {
+      "@context": "http://schema.org",
+      "@type": "VideoObject",
+      "name": video.title,
+      "description": video.description,
+      "thumbnailUrl": video.thumbnailUrl,
+      "uploadDate": video.createdAt,
+      "contentUrl": video.videoUrl,
+      "publisher": {
+        "@type": "Organization",
+        "name": "Your Platform Name",
+        "logo": "https://yourdomain.com/logo.png"
+      }
+    };
+    return res.json(video, jsonLd);
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
+
 
 // PUT /videos/:id - Update a video
 export const updateVideo = async (req, res) => {

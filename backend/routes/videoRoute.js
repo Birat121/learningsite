@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createVideo, getVideo, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,postEnrolledVideo } from '../controllers/trainingVideoController.js';
+import { createVideo, getVideoBySlug, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,postEnrolledVideo } from '../controllers/trainingVideoController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -12,14 +12,15 @@ const upload = multer({ storage: storage }).fields([
   { name: 'thumbnail', maxCount: 1 },
 ]);
 
-// Routes for video operations
-router.post('/videos', upload, createVideo); // Create video
-router.get('/videos', getAllVideos); // Get all videos
-router.get('/videos/:id', getVideo); // Get video by ID
-router.put('/videos/:id', upload, updateVideo); // Update video
-router.delete('/videos/:id', deleteVideo); // Delete video
+router.post('/videos', authMiddleware, upload, createVideo);
+router.get('/videos', getAllVideos);
+router.get('/videos/slug/:slug', getVideoBySlug); // Prevents slug/id conflict
+router.put('/videos/:id', authMiddleware, upload, updateVideo);
+router.delete('/videos/:id', authMiddleware, deleteVideo);
 
+// Enrollment
 router.get('/videos/enrolled', authMiddleware, getEnrolledVideos);
 router.post('/videos/enrolled', authMiddleware, postEnrolledVideo);
+
 
 export default router;

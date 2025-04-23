@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
+import { Helmet } from "react-helmet"; // Import React Helmet
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -24,7 +25,7 @@ const CourseDetails = () => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get(`/videos/videos/${id}`);
+        const res = await axiosInstance.get(`/videos//videos/slug/${slug}`);
         setCourse(res.data);
       } catch (err) {
         console.error(err);
@@ -92,6 +93,21 @@ const CourseDetails = () => {
 
   return (
     <div className="pt-32 pb-20 px-4">
+
+      {/* Meta Tags for SEO using React Helmet */}
+      <Helmet>
+        <title>{course.title} | Your Platform Name</title>
+        <meta name="description" content={course.description} />
+        <meta property="og:title" content={course.title} />
+        <meta property="og:description" content={course.description} />
+        <meta property="og:image" content={course.thumbnailUrl} />
+        <meta property="og:url" content={`https://yourdomain.com/courses/${id}`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={course.title} />
+        <meta name="twitter:description" content={course.description} />
+        <meta name="twitter:image" content={course.thumbnailUrl} />
+        <link rel="canonical" href={`https://yourdomain.com/courses/${id}`} />
+      </Helmet>
 
       {/* Course Main Section */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
@@ -210,14 +226,14 @@ const CourseDetails = () => {
                 <div className="mt-6 space-y-4 text-lg">
                   {quiz.questions.map((q, i) => (
                     <div key={i}>
-                      {answers[i] === q.correctAnswer ? (
-                        <span className="text-green-600 font-semibold">
-                          ✅ Question {i + 1} is correct!
-                        </span>
+                      {answers[i] === q.correctOption ? (
+                        <p className="text-green-500">
+                          Question {i + 1}: Correct!
+                        </p>
                       ) : (
-                        <span className="text-red-600 font-semibold">
-                          ❌ Question {i + 1} is incorrect. Correct: {q.options[q.correctAnswer]}
-                        </span>
+                        <p className="text-red-500">
+                          Question {i + 1}: Incorrect.
+                        </p>
                       )}
                     </div>
                   ))}
@@ -225,7 +241,7 @@ const CourseDetails = () => {
               )}
             </>
           ) : (
-            <p className="text-red-600">No quiz available for this course.</p>
+            <p className="text-gray-600">No quiz available for this course.</p>
           )}
         </div>
       )}

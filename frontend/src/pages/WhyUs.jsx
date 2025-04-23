@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaBuilding, FaDollarSign, FaHandshake, FaGlobe, FaCity } from 'react-icons/fa';
 
+
 const reasons = [
   {
     icon: <FaBuilding className="text-3xl sm:text-4xl text-white" />,
