@@ -57,7 +57,7 @@ const AuthPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = "https://learningsite-lsgy.onrender.com/api/auth/google";
  // Redirect to backend Google OAuth route
   };
 

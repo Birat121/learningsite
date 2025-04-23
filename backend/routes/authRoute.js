@@ -33,7 +33,7 @@ authRouter.get("/google/callback",
     });
 
     // You can redirect to frontend with token if needed
-    res.redirect(`http://localhost:5173/oauth-success?token=${token}`);
+    res.redirect(`https://realstatelearning3.netlify.app/oauth-success?token=${token}`);
 
   }
 );
