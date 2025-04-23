@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin:[
   
-    "https://learningsite-zeta.vercel.app"// production
+    "https://learningsite-4frp.vercel.app/"// production
 ],
   credentials: true,
 }));
