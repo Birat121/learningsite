@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173", // your frontend
+  origin: "https://realstatelearning3.netlify.app/", // your frontend
   credentials: true, // if using cookies
 }));
 
