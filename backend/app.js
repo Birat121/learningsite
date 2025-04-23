@@ -22,11 +22,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin:[
-  
-    "https://learningsite-4frp.vercel.app/"// production
-],
-  credentials: true,
+  origin: "http://localhost:5173", // your frontend
+  credentials: true, // if using cookies
 }));
 
 app.use(express.json());

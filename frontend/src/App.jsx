@@ -45,7 +45,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/courses" element={<Courses />} />
-        <Route path="/courses/:id" element={<CourseDetails />} />
+        <Route path="/courses/:slug" element={<CourseDetails />} />
         <Route path="/why-dubai" element={<WhyUs />} />
         <Route path="/checkout/:id" element={<CheckoutPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />

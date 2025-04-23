@@ -6,8 +6,5 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     outDir: 'dist', // default, but explicit
-  },
-  server: {
-    host: true, // optional, helpful for local network testing
-  },
+  }
 });

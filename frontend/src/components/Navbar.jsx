@@ -262,7 +262,7 @@ const Navbar = () => {
               <button
                 onClick={() => {
                   closeMenu();
-                  navigate("/");
+                  navigate("/login");
                 }}
                 className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
               >

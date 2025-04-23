@@ -6,7 +6,8 @@ const CourseCard = ({ course }) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
 
   return (
-    <Link to={`/courses/${course._id}`}>
+    <Link to={`/courses/${course.slug}`}>
+
       <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-full cursor-pointer hover:shadow-lg transition-all duration-300">
         <div className="relative w-full h-40 overflow-hidden">
           <img

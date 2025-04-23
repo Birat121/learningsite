@@ -4,8 +4,10 @@ import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 import { Helmet } from "react-helmet"; // Import React Helmet
 
+
+
 const CourseDetails = () => {
-  const { id } = useParams();
+  const {id, slug } = useParams();
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
@@ -25,7 +27,7 @@ const CourseDetails = () => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const res = await axiosInstance.get(`/videos//videos/slug/${slug}`);
+        const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
         setCourse(res.data);
       } catch (err) {
         console.error(err);

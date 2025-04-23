@@ -10,7 +10,7 @@ const Home = () => {
     <>
      <Helmet>
         {/* Title for the Home Page */}
-        <title>Learn Real Estate Online - YourPlatformName</title>
+        <title>Learn Real Estate Online - Koffee With Kirren</title>
 
         {/* Meta description for better search engine indexing */}
         <meta

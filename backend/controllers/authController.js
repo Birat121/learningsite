@@ -24,7 +24,7 @@ export const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid =  bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new CustomError("Invalid credentials", 401);
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",

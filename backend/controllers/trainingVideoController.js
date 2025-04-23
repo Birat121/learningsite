@@ -1,10 +1,15 @@
 import cloudinary from '../utils/cloudinary.js';
 import Video from '../models/videoModel.js';
 import Payment from '../models/paymentModel.js';
+import slugify from 'slugify';
 
+// POST /videos - Create a video
 // POST /videos - Create a video
 export const createVideo = async (req, res) => {
   try {
+    // Automatically generate a slug from the title
+    const slug = slugify(req.body.title, { lower: true, strict: true });
+
     // Upload video to Cloudinary
     const videoResult = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
@@ -37,6 +42,7 @@ export const createVideo = async (req, res) => {
       videoPublicId: videoResult.public_id,
       thumbnailUrl: thumbnailResult.url,
       thumbnailPublicId: thumbnailResult.public_id,
+      slug: slug,  // Add the generated slug to the video
     });
 
     await newVideo.save();
@@ -91,9 +97,10 @@ export const updateVideo = async (req, res) => {
 
     const updatedData = {};
 
-    // Update title if provided
+    // Update title if provided and generate a new slug
     if (req.body.title) {
       updatedData.title = req.body.title;
+      updatedData.slug = slugify(req.body.title, { lower: true, strict: true }); // Generate new slug
     }
 
     // Update price if provided

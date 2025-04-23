@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { FaCcVisa, FaCcPaypal, FaMobileAlt, FaMoneyCheckAlt } from "react-icons/fa";
-import { PayPalButtons } from "@paypal/react-paypal-js";
 
 const CheckoutPage = () => {
   const { id } = useParams();
@@ -24,7 +23,7 @@ const CheckoutPage = () => {
   }, [id]);
 
   const handleCheckout = () => {
-    alert("Only PayPal is available for now.");
+    alert(`Payment method '${selectedPayment}' selected. Integration coming soon.`);
   };
 
   if (!course)
@@ -73,61 +72,13 @@ const CheckoutPage = () => {
             />
           </div>
 
-          {selectedPayment === "paypal" && (
-            <div className="my-6">
-              <PayPalButtons
-                style={{ layout: "vertical" }}
-                createOrder={async () => {
-                  try {
-                    const res = await axiosInstance.post("/payment/create-order", {
-                      courseId: id,
-                      price: course.price,
-                    });
-                    return res.data.orderId;
-                  } catch (err) {
-                    console.error("Create order failed", err);
-                    alert("Something went wrong creating the PayPal order.");
-                  }
-                }}
-                onApprove={async (data) => {
-                  try {
-                    const res = await axiosInstance.post("/payment/capture-payment/success", {
-                      orderId: data.orderID,
-                      courseId: id,
-                    });
-
-                    await axiosInstance.post("/videos/videos/enrolled", {
-                      courseId: id,
-                      userId: res.data.userId,
-                      method: "paypal",
-                      status: "success",
-                    });
-
-                    navigate("/enrolledCourse");
-                  } catch (err) {
-                    console.error("Capture failed:", err);
-                    alert("Something went wrong while confirming the payment.");
-                  }
-                }}
-                onCancel={() => {
-                  alert("Payment was cancelled.");
-                }}
-                onError={(err) => {
-                  console.error("PayPal Error:", err);
-                  alert("Payment failed.");
-                }}
-              />
-            </div>
-          )}
-
-          {selectedPayment !== "paypal" && (
-            <button
-              onClick={handleCheckout}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl text-lg transition-all"
-            >
-              Complete Payment
-            </button>
-          )}
+          {/* Temporary Button Until Payment Integration */}
+          <button
+            onClick={handleCheckout}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl text-lg transition-all"
+          >
+            Proceed to Pay
+          </button>
         </div>
 
         {/* Right: Course Summary */}
@@ -167,3 +118,4 @@ const PaymentOption = ({ method, selected, onClick, icon, label }) => {
 };
 
 export default CheckoutPage;
+
