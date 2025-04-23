@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import { createVideo, getVideoBySlug, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,postEnrolledVideo } from '../controllers/trainingVideoController.js';
 import { adminAuth } from '../middleware/adminMiddleware.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
