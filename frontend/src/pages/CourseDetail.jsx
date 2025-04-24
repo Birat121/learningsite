@@ -80,7 +80,7 @@ const CourseDetails = () => {
   const handleBuyNowClick = () => {
     const token = localStorage.getItem("token");
     if (token) {
-      navigate(`/checkout/${id}`);
+      navigate(`/checkout/${slug}`);
     } else {
       toast.error("Please log in to buy this course.");
       navigate("/login");

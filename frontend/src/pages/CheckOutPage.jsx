@@ -4,7 +4,7 @@ import axiosInstance from "../api/axiosInstance";
 import { FaCcVisa, FaCcPaypal, FaMobileAlt, FaMoneyCheckAlt } from "react-icons/fa";
 
 const CheckoutPage = () => {
-  const { id } = useParams();
+  const { id, slug } = useParams();
   const [course, setCourse] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState("paypal");
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const CheckoutPage = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axiosInstance.get(`/videos/videos/${id}`);
+        const response = await axiosInstance.get(`/videos/videos/${slug}`);
         setCourse(response.data);
       } catch (error) {
         console.error("Failed to fetch course:", error);
