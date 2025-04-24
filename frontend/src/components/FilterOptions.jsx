@@ -1,59 +1,65 @@
 const FiltersSidebar = ({ filters, setFilters }) => {
-  const handleCategoryChange = (cat) => {
+  const handlePropertyTypeChange = (type) => {
     setFilters((prev) => {
-      const exists = prev.categories.includes(cat);
+      const exists = prev.propertyTypes.includes(type);
       return {
         ...prev,
-        categories: exists
-          ? prev.categories.filter((c) => c !== cat)
-          : [...prev.categories, cat],
+        propertyTypes: exists
+          ? prev.propertyTypes.filter((t) => t !== type)
+          : [...prev.propertyTypes, type],
       };
     });
   };
 
-  const handlePriceChange = (e) => {
-    setFilters((prev) => ({ ...prev, price: e.target.value }));
+  const handlePriceRangeChange = (e) => {
+    setFilters((prev) => ({ ...prev, priceRange: e.target.value }));
   };
 
   const handleReset = () => {
-    setFilters({ categories: [], price: "" });
+    setFilters({ propertyTypes: [], priceRange: "" });
   };
 
   return (
     <div className="w-full space-y-6 p-6 bg-white shadow rounded-xl">
-      {/* Categories */}
+      {/* Property Types */}
       <div>
-        <h4 className="font-bold text-lg mb-3">Categories</h4>
+        <h4 className="font-bold text-lg mb-3">Property Type</h4>
         <div className="space-y-2">
-          {["Arts & Crafts", "Coaching", "Online Business", "Real Estate"].map((cat) => (
-            <label key={cat} className="flex items-center space-x-2 cursor-pointer">
+          {["Apartment", "House", "Land", "Commercial", "Villa"].map((type) => (
+            <label key={type} className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
                 className="accent-yellow-500"
-                checked={filters.categories.includes(cat)}
-                onChange={() => handleCategoryChange(cat)}
+                checked={filters.propertyTypes.includes(type)}
+                onChange={() => handlePropertyTypeChange(type)}
               />
-              <span>{cat}</span>
+              <span>{type}</span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* Price */}
+      {/* Price Range */}
       <div>
-        <h4 className="font-bold text-lg mb-3">Price</h4>
+        <h4 className="font-bold text-lg mb-3">Price Range</h4>
         <div className="space-y-2">
-          {["Free", "Paid"].map((price) => (
-            <label key={price} className="flex items-center space-x-2 cursor-pointer">
+          {[
+            "Under $50,000",
+            "$50,000 - $100,000",
+            "$100,000 - $250,000",
+            "$250,000 - $500,000",
+            "Above $500,000",
+          ].map((range) => (
+            <label key={range} className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="radio"
-                name="price"
-                value={price}
+                name="priceRange"
+                value={range}
                 className="accent-yellow-500"
-                checked={filters.price === price}
-                onChange={handlePriceChange}
+                checked={filters.priceRange === range}
+                onChange={handlePriceRangeChange}
               />
-              <span>{price}</span>
+              <span>{range}</span>
             </label>
           ))}
         </div>

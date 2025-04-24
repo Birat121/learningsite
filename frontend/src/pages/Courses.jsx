@@ -11,7 +11,7 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filters, setFilters] = useState({ categories: [], price: "" });
+  const [filters, setFilters] = useState({ propertyTypes: [], priceRange: "" });
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("latest");
   const [page, setPage] = useState(1);
@@ -44,18 +44,33 @@ const Courses = () => {
     setPage(1); // Reset page on filter change
   }, [filters, search, sort]);
 
+  const matchPriceRange = (price, range) => {
+    switch (range) {
+      case "Under $50,000":
+        return price < 50000;
+      case "$50,000 - $100,000":
+        return price >= 50000 && price <= 100000;
+      case "$100,000 - $250,000":
+        return price > 100000 && price <= 250000;
+      case "$250,000 - $500,000":
+        return price > 250000 && price <= 500000;
+      case "Above $500,000":
+        return price > 500000;
+      default:
+        return true;
+    }
+  };
+
   const processed = useMemo(() => {
     return courses
       .filter((c) => {
-        const matchCategory =
-          filters.categories.length === 0 ||
-          filters.categories.some((cat) => c.category?.includes(cat));
+        const matchType =
+          filters.propertyTypes.length === 0 ||
+          filters.propertyTypes.some((type) => c.category?.includes(type));
         const matchPrice =
-          filters.price === "" ||
-          (filters.price === "Free" && c.price === 0) ||
-          (filters.price === "Paid" && c.price > 0);
+          filters.priceRange === "" || matchPriceRange(c.price, filters.priceRange);
         const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
-        return matchCategory && matchPrice && matchSearch;
+        return matchType && matchPrice && matchSearch;
       })
       .sort((a, b) => {
         if (sort === "latest") return new Date(b.createdAt) - new Date(a.createdAt);
@@ -86,7 +101,6 @@ const Courses = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 pt-28 pb-16 px-4 md:px-10 mt-16">
-      {/* ✅ SEO Helmet */}
       <Helmet>
         <title>Courses | Kirren Real Estate Training</title>
         <meta
@@ -136,4 +150,5 @@ const Courses = () => {
 };
 
 export default Courses;
+
 
