@@ -36,10 +36,10 @@ const CourseDetails = () => {
         setLoading(false);
       }
     };
-
+  
     const fetchAccess = async () => {
       try {
-        const res = await axiosInstance.get(`/purchases/${id}`, {
+        const res = await axiosInstance.get(`/purchases/${slug}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -50,11 +50,11 @@ const CourseDetails = () => {
         setHasAccess(false);
       }
     };
-
+  
     fetchCourse();
     fetchAccess();
-  }, [id]);
-
+  }, [slug]); // ✅ use slug here
+  
   const fetchQuiz = async () => {
     try {
       setQuizLoading(true);
@@ -103,12 +103,12 @@ const CourseDetails = () => {
         <meta property="og:title" content={course.title} />
         <meta property="og:description" content={course.description} />
         <meta property="og:image" content={course.thumbnailUrl} />
-        <meta property="og:url" content={`https://yourdomain.com/courses/${id}`} />
+        <meta property="og:url" content={`https://yourdomain.com/courses/${slug}`} />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={course.title} />
         <meta name="twitter:description" content={course.description} />
         <meta name="twitter:image" content={course.thumbnailUrl} />
-        <link rel="canonical" href={`https://yourdomain.com/courses/${id}`} />
+        <link rel="canonical" href={`https://yourdomain.com/courses/${slug}`} />
       </Helmet>
 
       {/* Course Main Section */}

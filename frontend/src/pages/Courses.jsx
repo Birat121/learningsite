@@ -46,16 +46,16 @@ const Courses = () => {
 
   const matchPriceRange = (price, range) => {
     switch (range) {
-      case "Under $50,000":
-        return price < 50000;
-      case "$50,000 - $100,000":
-        return price >= 50000 && price <= 100000;
-      case "$100,000 - $250,000":
-        return price > 100000 && price <= 250000;
-      case "$250,000 - $500,000":
-        return price > 250000 && price <= 500000;
-      case "Above $500,000":
-        return price > 500000;
+      case "Under $50":
+        return price < 50;
+      case "$50 - $100":
+        return price >= 50 && price <= 100;
+      case "$100 - $250":
+        return price > 100 && price <= 250;
+      case "$250 - $500":
+        return price > 250 && price <= 500;
+      case "Above $500":
+        return price > 500;
       default:
         return true;
     }
