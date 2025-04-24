@@ -44,11 +44,11 @@ const FiltersSidebar = ({ filters, setFilters }) => {
         <h4 className="font-bold text-lg mb-3">Price Range</h4>
         <div className="space-y-2">
           {[
-            "Under $50,000",
-            "$50,000 - $100,000",
-            "$100,000 - $250,000",
-            "$250,000 - $500,000",
-            "Above $500,000",
+            "Under $50",
+            "$50 - $100",
+            "$100 - $250",
+            "$250 - $500",
+            "Above $500",
           ].map((range) => (
             <label key={range} className="flex items-center space-x-2 cursor-pointer">
               <input
