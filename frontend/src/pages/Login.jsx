@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/authContext";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
 
 const AuthPage = () => {
   const [isSignIn, setIsSignIn] = useState(true);
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,44 +24,58 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
+    // Basic client-side validation
+    if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      return setError("Please enter a valid email address.");
+    }
+
+    if (formData.password.length < 6) {
+      return setError("Password must be at least 6 characters long.");
+    }
+
+    if (!isSignIn && formData.name.trim().length < 3) {
+      return setError("Name must be at least 3 characters.");
+    }
+
+    setLoading(true);
 
     try {
       const url = isSignIn ? "/auth/login" : "/auth/register";
       const payload = isSignIn
         ? { email: formData.email, password: formData.password }
         : formData;
-    
+
       const res = await axiosInstance.post(url, payload, {
         withCredentials: true,
       });
-    
-      toast.success(isSignIn ? "Logged in successfully!" : "Account created successfully!");
-    
+
+      toast.success(
+        isSignIn ? "Logged in successfully!" : "Account created successfully!"
+      );
+
       if (isSignIn) {
         login(res.data.token);
         navigate("/");
       }
-    
+
       setFormData({ name: "", email: "", password: "" });
       setIsSignIn(true);
-    
     } catch (err) {
       console.error(err);
       const message = err.response?.data?.message || "Something went wrong.";
       setError(message);
       toast.error(message);
-    }
-    
-     finally {
+    } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://learningsite-lsgy.onrender.com/api/auth/google";
- // Redirect to backend Google OAuth route
+    window.location.href =
+      "https://learningsite-lsgy.onrender.com/api/auth/google";
+    // Redirect to backend Google OAuth route
   };
 
   return (
@@ -83,7 +100,10 @@ const AuthPage = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             {!isSignIn && (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Full Name
                 </label>
                 <input
@@ -100,7 +120,10 @@ const AuthPage = () => {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -116,7 +139,10 @@ const AuthPage = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -140,21 +166,35 @@ const AuthPage = () => {
                   />
                   <span className="ml-2">Remember me</span>
                 </label>
-                <a href="#" className="text-sm text-blue-600 hover:text-blue-500 font-medium">
+                <a
+                  href="#"
+                  className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+                >
                   Forgot your password?
                 </a>
               </div>
             )}
 
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
 
             <div>
               <button
                 type="submit"
-                disabled={loading}
-                className="w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-[rgb(0,104,80)] hover:bg-green-800"
+                disabled={
+                  loading ||
+                  !formData.email ||
+                  !formData.password ||
+                  (!isSignIn && !formData.name)
+                }
+                className="w-full flex justify-center py-2 px-4 text-sm font-medium rounded-md text-white bg-[rgb(0,104,80)] hover:bg-green-800 disabled:opacity-50"
               >
-                {loading ? "Please wait..." : isSignIn ? "Sign in" : "Create account"}
+                {loading
+                  ? "Please wait..."
+                  : isSignIn
+                  ? "Sign in"
+                  : "Create account"}
               </button>
             </div>
           </form>
@@ -181,7 +221,9 @@ const AuthPage = () => {
                   alt="Google"
                   className="h-5 w-5"
                 />
-                <span className="text-sm text-gray-700 font-medium">Google</span>
+                <span className="text-sm text-gray-700 font-medium">
+                  Google
+                </span>
               </button>
             </div>
           </div>
