@@ -25,21 +25,24 @@ export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    
+
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
-    
-    // Correct password comparison
+
+    if (!user.password) {
+      return res.status(400).json({ message: "Please login with Google" });
+    }
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new CustomError("Invalid credentials", 401);
-    
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "None", // Allow cross-site cookie usage (needed for Render + Vercel)
+      sameSite: "None",
       maxAge: 24 * 60 * 60 * 1000,
     });
 
@@ -48,6 +51,7 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
 
 
 export const logout = async (req, res) => {
