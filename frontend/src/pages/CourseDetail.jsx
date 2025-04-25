@@ -96,7 +96,7 @@ const CourseDetails = () => {
 
       {/* Meta Tags for SEO using React Helmet */}
       <Helmet>
-        <title>{course.title} | Your Platform Name</title>
+        <title>{course.title} | Koffee With Kirren</title>
         <meta name="description" content={course.description} />
         <meta property="og:title" content={course.title} />
         <meta property="og:description" content={course.description} />
