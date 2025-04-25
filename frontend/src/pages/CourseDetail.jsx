@@ -4,10 +4,8 @@ import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 import { Helmet } from "react-helmet"; // Import React Helmet
 
-
-
 const CourseDetails = () => {
-  const {id, slug } = useParams();
+  const { id, slug } = useParams();
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
@@ -36,7 +34,7 @@ const CourseDetails = () => {
         setLoading(false);
       }
     };
-  
+
     const fetchAccess = async () => {
       try {
         const res = await axiosInstance.get(`/purchases/${slug}`, {
@@ -50,11 +48,11 @@ const CourseDetails = () => {
         setHasAccess(false);
       }
     };
-  
+
     fetchCourse();
     fetchAccess();
   }, [slug]); // ✅ use slug here
-  
+
   const fetchQuiz = async () => {
     try {
       setQuizLoading(true);
@@ -137,7 +135,7 @@ const CourseDetails = () => {
                   controls
                   autoPlay
                   poster={course.thumbnailUrl}
-                  className="w-full h-[300px] object-cover"
+                  className="w-full h-[400px] object-cover"
                   onEnded={handleVideoEnd}
                 >
                   <source src={course.videoUrl} type="video/mp4" />
@@ -146,7 +144,7 @@ const CourseDetails = () => {
               ) : (
                 <div
                   onClick={() => setShowVideo(true)}
-                  className="relative w-full h-[300px] bg-gray-300 flex items-center justify-center cursor-pointer"
+                  className="relative w-full h-[400px] bg-gray-300 flex items-center justify-center cursor-pointer"
                 >
                   <img
                     src={course.thumbnailUrl}
@@ -159,7 +157,7 @@ const CourseDetails = () => {
                 </div>
               )
             ) : (
-              <div className="relative w-full h-[300px] bg-gray-200 flex items-center justify-center">
+              <div className="relative w-full h-[400px] bg-gray-200 flex items-center justify-center">
                 <img
                   src={course.thumbnailUrl}
                   alt="Course Thumbnail"
@@ -252,3 +250,4 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
+
