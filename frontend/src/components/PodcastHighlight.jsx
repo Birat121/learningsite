@@ -13,7 +13,7 @@ const PodcastHighlight = () => {
 
         <div className="flex flex-col sm:flex-row justify-center gap-6">
           <a
-            href="https://www.youtube.com" // Replace with your YouTube URL
+            href="https://www.youtube.com/@KoffeewithKirren" // Replace with your YouTube URL
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-full hover:bg-blue-50 transition"
