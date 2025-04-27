@@ -6,23 +6,33 @@ import { Link } from 'react-router-dom';
 const courses = [
   {
     icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-    title: "Real Estate Investing 101",
-    description: "Learn the fundamentals of real estate investing, risk management, and portfolio building.",
+    title: "Introduction to Off Plan",
+    description: "Discover Dubai's past, present, and future, and understand the off-plan process.",
   },
   {
     icon: <FaTools className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-    title: "Advanced Property Flipping",
-    description: "Master the art of flipping properties with real-world strategies and case studies.",
+    title: "Introduction to Leasing",
+    description: "Coming soon",
   },
   {
     icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-    title: "Rental Property Mastery",
-    description: "Learn how to buy, manage, and profit from rental properties long-term.",
+    title: "Introduction to Secondary",
+    description: "Coming soon",
   },
   {
     icon: <FaChartLine className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-    title: "Financing & Mortgages",
-    description: "Understand mortgage structures, financing deals, and getting the best loan terms.",
+    title: "Sales Techniques",
+    description: "Coming soon",
+  },
+  {
+    icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Dubai Area Guides",
+    description: "Coming soon",
+  },
+  {
+    icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Dubai Property Developers",
+    description: "Coming soon",
   },
 ];
 
@@ -38,7 +48,7 @@ const Courses = () => {
     >
       <h2 className="text-3xl sm:text-4xl font-bold mb-4 text-gray-900">Courses & Training</h2>
       <p className="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto mb-6">
-        Empower yourself with practical real estate knowledge tailored to all experience levels.
+        Empower yourself with practical Dubai real estate knowledge tailored to new and aspiring agents at foundation level.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left justify-items-center">
@@ -56,9 +66,7 @@ const Courses = () => {
       <div className="mt-8">
         <Link 
           to="/courses" 
-          smooth={true} 
-          duration={500} 
-          className="inline-block px-8 py-4 text-base sm:text-xl bg-[rgb(0,104,80)] text-white font-semibold rounded-lg shadow-md  transition"
+          className="inline-block px-8 py-4 text-base sm:text-xl bg-[rgb(0,104,80)] text-white font-semibold rounded-lg shadow-md transition"
         >
           Explore Courses
         </Link>

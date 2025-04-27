@@ -4,6 +4,7 @@ import Introduction from '../components/Introduction';
 import WhyChooseMe from '../components/ChooseMe';
 import Courses from '../components/CoursesWeOffer';
 import { Helmet } from 'react-helmet';
+import PodcastHighlight from '../components/PodcastHighlight';
 
 const Home = () => {
   return (
@@ -27,6 +28,7 @@ const Home = () => {
     <Hero />
     <Introduction/>
     <WhyChooseMe/>
+    <PodcastHighlight/>
     <Courses/>
 
     </>

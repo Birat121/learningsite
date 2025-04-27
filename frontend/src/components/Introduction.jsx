@@ -10,7 +10,7 @@ const Introduction = () => {
         <img
           src={image}
           alt="Introduction"
-          className="w-[80%] sm:w-[70%] md:w-[95%] lg:w-[60%] h-auto object-cover rounded-md animate-float"
+          className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
         />
       </div>
 
@@ -36,19 +36,12 @@ const Introduction = () => {
             Ready to level up your real estate knowledge?
           </p>
           <Link
-            to='/courses'
+            to='/contact'
             className="bg-[rgb(0,104,80)] text-white text-sm sm:text-base md:text-lg font-semibold px-5 py-2 sm:px-6 sm:py-3 rounded-md transition duration-300 w-max"
           >
-            Explore Courses
+            Book Your Free Consultation
           </Link>
         </div>
-      </div>
-
-      {/* Decorative Shapes */}
-      <div className="absolute top-4 left-6 w-10 h-10 sm:w-12 sm:h-12 bg-orange-300 rounded-full opacity-60"></div>
-      <div className="absolute bottom-8 right-8 w-12 h-12 sm:w-16 sm:h-16 border-2 border-orange-400 rounded-full"></div>
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-orange-500 text-2xl sm:text-3xl rotate-45">
-        ~
       </div>
     </section>
   );

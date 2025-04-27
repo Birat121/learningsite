@@ -1,6 +1,5 @@
 import React from 'react';
-import realstate from '../assets/realstate2.jpg';
-import { ChevronDown } from 'lucide-react';
+import dubai from '../assets/Dubai-Skyline.jpg';
 import { motion } from 'framer-motion';
 
 const Hero = () => {
@@ -16,7 +15,7 @@ const Hero = () => {
       {/* Background Image */}
       <div
         className="absolute inset-0 w-full h-full bg-center bg-cover"
-        style={{ backgroundImage: `url(${realstate})` }}
+        style={{ backgroundImage: `url(${dubai})` }}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
       </div>
@@ -50,17 +49,6 @@ const Hero = () => {
         >
           Start Learning Now
         </motion.button>
-
-        {/* Scroll Down Arrow */}
-        <motion.div
-          className="absolute bottom-8 sm:bottom-10 animate-bounce cursor-pointer"
-          onClick={scrollToCourses}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.5 }}
-        >
-          <ChevronDown className="text-white w-6 h-6 sm:w-8 sm:h-8" />
-        </motion.div>
       </div>
     </section>
   );

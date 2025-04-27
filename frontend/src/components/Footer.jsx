@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaInstagram,
-  FaLinkedinIn,
-} from 'react-icons/fa';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaWhatsapp, FaYoutube, FaTiktok } from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -14,19 +9,63 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="space-y-2">
           <p className="text-sm sm:text-base">
-            📧 <a href="mailto:contact@koffee-kirren.com" className="text-yellow-400 hover:underline">contact@koffee-kirren.com</a> |
-            📞 <a href="tel:+1234567890" className="text-yellow-400 hover:underline">+1 (234) 567-890</a>
+            📧 <a href="mailto:sales@koffeewithkirren.com" className="text-yellow-400 hover:underline">sales@koffeewithkirrenn.com</a> |
+            📞 <a href="tell:+911555547963" className="text-yellow-400 hover:underline">+911555547963</a>
           </p>
-          <p className="text-sm sm:text-base">📍 123 Real Estate Lane, Property City, USA</p>
+          <p className="text-sm sm:text-base">📍 DSO-IFZA, Dubai Silicon Oasis, Dubai</p>
         </div>
 
         {/* Social Icons */}
         <div className="flex justify-center space-x-6 text-xl sm:text-2xl">
-          <a href="#" className="hover:text-yellow-400 transition"><FaFacebookF /></a>
-          <a href="#" className="hover:text-yellow-400 transition"><FaTwitter /></a>
-          <a href="#" className="hover:text-yellow-400 transition"><FaInstagram /></a>
-          <a href="#" className="hover:text-yellow-400 transition"><FaLinkedinIn /></a>
-        </div>
+  <a 
+    href="https://www.linkedin.com/company/koffee-with-kirren/" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="hover:text-yellow-400 transition"
+  >
+    <FaLinkedinIn />
+  </a>
+  <a 
+    href="https://www.youtube.com/@KoffeewithKirren" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="hover:text-yellow-400 transition"
+  >
+    <FaYoutube />
+  </a>
+  <a 
+    href="https://www.instagram.com/koffeewithkirren?igsh=M3c1NG5jbzlwanZ3" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="hover:text-yellow-400 transition"
+  >
+    <FaInstagram />
+  </a>
+  <a 
+    href="https://www.tiktok.com/@koffeewithkirren?_t=ZN-8vagd7GohCp&_r=1" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="hover:text-yellow-400 transition"
+  >
+    <FaTiktok />
+  </a>
+  <a 
+    href="https://www.facebook.com/share/18c2MMRyJR/" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="hover:text-yellow-400 transition"
+  >
+    <FaFacebookF />
+  </a>
+  <a 
+    href="https://wa.me/971555547963" 
+    target="_blank" 
+    rel="noopener noreferrer" 
+    className="hover:text-yellow-400 transition"
+  >
+    <FaWhatsapp />
+  </a>
+</div>
 
         {/* Copyright */}
         <div className="text-xs sm:text-sm text-gray-300">

@@ -18,7 +18,7 @@ const WhyChooseMe = () => {
           Why Choose Me?
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-white max-w-2xl mx-auto">
-          Here’s what I offer to help you succeed in your real estate journey.
+          I provide the expertise and resources necessary to navigate your real estate dreams effectively.
         </p>
       </div>
 
@@ -27,7 +27,7 @@ const WhyChooseMe = () => {
           {
             icon: <FaChalkboardTeacher className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
             title: 'Expert Real Estate Mentorship',
-            desc: 'Receive personalized mentorship tailored to your goals.',
+            desc: 'Extensive Real Estate Expertise - over 26 years experience in real estate in UK and Dubai',
           },
           {
             icon: <FaSearch className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
@@ -66,15 +66,7 @@ const WhyChooseMe = () => {
         ))}
       </div>
 
-      {/* Button */}
-      <div className="text-center mt-10">
-        <Link
-          to="/contact"
-          className="inline-block bg-white text-[rgb(0,104,80)] font-semibold text-sm sm:text-base px-6 py-3 sm:px-8 sm:py-4 rounded-full shadow transition duration-300"
-        >
-          Connect With Me
-        </Link>
-      </div>
+      
     </section>
   );
 };
