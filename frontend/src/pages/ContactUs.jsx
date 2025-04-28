@@ -5,12 +5,14 @@ const ContactPage = () => {
   const [mapLoaded, setMapLoaded] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const formRef = useRef();
 
-  const sendEmail = (e) => {
+  const sendEmail = async (e) => {
     e.preventDefault();
     setSuccess("");
     setError("");
+    setLoading(true);
 
     const form = formRef.current;
     const formData = new FormData(form);
@@ -21,23 +23,37 @@ const ContactPage = () => {
       message: formData.get("message"),
     };
 
-    emailjs
-      .sendForm("service_jx2m2lv", "template_jygv2as", form, "A_NTgdITLFkCwT63H")
-      .then(() => {
-        // Send Auto-Reply
-        emailjs.send(
-          "service_jx2m2lv",
-          "template_nvvvrf4", // 🔁 Replace with your actual Auto-Reply Template ID
-          autoReplyParams,
-          "A_NTgdITLFkCwT63H"
-        );
+    try {
+      // Send main email
+      await emailjs.sendForm(
+        "service_jx2m2lv",
+        "template_jygv2as",
+        form,
+        "A_NTgdITLFkCwT63H"
+      );
 
-        setSuccess("Message sent successfully!");
-        form.reset();
-      })
-      .catch(() => {
-        setError("Failed to send message. Try again later.");
-      });
+      // Send auto-reply
+      await emailjs.send(
+        "service_jx2m2lv",
+        "template_nvvvrf4",
+        autoReplyParams,
+        "A_NTgdITLFkCwT63H"
+      );
+
+      setSuccess("Message sent successfully!");
+      form.reset();
+    } catch (err) {
+      console.error("Email send error:", err);
+      setError("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+
+      // Auto clear success/error messages after 5 seconds
+      setTimeout(() => {
+        setSuccess("");
+        setError("");
+      }, 5000);
+    }
   };
 
   return (
@@ -116,9 +132,10 @@ const ContactPage = () => {
 
             <button
               type="submit"
-              className="bg-[rgb(0,104,80)] text-white font-semibold px-6 py-2 rounded-full text-base transition-all duration-300"
+              disabled={loading}
+              className={`bg-[rgb(0,104,80)] text-white font-semibold px-6 py-2 rounded-full text-base transition-all duration-300 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              Submit
+              {loading ? "Sending..." : "Submit"}
             </button>
           </form>
 
@@ -128,7 +145,7 @@ const ContactPage = () => {
             )}
             <iframe
               title="Office Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3056.9989691834187!2d-75.38971302417528!3d39.91725088901005!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c6e9dcb67cf81d%3A0x419f9c8a0554fd2b!2s15%20W%203rd%20St%2C%20Media%2C%20PA%2019063%2C%20USA!5e0!3m2!1sen!2snp!4v1712471428721!5m2!1sen!2snp"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3609.2657749782253!2d55.37806847535893!3d25.119035777754404!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f637f4c2e7c7f%3A0xd7cf6a4d2c15b6e2!2sDSO-IFZA%2C%20Dubai%20Silicon%20Oasis%2C%20Dubai%2C%20UAE!5e0!3m2!1sen!2snp!4v1714292765793!5m2!1sen!2snp"
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -146,3 +163,4 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
+
