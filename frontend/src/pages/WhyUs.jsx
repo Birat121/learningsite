@@ -42,7 +42,7 @@ const ReasonsToChooseDubaiRealEstate = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await axiosInstance.get('/blogs'); // replace with your actual API endpoint
+        const res = await axiosInstance.get('/blogs/blogs'); // replace with your actual API endpoint
         setBlogs(res.data);
       } catch (error) {
         console.error('Failed to fetch blogs:', error);
