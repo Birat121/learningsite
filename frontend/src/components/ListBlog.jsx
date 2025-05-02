@@ -5,7 +5,8 @@ import { toast } from "react-hot-toast";
 const ListBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const [selectedBlog, setSelectedBlog] = useState(null);
-  const [editData, setEditData] = useState({ title: "", description: "" });
+  const [editData, setEditData] = useState({ title: "", description: "", author: "" });
+  const [deleteBlogId, setDeleteBlogId] = useState(null);
 
   const fetchBlogs = async () => {
     try {
@@ -16,14 +17,12 @@ const ListBlogs = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this blog?");
-    if (!confirmDelete) return;
-
+  const handleDeleteConfirm = async () => {
     try {
-      await axiosInstance.delete(`/blogs/blogs/${id}`);
-      setBlogs(blogs.filter((blog) => blog._id !== id));
+      await axiosInstance.delete(`/blogs/blogs/${deleteBlogId}`);
+      setBlogs(blogs.filter((blog) => blog._id !== deleteBlogId));
       toast.success("Deleted successfully");
+      setDeleteBlogId(null);
     } catch {
       toast.error("Delete failed");
     }
@@ -31,20 +30,22 @@ const ListBlogs = () => {
 
   const handleEditOpen = (blog) => {
     setSelectedBlog(blog);
-    setEditData({ title: blog.title, description: blog.description });
+    setEditData({
+      title: blog.title,
+      description: blog.description,
+      author: blog.author || ""
+    });
   };
 
   const handleEditClose = () => {
     setSelectedBlog(null);
-    setEditData({ title: "", description: "" });
+    setEditData({ title: "", description: "", author: "" });
   };
 
   const handleEditSubmit = async () => {
     try {
       const res = await axiosInstance.put(`/blogs/blogs/${selectedBlog._id}`, editData);
       toast.success("Blog updated");
-
-      // Update local state
       const updatedBlogs = blogs.map((blog) =>
         blog._id === selectedBlog._id ? res.data : blog
       );
@@ -96,7 +97,7 @@ const ListBlogs = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(blog._id)}
+                      onClick={() => setDeleteBlogId(blog._id)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
                     >
                       Delete
@@ -109,7 +110,7 @@ const ListBlogs = () => {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Edit Modal */}
       {selectedBlog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg">
@@ -121,6 +122,15 @@ const ListBlogs = () => {
                   type="text"
                   value={editData.title}
                   onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Author</label>
+                <input
+                  type="text"
+                  value={editData.author}
+                  onChange={(e) => setEditData({ ...editData, author: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
                 />
               </div>
@@ -149,6 +159,30 @@ const ListBlogs = () => {
                   Save
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteBlogId && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg text-center">
+            <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
+            <p className="text-gray-700 mb-6">Are you sure you want to delete this blog?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setDeleteBlogId(null)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
