@@ -77,15 +77,8 @@ const About = () => {
             </p>
           </div>
 
-          {/* Call to Action */}
-          <div className="text-center mt-12">
-            <a
-              href="/contact"
-              className="bg-[rgb(0,104,80)] text-white text-lg sm:text-xl font-semibold px-8 py-4 rounded-full transition duration-300 hover:bg-green-600"
-            >
-              Get in Touch & Discuss Your Investment Strategy
-            </a>
-          </div>
+          
+          
         </div>
       </section>
     </>

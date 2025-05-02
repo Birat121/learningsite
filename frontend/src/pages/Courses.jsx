@@ -5,6 +5,13 @@ import CourseCard from "../components/CourseCard";
 import SearchAndSortBar from "../components/SearchAndSort";
 import Pagination from "../components/Pagination";
 import axiosInstance from "../api/axiosInstance";
+import dubai1 from "../assets/dubai1.jpeg";
+import dubai2 from "../assets/dubai2.jpg";
+import dubai3 from "../assets/dubai3.avif";
+import dubai4 from "../assets/dubai5.webp";
+import dubai5 from "../assets/dubai6.jpg";
+import dubai6 from "../assets/dubai7.webp";
+
 
 // Define your static fallback courses
 const staticCourses = [
@@ -15,7 +22,7 @@ const staticCourses = [
     description:
       "Discover Dubai's past, present, and future, and understand the off-plan process.",
     price: 0,
-    thumbnailUrl: "/assets/dubai1.jpeg", // Use a Dubai image here
+    thumbnailUrl: { dubai1 }, // Use a Dubai image here
     comingSoon: false,
   },
   {
@@ -24,7 +31,7 @@ const staticCourses = [
     title: "Introduction to Leasing",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/assets/dubai2.jpg",
+    thumbnailUrl: { dubai2 },
     comingSoon: true,
   },
   {
@@ -33,7 +40,7 @@ const staticCourses = [
     title: "Introduction to Secondary",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/assets/dubai3.avif",
+    thumbnailUrl: { dubai3 },
     comingSoon: true,
   },
   {
@@ -42,7 +49,7 @@ const staticCourses = [
     title: "Sales Techniques",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/assets/dubai5.webp",
+    thumbnailUrl: { dubai4 },
     comingSoon: true,
   },
   {
@@ -51,7 +58,7 @@ const staticCourses = [
     title: "Dubai Area Guides",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/assets/dubai6.jpg",
+    thumbnailUrl: { dubai5 },
     comingSoon: true,
   },
   {
@@ -60,7 +67,7 @@ const staticCourses = [
     title: "Dubai Property Developers",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/assets/dubai7.webp",
+    thumbnailUrl: { dubai6 },
     comingSoon: true,
   },
 ];
