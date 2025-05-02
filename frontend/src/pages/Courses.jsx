@@ -22,7 +22,7 @@ const staticCourses = [
     description:
       "Discover Dubai's past, present, and future, and understand the off-plan process.",
     price: 0,
-    thumbnailUrl: { dubai1 }, // Use a Dubai image here
+    thumbnailUrl: dubai1, // ✅ Correct: assign directly as string
     comingSoon: false,
   },
   {
@@ -31,7 +31,7 @@ const staticCourses = [
     title: "Introduction to Leasing",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: { dubai2 },
+    thumbnailUrl: dubai2,
     comingSoon: true,
   },
   {
@@ -40,7 +40,7 @@ const staticCourses = [
     title: "Introduction to Secondary",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: { dubai3 },
+    thumbnailUrl: dubai3,
     comingSoon: true,
   },
   {
@@ -49,7 +49,7 @@ const staticCourses = [
     title: "Sales Techniques",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: { dubai4 },
+    thumbnailUrl: dubai4,
     comingSoon: true,
   },
   {
@@ -58,7 +58,7 @@ const staticCourses = [
     title: "Dubai Area Guides",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: { dubai5 },
+    thumbnailUrl: dubai5,
     comingSoon: true,
   },
   {
@@ -67,10 +67,11 @@ const staticCourses = [
     title: "Dubai Property Developers",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: { dubai6 },
+    thumbnailUrl: dubai6,
     comingSoon: true,
   },
 ];
+
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
