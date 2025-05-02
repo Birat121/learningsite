@@ -17,7 +17,7 @@ const PodcastHighlight = () => {
             <iframe
               width="320"
               height="180"
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID_1" // Replace with your actual YouTube video ID
+              src="https://youtu.be/OmDmNf6pD5A?si=87iZ_0ErUHbgcbwq" // Replace with your actual YouTube video ID
               title="YouTube video 1"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
@@ -32,7 +32,7 @@ const PodcastHighlight = () => {
             <iframe
               width="320"
               height="180"
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID_2" // Replace with your actual YouTube video ID
+              src="https://youtu.be/OmDmNf6pD5A?si=87iZ_0ErUHbgcbwq" // Replace with your actual YouTube video ID
               title="YouTube video 2"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
@@ -47,7 +47,7 @@ const PodcastHighlight = () => {
             <iframe
               width="320"
               height="180"
-              src="https://www.youtube.com/embed/YOUR_VIDEO_ID_3" // Replace with your actual YouTube video ID
+              src="https://youtu.be/OmDmNf6pD5A?si=87iZ_0ErUHbgcbwq" // Replace with your actual YouTube video ID
               title="YouTube video 3"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
