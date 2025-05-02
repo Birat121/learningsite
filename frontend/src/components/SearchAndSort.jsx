@@ -1,7 +1,9 @@
-const SearchAndSortBar = ({ search, setSearch, sort, setSort }) => (
+const SearchAndSortBar = ({ search, setSearch, sort, setSort, from, to, total }) => (
   <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
     <div className="text-gray-600 text-sm md:text-base">
-      Showing 1–12 of 20 results
+      {total > 0
+        ? `Showing ${from}–${to} of ${total} results`
+        : "No results found"}
     </div>
 
     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -26,4 +28,3 @@ const SearchAndSortBar = ({ search, setSearch, sort, setSort }) => (
 );
 
 export default SearchAndSortBar;
-

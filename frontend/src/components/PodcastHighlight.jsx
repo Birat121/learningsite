@@ -12,49 +12,49 @@ const PodcastHighlight = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-6">
-          {/* Embed YouTube Video */}
+          {/* Real Estate Video 1 */}
           <div className="flex flex-col items-center bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition">
             <iframe
               width="320"
               height="180"
-              src="https://youtu.be/OmDmNf6pD5A?si=87iZ_0ErUHbgcbwq" // Replace with your actual YouTube video ID
-              title="YouTube video 1"
+              src="https://www.youtube.com/embed/kOwpoIiLxYw"
+              title="Dubai Real Estate Market 2024"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="mb-3"
             ></iframe>
-            <p>Watch on YouTube</p>
+            <p>Dubai Real Estate Market 2024</p>
           </div>
 
-          {/* Embed Another YouTube Video */}
+          {/* Real Estate Video 2 */}
           <div className="flex flex-col items-center bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition">
             <iframe
               width="320"
               height="180"
-              src="https://youtu.be/OmDmNf6pD5A?si=87iZ_0ErUHbgcbwq" // Replace with your actual YouTube video ID
-              title="YouTube video 2"
+              src="https://www.youtube.com/embed/9JjMOripZ14"
+              title="How to Invest in Dubai Real Estate"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="mb-3"
             ></iframe>
-            <p>Watch on YouTube</p>
+            <p>How to Invest in Dubai Real Estate</p>
           </div>
 
-          {/* Embed Another YouTube Video */}
+          {/* Real Estate Video 3 */}
           <div className="flex flex-col items-center bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition">
             <iframe
               width="320"
               height="180"
-              src="https://youtu.be/OmDmNf6pD5A?si=87iZ_0ErUHbgcbwq" // Replace with your actual YouTube video ID
-              title="YouTube video 3"
+              src="https://www.youtube.com/embed/dXqwh2JvySc"
+              title="Beginner’s Guide to Off-Plan Property in Dubai"
               frameBorder="0"
               allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               className="mb-3"
             ></iframe>
-            <p>Watch on YouTube</p>
+            <p>Beginner’s Guide to Off-Plan Property</p>
           </div>
         </div>
       </div>

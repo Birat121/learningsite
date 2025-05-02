@@ -12,7 +12,7 @@ import dubai4 from "../assets/dubai5.webp";
 import dubai5 from "../assets/dubai6.jpg";
 import dubai6 from "../assets/dubai7.webp";
 
-// Static fallback courses
+// Define your static fallback courses
 const staticCourses = [
   {
     _id: "off-plan",
@@ -21,7 +21,7 @@ const staticCourses = [
     description:
       "Discover Dubai's past, present, and future, and understand the off-plan process.",
     price: 0,
-    thumbnailUrl: dubai1,
+    thumbnailUrl: dubai1, // ✅ Correct: assign directly as string
     comingSoon: false,
   },
   {
@@ -75,6 +75,7 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // Remove filters if not needed
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("latest");
   const [page, setPage] = useState(1);
@@ -91,11 +92,21 @@ const Courses = () => {
           : Array.isArray(data.videos)
           ? data.videos
           : [];
-        setCourses(list.length ? list : staticCourses);
+        // If the backend returns an empty list, use our static courses
+        if (!list.length) {
+          setCourses(staticCourses);
+        } else {
+          setCourses(list);
+        }
       } catch (err) {
         console.error(err);
-        setError(err.response?.data?.message || err.message || "Failed to load courses.");
-        setCourses(staticCourses); // Fallback
+        setError(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to load courses."
+        );
+        // In case of error, you might prefer showing static courses
+        setCourses(staticCourses);
       } finally {
         setLoading(false);
       }
@@ -104,16 +115,26 @@ const Courses = () => {
     fetchCourses();
   }, []);
 
+  // Reset page on change of search or sort
   useEffect(() => {
     setPage(1);
   }, [search, sort]);
 
+  // Process (search and sort) courses
   const processed = useMemo(() => {
     return courses
-      .filter((c) => c.title.toLowerCase().includes(search.toLowerCase()))
+      .filter((c) => {
+        const matchSearch = c.title
+          .toLowerCase()
+          .includes(search.toLowerCase());
+        return matchSearch;
+      })
       .sort((a, b) => {
-        if (sort === "latest") return new Date(b.createdAt) - new Date(a.createdAt);
-        if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+        if (sort === "latest")
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        if (sort === "oldest")
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        // For courses with "coming soon", you might simply keep the order or sort alphabetically
         if (sort === "priceLow") return a.price - b.price;
         if (sort === "priceHigh") return b.price - a.price;
         return 0;
@@ -153,21 +174,19 @@ const Courses = () => {
       </Helmet>
 
       <div className="max-w-7xl mx-auto">
+        {/* Grid with one column (no sidebar) */}
         <div className="grid grid-cols-1 gap-8">
+          {/* Main Content */}
           <section className="space-y-8">
             <SearchAndSortBar
               search={search}
               setSearch={setSearch}
               sort={sort}
               setSort={setSort}
+              from={(page - 1) * perPage + 1}
+              to={Math.min(page * perPage, processed.length)}
+              total={processed.length}
             />
-
-            {processed.length > 0 && (
-              <p className="text-sm text-gray-600 text-right">
-                Showing {(page - 1) * perPage + 1}–
-                {Math.min(page * perPage, processed.length)} of {processed.length} results
-              </p>
-            )}
 
             {paginated.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
