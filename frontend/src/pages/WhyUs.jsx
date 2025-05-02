@@ -124,7 +124,7 @@ const ReasonsToChooseDubaiRealEstate = () => {
             {blogs.map((blog, index) => (
               <div
                 key={index}
-                className="bg-[rgb(0,104,80] p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-[rgb(0,104,80)] p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3">{blog.title}</h3>
                 <p className="text-sm sm:text-base text-white mb-4">{blog.description}</p>
