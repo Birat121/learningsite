@@ -1,6 +1,7 @@
 import React from 'react';
 import dubai from '../assets/Dubai-Skyline.jpg';
 import { motion } from 'framer-motion';
+import { ChevronDown } from 'react-feather'; // Make sure you have installed react-feather or use your preferred icon library
 
 const Hero = () => {
   const scrollToCourses = () => {
@@ -28,7 +29,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
         >
-          Welcome to <span className="text-white">KOFFEE WITH KIRREN</span>
+          <span className="text-white">KOFFEE WITH KIRREN</span>
         </motion.h1>
 
         <motion.p
@@ -40,18 +41,22 @@ const Hero = () => {
           Your Gateway to Smart Real Estate Investments & Education.
         </motion.p>
 
-        <motion.button
+        {/* Scroll Down Text & Arrow */}
+        <motion.div
+          className="flex flex-col items-center space-x-2 absolute bottom-16 sm:bottom-20 cursor-pointer animate-bounce"
           onClick={scrollToCourses}
-          className="bg-[rgb(0,104,80)] text-sm sm:text-base md:text-xl text-white font-semibold px-6 py-3 rounded-full transition duration-300 shadow-md hover:shadow-lg"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.5 }}
         >
-          Start Learning Now
-        </motion.button>
+          <span className="text-white text-sm sm:text-lg">Scroll</span>
+          <ChevronDown className="text-white w-6 h-6 sm:w-8 sm:h-8" />
+        </motion.div>
       </div>
     </section>
   );
 };
 
 export default Hero;
+
+

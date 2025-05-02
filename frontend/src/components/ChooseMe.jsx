@@ -15,7 +15,7 @@ const WhyChooseMe = () => {
     <section className="py-12 px-4 bg-[rgb(0,104,80)]">
       <div className="text-center mb-10">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">
-          Why Choose Me?
+          Discover My Range of Services
         </h2>
         <p className="text-base sm:text-lg md:text-xl text-white max-w-2xl mx-auto">
           I provide the expertise and resources necessary to navigate your real estate dreams effectively.
@@ -23,16 +23,16 @@ const WhyChooseMe = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-        {[
+        {[ 
           {
             icon: <FaChalkboardTeacher className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
             title: 'Expert Real Estate Mentorship',
             desc: 'Extensive Real Estate Expertise - over 26 years experience in real estate in UK and Dubai',
           },
           {
-            icon: <FaSearch className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
-            title: 'Comprehensive Investment Courses',
-            desc: 'Access real estate investment courses from basics to advanced strategies.',
+            icon: <FaFileAlt className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
+            title: 'Dubai Real Estate Guidance',
+            desc: 'Learn about various investment options including the buying and leasing process.',
           },
           {
             icon: <FaDollarSign className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
@@ -46,13 +46,13 @@ const WhyChooseMe = () => {
           },
           {
             icon: <FaUsers className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
-            title: 'Real Estate Networking',
-            desc: 'Get access to a network of industry professionals, including brokers.',
+            title: 'Golden Visa Guidance',
+            desc: 'Learn about the criteria and benefits of the golden visa.',
           },
           {
-            icon: <FaFileAlt className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
-            title: 'Hands-On Experience',
-            desc: 'Gain practical knowledge through case studies and live projects.',
+            icon: <FaSearch className="text-3xl sm:text-4xl text-[rgb(0,104,80)]" />,
+            title: 'Courses & Training',
+            desc: 'Practical Dubai real estate knowledge tailored to new and aspiring agents at foundation level.',
           },
         ].map((card, i) => (
           <div
@@ -65,8 +65,6 @@ const WhyChooseMe = () => {
           </div>
         ))}
       </div>
-
-      
     </section>
   );
 };

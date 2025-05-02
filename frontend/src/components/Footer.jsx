@@ -9,8 +9,8 @@ const Footer = () => {
         {/* Contact Info */}
         <div className="space-y-2">
           <p className="text-sm sm:text-base">
-            📧 <a href="mailto:sales@koffeewithkirren.com" className="text-yellow-400 hover:underline">sales@koffeewithkirrenn.com</a> |
-            📞 <a href="tell:+911555547963" className="text-yellow-400 hover:underline">+911555547963</a>
+            📧 <a href="mailto:sales@koffeewithkirren.com" className="text-yellow-400 hover:underline">sales@koffeewithkirren.com</a> |
+            📞 <a href="tell:+971555547963" className="text-yellow-400 hover:underline">+971555547963</a>
           </p>
           <p className="text-sm sm:text-base">📍 DSO-IFZA, Dubai Silicon Oasis, Dubai</p>
         </div>

@@ -1,4 +1,4 @@
-import { FaYoutube, FaSpotify, FaMicrophoneAlt } from 'react-icons/fa';
+import React from 'react';
 
 const PodcastHighlight = () => {
   return (
@@ -12,31 +12,50 @@ const PodcastHighlight = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-6">
-          <a
-            href="https://www.youtube.com/@KoffeewithKirren" // Replace with your YouTube URL
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-full hover:bg-blue-50 transition"
-          >
-            <FaYoutube className="text-2xl" />
-            Watch on YouTube
-          </a>
-          <a
-            href="https://www.spotify.com" // Replace with your Spotify URL
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-full hover:bg-blue-50 transition"
-          >
-            <FaSpotify className="text-2xl" />
-            Listen on Spotify
-          </a>
-          <a
-            href="#shorts" // Optional: link to a Shorts page or section
-            className="flex items-center gap-3 bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-full hover:bg-blue-50 transition"
-          >
-            <FaMicrophoneAlt className="text-2xl" />
-            Quick Shorts
-          </a>
+          {/* Embed YouTube Video */}
+          <div className="flex flex-col items-center bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition">
+            <iframe
+              width="320"
+              height="180"
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID_1" // Replace with your actual YouTube video ID
+              title="YouTube video 1"
+              frameBorder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="mb-3"
+            ></iframe>
+            <p>Watch on YouTube</p>
+          </div>
+
+          {/* Embed Another YouTube Video */}
+          <div className="flex flex-col items-center bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition">
+            <iframe
+              width="320"
+              height="180"
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID_2" // Replace with your actual YouTube video ID
+              title="YouTube video 2"
+              frameBorder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="mb-3"
+            ></iframe>
+            <p>Watch on YouTube</p>
+          </div>
+
+          {/* Embed Another YouTube Video */}
+          <div className="flex flex-col items-center bg-white text-[rgb(0,104,80)] px-6 py-4 rounded-xl shadow-md hover:shadow-lg transition">
+            <iframe
+              width="320"
+              height="180"
+              src="https://www.youtube.com/embed/YOUR_VIDEO_ID_3" // Replace with your actual YouTube video ID
+              title="YouTube video 3"
+              frameBorder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="mb-3"
+            ></iframe>
+            <p>Watch on YouTube</p>
+          </div>
         </div>
       </div>
     </section>

@@ -20,12 +20,13 @@ const Introduction = () => {
           HELLO THERE
         </h2>
         <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 text-gray-700">
-          <span className="font-bold">My name</span> Kirren, Your Real Estate Mentor
+          My name is Kirren, your Dubai real estate mentor!
         </h3>
         <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4 leading-relaxed">
-          If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the right
-          place! With years of experience in the industry, I’ve helped countless individuals
-          navigate the complexities of real estate investment, financing, and market trends.
+          If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the
+          right place! With years of experience in the industry, I’ve helped countless
+          individuals navigate the complexities of real estate investment, financing, and
+          market trends.
         </p>
         <p className="text-sm sm:text-base md:text-lg mb-5 sm:mb-6 leading-relaxed">
           Through my expert courses, mentorship, and insightful content, you’ll gain the confidence
@@ -35,11 +36,14 @@ const Introduction = () => {
           <p className="text-base sm:text-lg md:text-xl text-gray-700 font-bold">
             Ready to level up your real estate knowledge?
           </p>
+
+          {/* Why Choose Me link with Right Arrow */}
           <Link
-            to='/contact'
-            className="bg-[rgb(0,104,80)] text-white text-sm sm:text-base md:text-lg font-semibold px-5 py-2 sm:px-6 sm:py-3 rounded-md transition duration-300 w-max"
+            to="/why-dubai"
+            className="flex items-center space-x-2 text-[rgb(0,104,80)] font-semibold text-sm sm:text-base md:text-lg"
           >
-            Book Your Free Consultation
+            <span>Why Choose Me?</span>
+            <span className="text-[rgb(0,104,80)] text-2xl">→</span> {/* Right arrow here */}
           </Link>
         </div>
       </div>
@@ -48,3 +52,4 @@ const Introduction = () => {
 };
 
 export default Introduction;
+

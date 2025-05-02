@@ -1,60 +1,7 @@
 import React from "react";
-import {
-  Home,
-  LineChart,
-  Layers3,
-  Handshake,
-  BadgeCheck,
-  Gem,
-  Target,
-  Users,
-} from "lucide-react";
-
-import { useNavigate } from "react-router-dom";
-import { Helmet } from 'react-helmet'; 
+import { Helmet } from 'react-helmet';
 
 const About = () => {
-  const navigate = useNavigate();
-  const offerings = [
-    {
-      icon: <Home className="w-8 h-8 text-green-900" />,
-      title: "Buying & Selling Property",
-    },
-    {
-      icon: <LineChart className="w-8 h-8 text-green-900" />,
-      title: "Real Estate Investment Strategies",
-    },
-    {
-      icon: <Layers3 className="w-8 h-8 text-green-900" />,
-      title: "Off-Plan vs. Ready Property Guide",
-    },
-    {
-      icon: <Handshake className="w-8 h-8 text-green-900" />,
-      title: "Mastering Real Estate Negotiation",
-    },
-    {
-      icon: <BadgeCheck className="w-8 h-8 text-green-900" />,
-      title: "Real Estate Licensing & Career Guide",
-    },
-  ];
-
-  const values = [
-    {
-      icon: <Gem className="w-8 h-8 text-green-800" />,
-      title: "Integrity First",
-      desc: "Transparency and honesty in every step of the process.",
-    },
-    {
-      icon: <Target className="w-8 h-8 text-green-800" />,
-      title: "Result-Oriented",
-      desc: "Focused on helping you achieve measurable real estate success.",
-    },
-    {
-      icon: <Users className="w-8 h-8 text-green-800" />,
-      title: "People-Driven",
-      desc: "Your growth and learning are at the heart of everything I do.",
-    },
-  ];
 
   return (
     <>
@@ -74,71 +21,70 @@ const About = () => {
           content="real estate mentor, real estate education, property buying and selling, real estate strategies"
         />
       </Helmet>
+
       <section className="bg-gray-100 py-16 px-6 mt-16 md:px-24">
-        <div className="max-w-6xl mx-auto space-y-20">
+        <div className="max-w-7xl mx-auto space-y-20">
           {/* Who Am I Section */}
           <div className="text-center">
             <h2 className="text-3xl sm:text-5xl font-bold text-green-900 mb-6">
               Who Am I?
             </h2>
-            <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              Hi, I’m Kirren — a real estate mentor, investor, and educator
-              passionate about turning complex property insights into clear,
-              actionable guidance for aspiring professionals.
+            <p className="text-base sm:text-xl text-gray-600 max-w-4xl mx-auto">
+              My deep understanding of the real estate market is the foundation of the value I bring to my clients, both local and international. With over 26 years of experience, I offer comprehensive expertise across all facets of the industry.
             </p>
           </div>
 
-          {/* What I Offer */}
-          <div>
-            <h3 className="text-2xl sm:text-4xl font-bold text-green-800 text-center mb-12">
-              What I Offer
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-4xl mx-auto">
-              {offerings.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-4 sm:gap-6 bg-white shadow-sm hover:shadow-lg transition-shadow p-4 sm:p-6 rounded-lg"
-                >
-                  {item.icon}
-                  <span className="text-base sm:text-xl text-gray-800 font-medium">
-                    {item.title}
-                  </span>
-                </div>
-              ))}
+          {/* Professional Background */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="space-y-6">
+              <h3 className="text-2xl font-semibold text-green-800">A Diverse Background</h3>
+              <p className="text-lg text-gray-700">
+                Born and raised in the UK with Punjabi heritage, I bring a unique cultural perspective and a strong work ethic to my profession. My background combines practical experience with a solid academic foundation, enabling me to bridge the gap between theory and real-world practice.
+              </p>
+              <p className="text-lg text-gray-700">
+                I began with a focus on construction and design, which ignited my passion for the built environment. This led to formal studies in those areas, followed by business and finance studies, giving me a robust understanding of the financial drivers within real estate.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <h3 className="text-2xl font-semibold text-green-800">Early Career & CeMAP Qualification</h3>
+              <p className="text-lg text-gray-700">
+                Early in my career, I earned the CeMAP qualification, establishing a solid understanding of mortgage products and financing strategies, which is invaluable when working with international clients navigating different financial systems.
+              </p>
+              <p className="text-lg text-gray-700">
+                Over 16 years, I refined my skills at a UK housing association, gaining invaluable experience in managing the entire sales process, working closely with developers, and leading a sales team. I also achieved professional certifications in marketing, leadership, and property sales.
+              </p>
             </div>
           </div>
 
-          {/* Why Choose Me */}
-          <div>
-            <h3 className="text-3xl sm:text-4xl font-bold text-green-800 text-center mb-12">
-              Why Choose Me?
+          {/* Values & Experience */}
+          <div className="text-center space-y-6">
+            <h3 className="text-3xl sm:text-4xl font-bold text-green-800">
+              Formative Experiences & Values
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
-              {values.map((value, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-8 rounded-lg shadow text-center space-y-4"
-                >
-                  <div className="flex justify-center">{value.icon}</div>
-                  <h4 className="text-xl sm:text-2xl font-semibold text-green-900">
-                    {value.title}
-                  </h4>
-                  <p className="text-sm sm:text-base text-gray-600">
-                    {value.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+              One of the most formative experiences of my life was volunteering in Malawi, where I helped build homes for orphans. This experience not only deepened my understanding of the impact safe housing can have on individuals and communities, but it also instilled values of compassion, resilience, and cultural understanding—values that continue to guide my work today.
+            </p>
+          </div>
+
+          {/* Specialization & Current Focus */}
+          <div className="space-y-6">
+            <h3 className=" text-center text-2xl sm:text-4xl font-bold text-green-800">
+              Specializing in Dubai's Off-Plan Market
+            </h3>
+            <p className="text-lg text-gray-700">
+              I now specialize in the dynamic and competitive off-plan market in Dubai, working extensively with international investors. As a RERA-licensed real estate professional, I provide clients with data-driven market insights, strategic guidance, and an awareness of emerging opportunities. I remain current with market trends and regulatory changes to ensure my clients make well-informed decisions.
+            </p>
           </div>
 
           {/* Call to Action */}
-          <div className="text-center">
-            <button
-              onClick={() => navigate("/contact")} // Navigate to the Contact Us page
-              className="bg-[rgb(0,104,80)] text-white text-lg sm:text-xl font-semibold px-8 py-4 rounded-full transition duration-300"
+          <div className="text-center mt-12">
+            <a
+              href="/contact"
+              className="bg-[rgb(0,104,80)] text-white text-lg sm:text-xl font-semibold px-8 py-4 rounded-full transition duration-300 hover:bg-green-600"
             >
-              Get in Touch
-            </button>
+              Get in Touch & Discuss Your Investment Strategy
+            </a>
           </div>
         </div>
       </section>

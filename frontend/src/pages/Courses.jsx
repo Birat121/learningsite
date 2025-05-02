@@ -2,16 +2,74 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { ClipLoader } from "react-spinners";
 import CourseCard from "../components/CourseCard";
-import FiltersSidebar from "../components/FilterOptions";
 import SearchAndSortBar from "../components/SearchAndSort";
 import Pagination from "../components/Pagination";
 import axiosInstance from "../api/axiosInstance";
+
+// Define your static fallback courses
+const staticCourses = [
+  {
+    _id: "off-plan",
+    slug: "introduction-to-off-plan",
+    title: "Introduction to Off Plan",
+    description:
+      "Discover Dubai's past, present, and future, and understand the off-plan process.",
+    price: 0,
+    thumbnailUrl: "/images/dubai-skyline-sunset.jpg", // Use a Dubai image here
+    comingSoon: false,
+  },
+  {
+    _id: "leasing",
+    slug: "introduction-to-leasing",
+    title: "Introduction to Leasing",
+    description: "Coming soon",
+    price: 0,
+    thumbnailUrl: "/images/dubai1.jpg",
+    comingSoon: true,
+  },
+  {
+    _id: "secondary",
+    slug: "introduction-to-secondary",
+    title: "Introduction to Secondary",
+    description: "Coming soon",
+    price: 0,
+    thumbnailUrl: "/images/dubai2.jpg",
+    comingSoon: true,
+  },
+  {
+    _id: "sales-techniques",
+    slug: "sales-techniques",
+    title: "Sales Techniques",
+    description: "Coming soon",
+    price: 0,
+    thumbnailUrl: "/images/dubai3.jpg",
+    comingSoon: true,
+  },
+  {
+    _id: "area-guides",
+    slug: "dubai-area-guides",
+    title: "Dubai Area Guides",
+    description: "Coming soon",
+    price: 0,
+    thumbnailUrl: "/images/dubai4.jpg",
+    comingSoon: true,
+  },
+  {
+    _id: "property-developers",
+    slug: "dubai-property-developers",
+    title: "Dubai Property Developers",
+    description: "Coming soon",
+    price: 0,
+    thumbnailUrl: "/images/dubai5.jpg",
+    comingSoon: true,
+  },
+];
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filters, setFilters] = useState({ propertyTypes: [], priceRange: "" });
+  // Remove filters if not needed
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("latest");
   const [page, setPage] = useState(1);
@@ -28,10 +86,17 @@ const Courses = () => {
           : Array.isArray(data.videos)
           ? data.videos
           : [];
-        setCourses(list);
+        // If the backend returns an empty list, use our static courses
+        if (!list.length) {
+          setCourses(staticCourses);
+        } else {
+          setCourses(list);
+        }
       } catch (err) {
         console.error(err);
         setError(err.response?.data?.message || err.message || "Failed to load courses.");
+        // In case of error, you might prefer showing static courses
+        setCourses(staticCourses);
       } finally {
         setLoading(false);
       }
@@ -40,46 +105,27 @@ const Courses = () => {
     fetchCourses();
   }, []);
 
+  // Reset page on change of search or sort
   useEffect(() => {
-    setPage(1); // Reset page on filter change
-  }, [filters, search, sort]);
+    setPage(1);
+  }, [search, sort]);
 
-  const matchPriceRange = (price, range) => {
-    switch (range) {
-      case "Under $50":
-        return price < 50;
-      case "$50 - $100":
-        return price >= 50 && price <= 100;
-      case "$100 - $250":
-        return price > 100 && price <= 250;
-      case "$250 - $500":
-        return price > 250 && price <= 500;
-      case "Above $500":
-        return price > 500;
-      default:
-        return true;
-    }
-  };
-
+  // Process (search and sort) courses
   const processed = useMemo(() => {
     return courses
       .filter((c) => {
-        const matchType =
-          filters.propertyTypes.length === 0 ||
-          filters.propertyTypes.some((type) => c.category?.includes(type));
-        const matchPrice =
-          filters.priceRange === "" || matchPriceRange(c.price, filters.priceRange);
         const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
-        return matchType && matchPrice && matchSearch;
+        return matchSearch;
       })
       .sort((a, b) => {
         if (sort === "latest") return new Date(b.createdAt) - new Date(a.createdAt);
         if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+        // For courses with "coming soon", you might simply keep the order or sort alphabetically
         if (sort === "priceLow") return a.price - b.price;
         if (sort === "priceHigh") return b.price - a.price;
         return 0;
       });
-  }, [courses, filters, search, sort]);
+  }, [courses, search, sort]);
 
   const total = Math.ceil(processed.length / perPage);
   const paginated = useMemo(() => {
@@ -105,23 +151,19 @@ const Courses = () => {
         <title>Courses | Kirren Real Estate Training</title>
         <meta
           name="description"
-          content="Explore a variety of real estate training courses, including property investment, licensing, negotiation, and more. Learn from expert Kirren."
+          content="Explore a variety of real estate training courses in AED, including property investment, licensing, negotiation, and more. Learn from expert Kirren."
         />
         <meta
           name="keywords"
-          content="real estate courses, property training, real estate licensing, real estate investment, online property course"
+          content="real estate courses, property training, real estate licensing, real estate investment, online property course, AED"
         />
       </Helmet>
 
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-          {/* Sidebar */}
-          <aside className="md:col-span-3 mt-16">
-            <FiltersSidebar filters={filters} setFilters={setFilters} />
-          </aside>
-
+        {/* Grid with one column (no sidebar) */}
+        <div className="grid grid-cols-1 gap-8">
           {/* Main Content */}
-          <section className="md:col-span-9 space-y-8">
+          <section className="space-y-8">
             <SearchAndSortBar
               search={search}
               setSearch={setSearch}
@@ -150,5 +192,3 @@ const Courses = () => {
 };
 
 export default Courses;
-
-
