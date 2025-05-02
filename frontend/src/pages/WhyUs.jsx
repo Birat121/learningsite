@@ -54,6 +54,13 @@ const ReasonsToChooseDubaiRealEstate = () => {
     fetchBlogs();
   }, []);
 
+  const truncateDescription = (description, maxLength = 150) => {
+    if (description.length > maxLength) {
+      return description.slice(0, maxLength) + '...';
+    }
+    return description;
+  };
+
   return (
     <section className="py-16 px-4 sm:px-6 md:px-20 mt-18">
       <div className="max-w-6xl mx-auto text-center space-y-12 sm:space-y-16">
@@ -75,9 +82,20 @@ const ReasonsToChooseDubaiRealEstate = () => {
                 {reason.icon}
               </div>
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">{reason.title}</h3>
-              <p className="text-sm sm:text-base text-gray-600">{reason.description}</p>
+              <p className="text-sm sm:text-base text-gray-600">
+                {truncateDescription(reason.description)}
+              </p>
             </div>
           ))}
+        </div>
+        
+        <div className="text-center mt-10">
+          <button
+            onClick={() => window.location.href = '/contact'}
+            className="bg-[rgb(0,104,80)] text-white font-semibold px-8 py-4 rounded-full hover:bg-[rgb(0,82,60)] transition"
+          >
+            Get Your Free Consultation
+          </button>
         </div>
 
         {/* Blog Section */}
@@ -104,7 +122,9 @@ const ReasonsToChooseDubaiRealEstate = () => {
                     />
                   )}
                   <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">{blog.title}</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-4">{blog.description}</p>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
+                    {truncateDescription(blog.description)}
+                  </p>
                   <a href={blog.link} className="text-[rgb(0,104,80)] font-semibold hover:text-[rgb(0,82,60)]">
                     Read More &rarr;
                   </a>
@@ -116,19 +136,10 @@ const ReasonsToChooseDubaiRealEstate = () => {
           )}
         </div>
 
-        <div className="text-center mt-10">
-          <button
-            onClick={() => window.location.href = '/contact'}
-            className="bg-[rgb(0,104,80)] text-white font-semibold px-8 py-4 rounded-full hover:bg-[rgb(0,82,60)] transition"
-          >
-            Get Your Free Consultation
-          </button>
-        </div>
+        
       </div>
     </section>
   );
 };
 
 export default ReasonsToChooseDubaiRealEstate;
-
-
