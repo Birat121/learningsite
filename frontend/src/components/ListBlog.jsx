@@ -4,6 +4,8 @@ import { toast } from "react-hot-toast";
 
 const ListBlogs = () => {
   const [blogs, setBlogs] = useState([]);
+  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [editData, setEditData] = useState({ title: "", description: "" });
 
   const fetchBlogs = async () => {
     try {
@@ -15,12 +17,41 @@ const ListBlogs = () => {
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this blog?");
+    if (!confirmDelete) return;
+
     try {
-      await axiosInstance.delete(`/blogs/blog/${id}`);
+      await axiosInstance.delete(`/blogs/blogs/${id}`);
       setBlogs(blogs.filter((blog) => blog._id !== id));
       toast.success("Deleted successfully");
     } catch {
       toast.error("Delete failed");
+    }
+  };
+
+  const handleEditOpen = (blog) => {
+    setSelectedBlog(blog);
+    setEditData({ title: blog.title, description: blog.description });
+  };
+
+  const handleEditClose = () => {
+    setSelectedBlog(null);
+    setEditData({ title: "", description: "" });
+  };
+
+  const handleEditSubmit = async () => {
+    try {
+      const res = await axiosInstance.put(`/blogs/blogs/${selectedBlog._id}`, editData);
+      toast.success("Blog updated");
+
+      // Update local state
+      const updatedBlogs = blogs.map((blog) =>
+        blog._id === selectedBlog._id ? res.data : blog
+      );
+      setBlogs(updatedBlogs);
+      handleEditClose();
+    } catch {
+      toast.error("Update failed");
     }
   };
 
@@ -29,7 +60,7 @@ const ListBlogs = () => {
   }, []);
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10 px-4">
+    <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold mb-8 text-center">📚 Blog Posts</h2>
 
@@ -59,6 +90,7 @@ const ListBlogs = () => {
                   </p>
                   <div className="mt-4 flex justify-between gap-2">
                     <button
+                      onClick={() => handleEditOpen(blog)}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
                     >
                       Edit
@@ -76,9 +108,53 @@ const ListBlogs = () => {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {selectedBlog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg">
+            <h3 className="text-xl font-semibold mb-4">Edit Blog</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium">Title</label>
+                <input
+                  type="text"
+                  value={editData.title}
+                  onChange={(e) => setEditData({ ...editData, title: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Description</label>
+                <textarea
+                  rows={5}
+                  value={editData.description}
+                  onChange={(e) =>
+                    setEditData({ ...editData, description: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border rounded"
+                ></textarea>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  onClick={handleEditClose}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleEditSubmit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 export default ListBlogs;
-

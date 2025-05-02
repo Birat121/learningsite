@@ -43,7 +43,7 @@ const BlogForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen  py-10 px-4">
       <form
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg space-y-6"
