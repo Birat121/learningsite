@@ -15,7 +15,7 @@ const staticCourses = [
     description:
       "Discover Dubai's past, present, and future, and understand the off-plan process.",
     price: 0,
-    thumbnailUrl: "/images/dubai-skyline-sunset.jpg", // Use a Dubai image here
+    thumbnailUrl: "/assets/dubai1.jpeg", // Use a Dubai image here
     comingSoon: false,
   },
   {
@@ -24,7 +24,7 @@ const staticCourses = [
     title: "Introduction to Leasing",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/images/dubai1.jpg",
+    thumbnailUrl: "/assets/dubai2.jpg",
     comingSoon: true,
   },
   {
@@ -33,7 +33,7 @@ const staticCourses = [
     title: "Introduction to Secondary",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/images/dubai2.jpg",
+    thumbnailUrl: "/assets/dubai3.avif",
     comingSoon: true,
   },
   {
@@ -42,7 +42,7 @@ const staticCourses = [
     title: "Sales Techniques",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/images/dubai3.jpg",
+    thumbnailUrl: "/assets/dubai5.webp",
     comingSoon: true,
   },
   {
@@ -51,7 +51,7 @@ const staticCourses = [
     title: "Dubai Area Guides",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/images/dubai4.jpg",
+    thumbnailUrl: "/assets/dubai6.jpg",
     comingSoon: true,
   },
   {
@@ -60,7 +60,7 @@ const staticCourses = [
     title: "Dubai Property Developers",
     description: "Coming soon",
     price: 0,
-    thumbnailUrl: "/images/dubai5.jpg",
+    thumbnailUrl: "/assets/dubai7.webp",
     comingSoon: true,
   },
 ];
