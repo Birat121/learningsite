@@ -124,11 +124,11 @@ const ReasonsToChooseDubaiRealEstate = () => {
             {blogs.map((blog, index) => (
               <div
                 key={index}
-                className="bg-[rgb(0,104,80)] p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="bg-white p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
               >
-                <h3 className="text-xl sm:text-2xl font-semibold text-white mb-3">{blog.title}</h3>
-                <p className="text-sm sm:text-base text-white mb-4">{blog.description}</p>
-                <a href={blog.link} className="text-white font-semibold hover:text-[rgb(146,160,156)]">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">{blog.title}</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">{blog.description}</p>
+                <a href={blog.link} className="text-[rgb(0,104,80)] font-semibold hover:text-[rgb(0,82,60)]">
                   Read More &rarr;
                 </a>
               </div>
