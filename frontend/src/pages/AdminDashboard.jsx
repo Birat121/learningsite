@@ -12,7 +12,11 @@ const AdminPage = () => {
   const isActive = (path) => location.pathname === `/admin/dashboard/${path}`;
 
   const handleLogout = async () => {
-    await axiosInstance.post("/auth/admin/logout", {}, { withCredentials: true });
+    await axiosInstance.post(
+      "/auth/admin/logout",
+      {},
+      { withCredentials: true }
+    );
     localStorage.removeItem("adminToken");
     navigate("/admin/login");
     toast.success("Logged out successfully!");
@@ -47,7 +51,9 @@ const AdminPage = () => {
             <Link
               to="add"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${isActive("add") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("add") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <Plus size={20} />
               Add Course
@@ -55,7 +61,9 @@ const AdminPage = () => {
             <Link
               to="list"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${isActive("list") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("list") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <List size={20} />
               List Courses
@@ -63,11 +71,34 @@ const AdminPage = () => {
             <Link
               to="quiz"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${isActive("quiz") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("quiz") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <List size={20} />
               Manage Quizzes
             </Link>
+            <Link
+              to="add-blog"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("add-blog") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <Plus size={20} />
+              Add Blog
+            </Link>
+            <Link
+              to="list-blog"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("list-blog") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              List Blogs
+            </Link>
+
             <button
               onClick={() => {
                 handleLogout();
@@ -85,19 +116,25 @@ const AdminPage = () => {
       {/* Desktop Sidebar */}
       <aside className="bg-[rgb(0,104,80)] text-white w-64 p-6 hidden md:flex flex-col justify-between">
         <div>
-          <h2 className="text-3xl font-semibold mb-10 text-center">Dashboard</h2>
+          <h2 className="text-3xl font-semibold mb-10 text-center">
+            Dashboard
+          </h2>
           <nav className="space-y-4">
             {/* Consistent mobile and desktop links */}
             <Link
               to="add"
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${isActive("add") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
+                isActive("add") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <Plus size={20} />
               Add Course
             </Link>
             <Link
               to="list"
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${isActive("list") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
+                isActive("list") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <List size={20} />
               List Courses
@@ -105,7 +142,9 @@ const AdminPage = () => {
             <Link
               to="quiz"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${isActive("quiz") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("quiz") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <Plus size={20} />
               Add Quiz
@@ -113,10 +152,32 @@ const AdminPage = () => {
             <Link
               to="listquiz"
               onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${isActive("listquiz") ? "bg-green-800" : "hover:bg-green-600"}`}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("listquiz") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
             >
               <List size={20} />
               Quiz List
+            </Link>
+            <Link
+              to="add-blog"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("add-blog") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <Plus size={20} />
+              Add Blog
+            </Link>
+            <Link
+              to="list-blog"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("list-blog") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              List Blogs
             </Link>
           </nav>
         </div>
