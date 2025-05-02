@@ -9,6 +9,7 @@ import passport from "passport";
 import cookieParser from "cookie-parser";
 import router from "./routes/videoRoute.js";
 import quizRouter from "./routes/quizRoute.js";
+import blogRouter from "./routes/blogRoute.js";
 
 
 // Load Google Strategy
@@ -45,6 +46,7 @@ app.use(passport.session());
 app.use("/api/auth", authRouter);
 app.use("/api/videos", router);
 app.use("/api/quiz", quizRouter);
+app.use("/api/blogs", blogRouter);
 
 
 // Default test route

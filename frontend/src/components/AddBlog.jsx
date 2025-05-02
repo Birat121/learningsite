@@ -1,54 +1,115 @@
-import React, { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { toast } from "react-hot-toast";
+import { useState } from 'react';
+import axiosInstance from '../api/axiosInstance';
+import toast from 'react-hot-toast';
 
-const AddBlog = () => {
+const BlogForm = () => {
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    author: "",
-    image: null,
+    title: '',
+    description: '',
+    author: '',
   });
+  const [image, setImage] = useState(null);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: files ? files[0] : value,
-    });
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = new FormData();
-      data.append("title", formData.title);
-      data.append("description", formData.description);
-      data.append("author", formData.author);
-      data.append("image", formData.image);
+      const payload = new FormData();
+      payload.append('title', formData.title);
+      payload.append('description', formData.description);
+      payload.append('author', formData.author);
+      if (image) payload.append('image', image);
 
-      await axiosInstance.post("/admin/blog", data);
-      toast.success("Blog added successfully");
-      setFormData({ title: "", description: "", author: "", image: null });
-    } catch (error) {
-      toast.error("Failed to add blog");
+      await axiosInstance.post('/blogs/blogs', payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      toast.success('Blog created successfully');
+
+      
+      setFormData({ title: '', description: '', author: '' });
+      setImage(null);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to create blog');
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Add Blog</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Title" required className="w-full p-2 border rounded" />
-        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" required className="w-full p-2 border rounded" />
-        <input type="text" name="author" value={formData.author} onChange={handleChange} placeholder="Author" required className="w-full p-2 border rounded" />
-        <input type="file" name="image" accept="image/*" onChange={handleChange} className="w-full p-2" />
-        <button type="submit" className="bg-green-700 hover:bg-green-800 text-white py-2 px-4 rounded">
-          Add Blog
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <form
+        onSubmit={handleSubmit}
+        className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg space-y-6"
+      >
+        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+          📝 Create a New Blog Post
+        </h2>
+
+        <div>
+          <label className="block text-lg font-medium mb-2">Blog Title</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            placeholder="Enter blog title"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-lg font-medium mb-2">Description</label>
+          <textarea
+            name="description"
+            rows="10"
+            value={formData.description}
+            onChange={handleChange}
+            placeholder="Write your blog content here..."
+            className="w-full px-4 py-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          ></textarea>
+        </div>
+
+        <div>
+          <label className="block text-lg font-medium mb-2">Author</label>
+          <input
+            type="text"
+            name="author"
+            value={formData.author}
+            onChange={handleChange}
+            placeholder="Author name"
+            className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-lg font-medium mb-2">Thumbnail Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full px-4 py-2 border rounded-lg"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-lg transition"
+        >
+          Publish Blog
         </button>
       </form>
     </div>
   );
 };
 
-export default AddBlog;
+export default BlogForm;

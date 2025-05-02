@@ -7,7 +7,7 @@ const ListBlogs = () => {
 
   const fetchBlogs = async () => {
     try {
-      const res = await axiosInstance.get("/admin/blog");
+      const res = await axiosInstance.get("/blogs/blogs");
       setBlogs(res.data);
     } catch {
       toast.error("Failed to fetch blogs");
@@ -16,8 +16,8 @@ const ListBlogs = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axiosInstance.delete(`/admin/blog/${id}`);
-      setBlogs(blogs.filter(blog => blog._id !== id));
+      await axiosInstance.delete(`/blogs/blog/${id}`);
+      setBlogs(blogs.filter((blog) => blog._id !== id));
       toast.success("Deleted successfully");
     } catch {
       toast.error("Delete failed");
@@ -29,40 +29,56 @@ const ListBlogs = () => {
   }, []);
 
   return (
-    <div className="bg-white p-6 rounded shadow max-w-5xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Blog List</h2>
-      <table className="w-full text-left border">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="p-2">Title</th>
-            <th className="p-2">Description</th>
-            <th className="p-2">Date</th>
-            <th className="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blogs.map((blog) => (
-            <tr key={blog._id} className="border-t">
-              <td className="p-2">{blog.title}</td>
-              <td className="p-2">{blog.description.slice(0, 50)}...</td>
-              <td className="p-2">{new Date(blog.createdAt).toLocaleDateString()}</td>
-              <td className="p-2 space-x-2">
-                <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded">
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(blog._id)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="bg-gray-50 min-h-screen py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold mb-8 text-center">📚 Blog Posts</h2>
+
+        {blogs.length === 0 ? (
+          <p className="text-center text-gray-500">No blogs found.</p>
+        ) : (
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {blogs.map((blog) => (
+              <div
+                key={blog._id}
+                className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col"
+              >
+                {blog.image?.url && (
+                  <img
+                    src={blog.image.url}
+                    alt={blog.title}
+                    className="h-48 w-full object-cover"
+                  />
+                )}
+                <div className="p-4 flex-1 flex flex-col">
+                  <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
+                  <p className="text-gray-700 text-sm flex-1">
+                    {blog.description.slice(0, 120)}...
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {new Date(blog.createdAt).toLocaleDateString()}
+                  </p>
+                  <div className="mt-4 flex justify-between gap-2">
+                    <button
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(blog._id)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default ListBlogs;
+
