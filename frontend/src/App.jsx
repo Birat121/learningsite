@@ -27,6 +27,7 @@ import OAuthHandler from "./components/OAuth";
 import PayPalSuccess from "./components/PayPalSuccess";
 import AddBlog from "./components/AddBlog";
 import ListBlogs from "./components/ListBlog";
+import BlogDetail from "./components/BlogDetail";
 
 function App() {
   const location = useLocation();
@@ -51,6 +52,8 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/oauth-success" element={<OAuthHandler />} />
         <Route path="/paypal/success" element={<PayPalSuccess />} />
+        <Route path ="/blogs/:id" element={<BlogDetail />} />
+
 
         {/* Auth Routes */}
         <Route
