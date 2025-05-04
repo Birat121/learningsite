@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom'; // assuming you're using react-router
+import { useParams } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 
 const BlogDetail = () => {
-  const { blogId } = useParams();
+  const { slug } = useParams();  // changed from blogId to slug
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBlogDetail = async () => {
       try {
-        const res = await axiosInstance.get(`/blogs/blogs/${blogId}`); // Update with your actual endpoint
+        const res = await axiosInstance.get(`/blogs/blogs/${slug}`); // changed endpoint to use slug
         setBlog(res.data);
       } catch (err) {
         console.error("Error fetching blog:", err.response?.data || err.message);
         toast.error(err.response?.data?.message || err.message);
-        
       } finally {
         setLoading(false);
       }
     };
 
     fetchBlogDetail();
-  }, [blogId]);
+  }, [slug]);
 
   if (loading) return <p className="text-center py-10 text-gray-500">Loading blog...</p>;
   if (!blog) return <p className="text-center py-10 text-red-500">Blog not found.</p>;
@@ -55,7 +54,6 @@ const BlogDetail = () => {
       </div>
 
       <div className="prose max-w-none prose-lg text-gray-700">
-        {/* Supports HTML descriptions; if plain text, use <p>{blog.description}</p> */}
         <div dangerouslySetInnerHTML={{ __html: blog.description }} />
       </div>
     </section>
