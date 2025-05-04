@@ -173,7 +173,7 @@ const CourseDetails = () => {
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-4">
-            <div className="text-3xl font-bold text-gray-900">Rs. {course.price.toFixed(2)}</div>
+            <div className="text-3xl font-bold text-gray-900">AED {course.price.toFixed(2)}</div>
             <button
               onClick={handleBuyNowClick}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"

@@ -134,7 +134,9 @@ const ListPage = () => {
 
   return (
     <div className="bg-white shadow-lg rounded-xl p-6">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">Course List</h2>
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
+        Course List
+      </h2>
       <div className="overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead>
@@ -148,12 +150,24 @@ const ListPage = () => {
           <tbody>
             {Array.isArray(courses) &&
               courses.map((course, index) => (
-                <tr key={course._id || course.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                <tr
+                  key={course._id || course.id}
+                  className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                >
                   <td className="px-6 py-4">
-                    <img src={course.thumbnailUrl} alt={course.title} className="w-20 h-auto rounded-md" />
+                    <img
+                      src={course.thumbnailUrl}
+                      alt={course.title}
+                      className="w-20 h-auto rounded-md"
+                    />
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-800">{course.title}</td>
-                  <td className="px-6 py-4 text-green-600 font-semibold">${course.price}</td>
+                  <td className="px-6 py-4 font-medium text-gray-800">
+                    {course.title}
+                  </td>
+                  <td className="px-6 py-4 text-green-600 font-semibold">
+                    AED {course.price}
+                  </td>
+
                   <td className="px-6 py-4 text-center space-x-2">
                     <button
                       className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
@@ -181,7 +195,9 @@ const ListPage = () => {
             <h3 className="text-2xl font-bold mb-4">Edit Course</h3>
             <form onSubmit={handleUpdateCourse} encType="multipart/form-data">
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Course Title</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Course Title
+                </label>
                 <input
                   type="text"
                   name="title"
@@ -193,7 +209,9 @@ const ListPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Price</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Price
+                </label>
                 <input
                   type="number"
                   name="price"
@@ -205,7 +223,9 @@ const ListPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   value={courseData.description}
@@ -216,7 +236,9 @@ const ListPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Course Outcome</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Course Outcome
+                </label>
                 <textarea
                   name="courseOutcome"
                   value={courseData.courseOutcome}
@@ -227,7 +249,9 @@ const ListPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Thumbnail</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Thumbnail
+                </label>
                 <input
                   type="file"
                   name="thumbnailFile"
@@ -238,7 +262,9 @@ const ListPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Video</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Video
+                </label>
                 <input
                   type="file"
                   name="videoFile"

@@ -110,12 +110,15 @@ const AddPage = () => {
             type: "text",
             placeholder: "Enter course title",
           },
-          {
-            label: "Price (in NPR)",
-            name: "price",
-            type: "number",
-            placeholder: "Enter course price",
-          },
+          
+            {
+              label: "Price (in AED)",
+              name: "price",
+              type: "number",
+              placeholder: "Enter course price in AED",
+            },
+            
+          
         ].map(({ label, name, type, placeholder }) => (
           <div className="flex flex-col" key={name}>
             <label className="text-sm font-medium text-gray-700 mb-1">
