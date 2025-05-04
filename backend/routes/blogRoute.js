@@ -1,24 +1,19 @@
 import express from 'express';
-import multer from 'multer';
 import {
   createBlog,
   getAllBlogs,
-  getBlogById,
+  getBlogBySlug,
   updateBlog,
-  deleteBlog
+  deleteBlog,
 } from '../controllers/blogController.js';
 
-const blogRouter = express.Router();
+const router = express.Router();
 
-// Multer setup (in-memory storage)
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+router.post('blogs/', createBlog); // Create blog
+router.get('blogs/', getAllBlogs); // Get all blogs
+router.get('blogs/:slug', getBlogBySlug); // Get a single blog by slug
+router.put('blogs/:slug', updateBlog); // Update blog by slug
+router.delete('blogs/:slug', deleteBlog); // Delete blog by slug
 
-// Routes
-blogRouter.post('/blogs', upload.single('image'), createBlog);
-blogRouter.get('/blogs', getAllBlogs);
-blogRouter.get('/blogs/:id', getBlogById);
-blogRouter.put('/blogs/:id', upload.single('image'), updateBlog);
-blogRouter.delete('/blogs/:id', deleteBlog);
+export default router;
 
-export default blogRouter;

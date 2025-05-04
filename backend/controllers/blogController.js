@@ -2,7 +2,6 @@ import Blog from '../models/blogModel.js';
 import cloudinary from '../utils/cloudinary.js';
 import mongoose from 'mongoose';
 
-
 // CREATE
 export const createBlog = async (req, res) => {
   try {
@@ -53,31 +52,30 @@ export const getAllBlogs = async (req, res) => {
   }
 };
 
-// GET ONE
-export const getBlogById = async (req, res) => {
+// GET ONE (by slug)
+export const getBlogBySlug = async (req, res) => {
   try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: 'Invalid blog ID' });
-    }
+    const { slug } = req.params;
+    const blog = await Blog.findOne({ slug });
 
-    const blog = await Blog.findById(id);
     if (!blog) {
       return res.status(404).json({ message: 'Blog not found' });
     }
 
     res.json(blog);
   } catch (error) {
-    console.error('Error fetching blog:', error); // 👈 log error
+    console.error('Error fetching blog:', error);
     res.status(500).json({ message: 'Error fetching blog', error: error.message });
   }
 };
 
-// UPDATE
+// UPDATE (by slug)
 export const updateBlog = async (req, res) => {
   try {
+    const { slug } = req.params;
     const { title, description, author } = req.body;
-    const blog = await Blog.findById(req.params.id);
+
+    const blog = await Blog.findOne({ slug });
     if (!blog) return res.status(404).json({ message: 'Not found' });
 
     // Handle new image
@@ -114,10 +112,11 @@ export const updateBlog = async (req, res) => {
   }
 };
 
-// DELETE
+// DELETE (by slug)
 export const deleteBlog = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const { slug } = req.params;
+    const blog = await Blog.findOne({ slug });
     if (!blog) return res.status(404).json({ message: 'Not found' });
 
     if (blog.imagePublicId) {
