@@ -55,12 +55,12 @@ const CheckoutPage = () => {
     );
 
   return (
-    <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto">
+    <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto mt-14 mb-14">
       <div className="bg-white p-6 md:p-10 rounded-2xl shadow-lg grid md:grid-cols-2 gap-8">
         {/* Image Section */}
         <div>
           <img
-            src={course.thumbnail || "/default-thumbnail.jpg"}
+            src={course.thumbnailUrl || "/default-thumbnail.jpg"}
             alt={course.title}
             className="w-full h-64 object-cover rounded-xl shadow"
           />
