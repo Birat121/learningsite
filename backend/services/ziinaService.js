@@ -12,7 +12,7 @@ export async function createPaymentIntent({ amount, currency, email }) {
       `${ZIINA_API_URL}/payment_intent`,
       {
         amount,
-        currency,
+        currency_code,
         email,
         capture_method: 'automatic',
         confirmation_method: 'automatic',

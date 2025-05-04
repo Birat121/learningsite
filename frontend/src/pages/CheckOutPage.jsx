@@ -30,14 +30,11 @@ const CheckoutPage = () => {
     if (!course) return;
     setPaying(true);
     try {
-      // Initiating the payment via your backend
       const res = await axiosInstance.post("/payment/initiate", {
-        courseId: course._id,
-        amount: course.price,
+        videoId: course._id, // ✅ Key updated to match backend
       });
 
-      // Redirect to the payment URL from Ziina
-      window.location.href = res.data.paymentUrl;  // Redirects the user to the payment page
+      window.location.href = res.data.paymentUrl; // ✅ Key aligned with backend response
     } catch (err) {
       toast.error("Payment initiation failed.");
       console.error(err);
@@ -59,7 +56,6 @@ const CheckoutPage = () => {
   return (
     <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto mt-14 mb-14">
       <div className="bg-white p-6 md:p-10 rounded-2xl shadow-lg grid md:grid-cols-2 gap-8">
-        {/* Image Section */}
         <div>
           <img
             src={course.thumbnailUrl || "/default-thumbnail.jpg"}
@@ -68,7 +64,6 @@ const CheckoutPage = () => {
           />
         </div>
 
-        {/* Details & Payment Section */}
         <div className="flex flex-col justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-4 text-gray-900">Checkout</h1>
@@ -95,4 +90,3 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
-
