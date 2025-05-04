@@ -177,8 +177,7 @@ export const deleteVideo = async (req, res) => {
 };
 
 
-import Enrollment from '../models/enrollmentModel.js';  // Import the Enrollment model
-import Video from '../models/videoModel.js';  // Import Video model (for course details)
+import Enrollment from '../models/paymentModel.js';  // Import the Enrollment model
 
 export const getEnrolledVideos = async (req, res) => {
   try {

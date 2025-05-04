@@ -1,10 +1,10 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
-import { handleCreatePayment, handleZiinaWebhook } from "../controllers/checkOutController";
+import { handleCoursePayment, handleZiinaWebhook } from "../controllers/checkOutController.js";
 
 const paymentRouter = express.Router();
 
-paymentRouter.post("/payment", authMiddleware, handleCreatePayment);
+paymentRouter.post("/payment", authMiddleware, handleCoursePayment);
 paymentRouter.post("/webhook", handleZiinaWebhook);
 
 export default paymentRouter;
