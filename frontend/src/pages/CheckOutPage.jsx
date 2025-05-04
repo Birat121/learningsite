@@ -30,15 +30,12 @@ const CheckoutPage = () => {
     if (!course) return;
     setPaying(true);
     try {
-      // Simulated Zinna payment initiation (replace with real API)
       const res = await axiosInstance.post("/payments/initiate", {
         courseId: course._id,
         amount: course.price,
       });
 
-      // Redirect to payment gateway or show success
-      window.location.href = res.data.paymentUrl; // Simulated response
-
+      window.location.href = res.data.paymentUrl;
     } catch (err) {
       toast.error("Payment initiation failed.");
       console.error(err);
@@ -47,28 +44,52 @@ const CheckoutPage = () => {
     }
   };
 
-  if (loading) return <div className="pt-24 text-center">Loading checkout…</div>;
-  if (!course) return <div className="pt-24 text-center text-red-500">Course not found.</div>;
+  if (loading)
+    return <div className="pt-24 text-center text-lg">Loading checkout…</div>;
+
+  if (!course)
+    return (
+      <div className="pt-24 text-center text-red-500 text-lg">
+        Course not found.
+      </div>
+    );
 
   return (
-    <div className="pt-32 pb-20 px-4 max-w-3xl mx-auto">
-      <div className="bg-white p-8 rounded-xl shadow">
-        <h1 className="text-3xl font-bold mb-4 text-gray-900">Checkout</h1>
-        <p className="mb-2 text-gray-700"><strong>Course:</strong> {course.title}</p>
-        <p className="mb-2 text-gray-700"><strong>Price:</strong> AED {course.price.toFixed(2)}</p>
+    <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto">
+      <div className="bg-white p-6 md:p-10 rounded-2xl shadow-lg grid md:grid-cols-2 gap-8">
+        {/* Image Section */}
+        <div>
+          <img
+            src={course.thumbnail || "/default-thumbnail.jpg"}
+            alt={course.title}
+            className="w-full h-64 object-cover rounded-xl shadow"
+          />
+        </div>
 
-        <button
-          onClick={handlePayment}
-          disabled={paying}
-          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition"
-        >
-          {paying ? "Processing..." : "Pay Now"}
-        </button>
+        {/* Details & Payment Section */}
+        <div className="flex flex-col justify-between">
+          <div>
+            <h1 className="text-4xl font-bold mb-4 text-gray-900">Checkout</h1>
+            <p className="mb-3 text-gray-700 text-lg">
+              <strong>Course:</strong> {course.title}
+            </p>
+            <p className="mb-3 text-gray-700 text-lg">
+              <strong>Price:</strong> AED {course.price.toFixed(2)}
+            </p>
+            <p className="text-gray-600">{course.description?.substring(0, 150)}...</p>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            disabled={paying}
+            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50"
+          >
+            {paying ? "Processing..." : "Pay Now"}
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 export default CheckoutPage;
-
-
