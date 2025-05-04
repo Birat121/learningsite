@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom'; // assuming you're using react-router
 import axiosInstance from '../api/axiosInstance';
+import toast from 'react-hot-toast';
 
 const BlogDetail = () => {
   const { blogId } = useParams();
@@ -13,7 +14,9 @@ const BlogDetail = () => {
         const res = await axiosInstance.get(`/blogs/blogs/${blogId}`); // Update with your actual endpoint
         setBlog(res.data);
       } catch (err) {
-        console.error('Failed to fetch blog:', err);
+        console.error("Error fetching blog:", err.response?.data || err.message);
+        toast.error(err.response?.data?.message || err.message);
+        
       } finally {
         setLoading(false);
       }
