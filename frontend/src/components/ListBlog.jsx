@@ -6,7 +6,7 @@ const ListBlogs = () => {
   const [blogs, setBlogs] = useState([]);
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [editData, setEditData] = useState({ title: "", description: "", author: "" });
-  const [deleteBlogId, setDeleteBlogId] = useState(null);
+  const [deleteSlug, setDeleteSlug] = useState(null);
 
   const fetchBlogs = async () => {
     try {
@@ -19,10 +19,10 @@ const ListBlogs = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axiosInstance.delete(`/blogs/blogs/${deleteBlogId}`);
-      setBlogs(blogs.filter((blog) => blog._id !== deleteBlogId));
+      await axiosInstance.delete(`/blogs/blogs/${deleteSlug}`);
+      setBlogs(blogs.filter((blog) => blog.slug !== deleteSlug));
       toast.success("Deleted successfully");
-      setDeleteBlogId(null);
+      setDeleteSlug(null);
     } catch {
       toast.error("Delete failed");
     }
@@ -44,10 +44,10 @@ const ListBlogs = () => {
 
   const handleEditSubmit = async () => {
     try {
-      const res = await axiosInstance.put(`/blogs/blogs/${selectedBlog._id}`, editData);
+      const res = await axiosInstance.put(`/blogs/blogs/${selectedBlog.slug}`, editData);
       toast.success("Blog updated");
       const updatedBlogs = blogs.map((blog) =>
-        blog._id === selectedBlog._id ? res.data : blog
+        blog.slug === selectedBlog.slug ? res.data : blog
       );
       setBlogs(updatedBlogs);
       handleEditClose();
@@ -71,7 +71,7 @@ const ListBlogs = () => {
           <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog) => (
               <div
-                key={blog._id}
+                key={blog.slug}
                 className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col"
               >
                 {blog.image?.url && (
@@ -97,7 +97,7 @@ const ListBlogs = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => setDeleteBlogId(blog._id)}
+                      onClick={() => setDeleteSlug(blog.slug)}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded"
                     >
                       Delete
@@ -165,14 +165,14 @@ const ListBlogs = () => {
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteBlogId && (
+      {deleteSlug && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg text-center">
             <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
             <p className="text-gray-700 mb-6">Are you sure you want to delete this blog?</p>
             <div className="flex justify-center gap-4">
               <button
-                onClick={() => setDeleteBlogId(null)}
+                onClick={() => setDeleteSlug(null)}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
                 Cancel

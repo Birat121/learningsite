@@ -180,41 +180,42 @@ const ReasonsToChooseDubaiRealEstate = () => {
           </p>
 
           {loadingBlogs ? (
-            <p className="mt-6 text-gray-500">Loading blogs...</p>
-          ) : blogs.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mt-8">
-              {blogs.map((blog, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
-                >
-                  {blog.image && (
-                    <img
-                      src={blog.image}
-                      alt={blog.title}
-                      className="w-full h-48 object-cover rounded-lg mb-4"
-                    />
-                  )}
-                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
-                    {blog.title}
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    {truncateDescription(blog.description)}
-                  </p>
-                  <Link
-                    to={`/blogs/${blog._id}`}
-                    className="text-[rgb(0,104,80)] font-semibold hover:text-[rgb(0,82,60)]"
-                  >
-                    Read More →
-                  </Link>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="mt-6 text-gray-500">
-              No blog posts available at the moment. Please check back later.
-            </p>
-          )}
+  <p className="mt-6 text-gray-500">Loading blogs...</p>
+) : blogs.length > 0 ? (
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mt-8">
+    {blogs.map((blog, index) => (
+      <div
+        key={index}
+        className="bg-white p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
+      >
+        {blog.image && (
+          <img
+            src={blog.image}
+            alt={blog.title}
+            className="w-full h-48 object-cover rounded-lg mb-4"
+          />
+        )}
+        <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
+          {blog.title}
+        </h3>
+        <p className="text-sm sm:text-base text-gray-600 mb-4">
+          {truncateDescription(blog.description)}
+        </p>
+        <Link
+          to={`/blogs/${blog.slug}`}  // changed from blog._id to blog.slug
+          className="text-[rgb(0,104,80)] font-semibold hover:text-[rgb(0,82,60)]"
+        >
+          Read More →
+        </Link>
+      </div>
+    ))}
+  </div>
+) : (
+  <p className="mt-6 text-gray-500">
+    No blog posts available at the moment. Please check back later.
+  </p>
+)}
+
         </div>
       </div>
     </section>

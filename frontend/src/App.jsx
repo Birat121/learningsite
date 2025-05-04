@@ -52,7 +52,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/oauth-success" element={<OAuthHandler />} />
         <Route path="/paypal/success" element={<PayPalSuccess />} />
-        <Route path ="/blogs/:id" element={<BlogDetail />} />
+        <Route path ="/blogs/:slug" element={<BlogDetail />} />
 
 
         {/* Auth Routes */}
