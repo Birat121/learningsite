@@ -23,10 +23,10 @@ export const handleCoursePayment = async (req, res) => {
     });
 
     res.json({
-      confirmation_url: paymentData.next_action?.redirect_url || paymentData.confirmation_url,
+      paymentUrl: paymentData.next_action?.redirect_url || paymentData.confirmation_url,
       payment_intent_id: paymentData.id
     });
-
+    
   } catch (err) {
     console.error('Payment error:', err);
     res.status(500).json({ error: 'Payment intent creation failed', details: err.message });
