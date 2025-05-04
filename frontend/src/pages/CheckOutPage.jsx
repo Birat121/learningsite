@@ -1,121 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import { FaCcVisa, FaCcPaypal, FaMobileAlt, FaMoneyCheckAlt } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
 const CheckoutPage = () => {
-  const { id, slug } = useParams();
-  const [course, setCourse] = useState(null);
-  const [selectedPayment, setSelectedPayment] = useState("paypal");
+  const { slug } = useParams();
   const navigate = useNavigate();
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState(false);
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axiosInstance.get(`/videos/videos/${slug}`);
-        setCourse(response.data);
+        const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
+        setCourse(res.data);
       } catch (error) {
-        console.error("Failed to fetch course:", error);
+        toast.error("Failed to fetch course details");
+        navigate("/");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCourse();
-  }, [id]);
+  }, [slug, navigate]);
 
-  const handleCheckout = () => {
-    alert(`Payment method '${selectedPayment}' selected. Integration coming soon.`);
+  const handlePayment = async () => {
+    if (!course) return;
+    setPaying(true);
+    try {
+      // Simulated Zinna payment initiation (replace with real API)
+      const res = await axiosInstance.post("/payments/initiate", {
+        courseId: course._id,
+        amount: course.price,
+      });
+
+      // Redirect to payment gateway or show success
+      window.location.href = res.data.paymentUrl; // Simulated response
+
+    } catch (err) {
+      toast.error("Payment initiation failed.");
+      console.error(err);
+    } finally {
+      setPaying(false);
+    }
   };
 
-  if (!course)
-    return (
-      <div className="pt-28 flex justify-center text-gray-500 text-lg">
-        Loading course details...
-      </div>
-    );
+  if (loading) return <div className="pt-24 text-center">Loading checkout…</div>;
+  if (!course) return <div className="pt-24 text-center text-red-500">Course not found.</div>;
 
   return (
-    <div className="pt-28 px-4 sm:px-10 bg-gradient-to-b from-green-50 to-white min-h-screen">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 py-12">
-        {/* Left: Billing Section */}
-        <div className="md:col-span-2 bg-white p-8 rounded-3xl shadow-lg">
-          <h2 className="text-3xl font-bold mb-6 text-green-700">Checkout & Payment</h2>
+    <div className="pt-32 pb-20 px-4 max-w-3xl mx-auto">
+      <div className="bg-white p-8 rounded-xl shadow">
+        <h1 className="text-3xl font-bold mb-4 text-gray-900">Checkout</h1>
+        <p className="mb-2 text-gray-700"><strong>Course:</strong> {course.title}</p>
+        <p className="mb-2 text-gray-700"><strong>Price:</strong> AED {course.price.toFixed(2)}</p>
 
-          <h3 className="text-xl font-semibold mb-4">Select Payment Method</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <PaymentOption
-              method="card"
-              selected={selectedPayment}
-              icon={<FaCcVisa size={28} />}
-              label="Card"
-              onClick={() => setSelectedPayment("card")}
-            />
-            <PaymentOption
-              method="paypal"
-              selected={selectedPayment}
-              icon={<FaCcPaypal size={28} />}
-              label="PayPal"
-              onClick={() => setSelectedPayment("paypal")}
-            />
-            <PaymentOption
-              method="esewa"
-              selected={selectedPayment}
-              icon={<FaMobileAlt size={28} />}
-              label="eSewa"
-              onClick={() => setSelectedPayment("esewa")}
-            />
-            <PaymentOption
-              method="khalti"
-              selected={selectedPayment}
-              icon={<FaMoneyCheckAlt size={28} />}
-              label="Khalti"
-              onClick={() => setSelectedPayment("khalti")}
-            />
-          </div>
-
-          {/* Temporary Button Until Payment Integration */}
-          <button
-            onClick={handleCheckout}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl text-lg transition-all"
-          >
-            Proceed to Pay
-          </button>
-        </div>
-
-        {/* Right: Course Summary */}
-        <div className="bg-white p-6 rounded-3xl shadow-xl">
-          <img
-            src={course.thumbnailUrl}
-            alt={course.title}
-            className="h-48 w-full object-cover rounded-xl mb-5"
-          />
-          <h3 className="text-2xl font-semibold text-gray-800">{course.title}</h3>
-          <p className="text-gray-600 mt-2 text-sm line-clamp-4">{course.description}</p>
-          <div className="mt-6 flex justify-between items-center">
-            <span className="text-lg text-gray-500 font-medium">Total Price</span>
-            <span className="text-2xl text-green-700 font-bold">${course.price}</span>
-          </div>
-        </div>
+        <button
+          onClick={handlePayment}
+          disabled={paying}
+          className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition"
+        >
+          {paying ? "Processing..." : "Pay Now"}
+        </button>
       </div>
     </div>
   );
 };
 
-const PaymentOption = ({ method, selected, onClick, icon, label }) => {
-  const isActive = selected === method;
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-2 p-3 border rounded-lg transition-all duration-200 ${
-        isActive
-          ? "border-green-600 bg-green-100 text-green-700"
-          : "border-gray-300 text-gray-700 hover:border-green-400"
-      }`}
-    >
-      {icon}
-      <span className="font-medium">{label}</span>
-    </button>
-  );
-};
-
 export default CheckoutPage;
+
 

@@ -48,7 +48,7 @@ function App() {
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:slug" element={<CourseDetails />} />
         <Route path="/why-dubai" element={<WhyUs />} />
-        <Route path="/checkout/:id" element={<CheckoutPage />} />
+        <Route path="/checkout/:slug" element={<CheckoutPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/oauth-success" element={<OAuthHandler />} />
         <Route path="/paypal/success" element={<PayPalSuccess />} />
