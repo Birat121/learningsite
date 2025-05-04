@@ -37,7 +37,7 @@ const BlogForm = () => {
       setFormData({ title: '', description: '', author: '' });
       setImage(null);
     } catch (err) {
-      console.error(err);
+      console.error('Error creating blog:', err.response?.data || err.message);
       toast.error('Failed to create blog');
     }
   };
