@@ -1,6 +1,7 @@
 import Blog from '../models/blogModel.js';
 import cloudinary from '../utils/cloudinary.js';
-import mongoose from 'mongoose';
+import slugify from 'slugify';
+
 
 // CREATE
 export const createBlog = async (req, res) => {
@@ -10,25 +11,12 @@ export const createBlog = async (req, res) => {
 
     let imageUrl = '';
     let publicId = '';
-
-    if (imageBuffer) {
-      const result = await cloudinary.uploader.upload_stream(
-        { folder: 'blogs' },
-        (error, result) => {
-          if (error) throw error;
-          imageUrl = result.secure_url;
-          publicId = result.public_id;
-          finalizeCreate();
-        }
-      );
-      result.end(imageBuffer);
-    } else {
-      finalizeCreate();
-    }
+    const slug = slugify(title, { lower: true, strict: true });
 
     const finalizeCreate = async () => {
       const blog = await Blog.create({
         title,
+        slug,
         description,
         author,
         image: imageUrl,
@@ -36,11 +24,30 @@ export const createBlog = async (req, res) => {
       });
       res.status(201).json(blog);
     };
+
+    if (imageBuffer) {
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'blogs' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(imageBuffer);
+      });
+
+      imageUrl = uploadResult.secure_url;
+      publicId = uploadResult.public_id;
+    }
+
+    await finalizeCreate();
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to create blog.' });
   }
 };
+
 
 // GET ALL
 export const getAllBlogs = async (req, res) => {
@@ -78,14 +85,12 @@ export const updateBlog = async (req, res) => {
     const blog = await Blog.findOne({ slug });
     if (!blog) return res.status(404).json({ message: 'Not found' });
 
-    // Handle new image
+    // Handle image replacement
     if (req.file) {
-      // Delete old image
       if (blog.imagePublicId) {
         await cloudinary.uploader.destroy(blog.imagePublicId);
       }
 
-      // Upload new image
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { folder: 'blogs' },
@@ -102,6 +107,7 @@ export const updateBlog = async (req, res) => {
     }
 
     blog.title = title;
+    blog.slug = slugify(title, { lower: true, strict: true }); // Update slug
     blog.description = description;
     blog.author = author;
 
@@ -111,6 +117,7 @@ export const updateBlog = async (req, res) => {
     res.status(500).json({ message: 'Error updating blog.' });
   }
 };
+
 
 // DELETE (by slug)
 export const deleteBlog = async (req, res) => {
