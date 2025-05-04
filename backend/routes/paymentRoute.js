@@ -4,7 +4,7 @@ import { handleCoursePayment, handleZiinaWebhook } from "../controllers/checkOut
 
 const paymentRouter = express.Router();
 
-paymentRouter.post("/payment", authMiddleware, handleCoursePayment);
+paymentRouter.post("/initiate", authMiddleware, handleCoursePayment);
 paymentRouter.post("/webhook", handleZiinaWebhook);
 
 export default paymentRouter;

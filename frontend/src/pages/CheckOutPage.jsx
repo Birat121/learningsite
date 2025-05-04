@@ -31,7 +31,7 @@ const CheckoutPage = () => {
     setPaying(true);
     try {
       // Initiating the payment via your backend
-      const res = await axiosInstance.post("/payments/initiate", {
+      const res = await axiosInstance.post("/payment/initiate", {
         courseId: course._id,
         amount: course.price,
       });
