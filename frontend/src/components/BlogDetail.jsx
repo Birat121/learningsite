@@ -4,14 +4,14 @@ import axiosInstance from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 
 const BlogDetail = () => {
-  const { slug } = useParams();  // changed from blogId to slug
+  const { slug } = useParams();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBlogDetail = async () => {
       try {
-        const res = await axiosInstance.get(`/blogs/blogs/${slug}`); // changed endpoint to use slug
+        const res = await axiosInstance.get(`/blogs/blogs/${slug}`);
         setBlog(res.data);
       } catch (err) {
         console.error("Error fetching blog:", err.response?.data || err.message);
@@ -28,32 +28,34 @@ const BlogDetail = () => {
   if (!blog) return <p className="text-center py-10 text-red-500">Blog not found.</p>;
 
   return (
-    <section className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl sm:text-4xl font-bold text-[rgb(0,104,80)] mb-6">{blog.title}</h1>
-
+    <section className="max-w-4xl mx-auto px-4 py-20"> {/* Added top padding for navbar gap */}
       {blog.image && (
         <img
           src={blog.image}
           alt={blog.title}
-          className="w-full max-h-[400px] object-cover rounded-xl mb-6"
+          className="w-full max-h-[450px] object-cover rounded-2xl shadow-md mb-8"
         />
       )}
 
-      <div className="flex items-center mb-6">
+      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{blog.title}</h1>
+
+      <div className="flex items-center gap-4 mb-8">
         {blog.authorImage && (
           <img
             src={blog.authorImage}
             alt={blog.author}
-            className="w-12 h-12 rounded-full object-cover mr-4"
+            className="w-12 h-12 rounded-full object-cover"
           />
         )}
         <div>
-          <p className="font-semibold text-gray-800">{blog.author}</p>
-          <p className="text-sm text-gray-500">{new Date(blog.date).toLocaleDateString()}</p>
+          <p className="font-medium text-gray-800">{blog.author}</p>
+          <p className="text-sm text-gray-500">
+            {blog.date ? new Date(blog.date).toLocaleDateString() : ''}
+          </p>
         </div>
       </div>
 
-      <div className="prose max-w-none prose-lg text-gray-700">
+      <div className="prose max-w-none prose-lg text-gray-800">
         <div dangerouslySetInnerHTML={{ __html: blog.description }} />
       </div>
     </section>
@@ -61,3 +63,4 @@ const BlogDetail = () => {
 };
 
 export default BlogDetail;
+
