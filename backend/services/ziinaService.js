@@ -6,19 +6,22 @@ dotenv.config();
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 const ZIINA_API_URL = process.env.ZIINA_API_URL;
 
-export async function createPaymentIntent({ amount, currency, email }) {
+export async function createPaymentIntent({ amount, currency, email, videoId }) {
   try {
     const response = await axios.post(
       `${ZIINA_API_URL}/payment_intent`,
       {
         amount,
-        currency_code,
+        currency_code: currency,
         email,
         capture_method: 'automatic',
         confirmation_method: 'automatic',
         success_url: process.env.SUCCESS_URL,
         cancel_url: process.env.CANCEL_URL,
-        test: true
+        test: true,
+        metadata: {
+          videoId: videoId,  // Add videoId to the metadata here
+        },
       },
       {
         headers: {

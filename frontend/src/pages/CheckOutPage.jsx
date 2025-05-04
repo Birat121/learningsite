@@ -34,7 +34,11 @@ const CheckoutPage = () => {
         videoId: course._id, // ✅ Key updated to match backend
       });
 
-      window.location.href = res.data.paymentUrl; // ✅ Key aligned with backend response
+      if (res.data.paymentUrl) {
+        window.location.href = res.data.paymentUrl; // ✅ Key aligned with backend response
+      } else {
+        toast.error("Payment URL not found.");
+      }
     } catch (err) {
       toast.error("Payment initiation failed.");
       console.error(err);
@@ -80,6 +84,7 @@ const CheckoutPage = () => {
             onClick={handlePayment}
             disabled={paying}
             className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50"
+            aria-label="Proceed with payment for course"
           >
             {paying ? "Processing..." : "Pay Now"}
           </button>

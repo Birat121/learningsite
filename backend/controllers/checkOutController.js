@@ -1,5 +1,7 @@
 import { createPaymentIntent } from '../services/ziinaService.js';
-import Video from '../models/videoModel.js'; // Your model name is Video
+import Video from '../models/videoModel.js';
+import User from '../models/userModel.js';
+import Enrollment from '../models/paymentModel.js';  // Assuming Enrollment model exists
 
 export const handleCoursePayment = async (req, res) => {
   try {
@@ -16,7 +18,8 @@ export const handleCoursePayment = async (req, res) => {
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
       currency: 'AED',
-      customer_email
+      email: customer_email,
+      videoId: videoId,  // Ensure the videoId is passed to the payment creation service
     });
 
     res.json({
@@ -26,10 +29,9 @@ export const handleCoursePayment = async (req, res) => {
 
   } catch (err) {
     console.error('Payment error:', err);
-    res.status(500).json({ error: 'Payment intent creation failed' });
+    res.status(500).json({ error: 'Payment intent creation failed', details: err.message });
   }
 };
-
 
 export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
@@ -39,14 +41,21 @@ export const handleZiinaWebhook = async (req, res) => {
     const userEmail = event.data.customer_email;
 
     const user = await User.findOne({ email: userEmail });
-    if (!user) return res.status(404).send("User not found");
+    if (!user) {
+      console.error(`User not found with email: ${userEmail}`);
+      return res.status(404).send("User not found");
+    }
 
-    const videoId = event.data.metadata?.videoId;  // Assuming you send videoId in metadata
+    const videoId = event.data.metadata?.videoId;
     const video = await Video.findById(videoId);
-    if (!video) return res.status(404).send("Video not found");
+    if (!video) {
+      console.error(`Video not found with ID: ${videoId}`);
+      return res.status(404).send("Video not found");
+    }
 
     const existingEnrollment = await Enrollment.findOne({
       user: user._id,
+      video: video._id,
       paymentIntentId,
     });
 
@@ -61,6 +70,7 @@ export const handleZiinaWebhook = async (req, res) => {
     });
 
     res.status(200).send("Enrollment recorded");
+
   } else {
     res.status(400).send("Payment not successful");
   }
