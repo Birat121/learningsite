@@ -9,7 +9,7 @@ const ZIINA_API_URL = process.env.ZIINA_API_URL;
 export async function createPaymentIntent({ amount, currency, email }) {
   try {
     const response = await axios.post(
-      `${ZIINA_API_URL}/payment_intents`,
+      `${ZIINA_API_URL}/payment_intent`,
       {
         amount,
         currency,
