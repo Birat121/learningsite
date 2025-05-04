@@ -55,11 +55,20 @@ export const getAllBlogs = async (req, res) => {
 // GET ONE
 export const getBlogById = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) return res.status(404).json({ message: 'Not found' });
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid blog ID' });
+    }
+
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return res.status(404).json({ message: 'Blog not found' });
+    }
+
     res.json(blog);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching blog.' });
+    console.error('Error fetching blog:', error); // 👈 log error
+    res.status(500).json({ message: 'Error fetching blog', error: error.message });
   }
 };
 
