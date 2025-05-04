@@ -28,7 +28,7 @@ const BlogDetail = () => {
   if (!blog) return <p className="text-center py-10 text-red-500">Blog not found.</p>;
 
   return (
-    <section className="max-w-4xl mx-auto px-4 py-20"> {/* Added top padding for navbar gap */}
+    <section className="max-w-4xl mx-auto px-4 py-20 mt-14"> {/* Added top padding for navbar gap */}
       {blog.image && (
         <img
           src={blog.image}
