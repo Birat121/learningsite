@@ -30,12 +30,14 @@ const CheckoutPage = () => {
     if (!course) return;
     setPaying(true);
     try {
+      // Initiating the payment via your backend
       const res = await axiosInstance.post("/payments/initiate", {
         courseId: course._id,
         amount: course.price,
       });
 
-      window.location.href = res.data.paymentUrl;
+      // Redirect to the payment URL from Ziina
+      window.location.href = res.data.paymentUrl;  // Redirects the user to the payment page
     } catch (err) {
       toast.error("Payment initiation failed.");
       console.error(err);
@@ -93,3 +95,4 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
+

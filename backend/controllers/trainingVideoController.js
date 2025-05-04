@@ -177,13 +177,20 @@ export const deleteVideo = async (req, res) => {
 };
 
 
+import Enrollment from '../models/enrollmentModel.js';  // Import the Enrollment model
+import Video from '../models/videoModel.js';  // Import Video model (for course details)
+
 export const getEnrolledVideos = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user.id;  // User ID from JWT
 
-    const payments = await Payment.find({ userId, status: "success" }).populate("courseId");
+    // Find enrollments for the user and populate the course (video) details
+    const enrollments = await Enrollment.find({ user: userId })
+      .populate("video")  // Assuming you have a video reference in the Enrollment model
+      .exec();
 
-    const courses = payments.map((payment) => payment.courseId);
+    // Extract course details (videos) from the enrollments
+    const courses = enrollments.map((enrollment) => enrollment.video);
 
     res.status(200).json({ courses });
   } catch (error) {

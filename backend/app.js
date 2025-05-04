@@ -10,6 +10,7 @@ import cookieParser from "cookie-parser";
 import router from "./routes/videoRoute.js";
 import quizRouter from "./routes/quizRoute.js";
 import blogRouter from "./routes/blogRoute.js";
+import paymentRouter from "./routes/paymentRoute.js";
 
 
 // Load Google Strategy
@@ -47,6 +48,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/videos", router);
 app.use("/api/quiz", quizRouter);
 app.use("/api/blogs", blogRouter);
+app.use("/api/payment", paymentRouter);
 
 
 // Default test route
