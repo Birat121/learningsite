@@ -22,10 +22,20 @@ export const handleCoursePayment = async (req, res) => {
       videoId: videoId,  // Ensure the videoId is passed to the payment creation service
     });
 
-    res.json({
-      paymentUrl: paymentData.next_action?.redirect_url || paymentData.confirmation_url,
-      payment_intent_id: paymentData.id
-    });
+    // Add logging
+console.log("Ziina payment response:", paymentData);
+
+const redirectUrl = paymentData.next_action?.redirect_url || paymentData.confirmation_url;
+
+if (!redirectUrl) {
+  return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
+}
+
+res.json({
+  paymentUrl: redirectUrl,
+  payment_intent_id: paymentData.id,
+});
+
     
   } catch (err) {
     console.error('Payment error:', err);

@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: 'https://realstatelearning3.netlify.app',  // Your frontend URL
+  origin: 'https://realstatelearning3.netlify.app/',  // Your frontend URL
   credentials: true,  // Enable sending cookies/credentials if required
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Common methods used in your frontend
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allow headers like Authorization

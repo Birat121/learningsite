@@ -31,14 +31,17 @@ const CheckoutPage = () => {
     setPaying(true);
     try {
       const res = await axiosInstance.post("/payment/initiate", {
-        videoId: course._id, // ✅ Key updated to match backend
+        videoId: course._id,
       });
-
+      
+      console.log("Payment initiation response:", res.data);
+      
       if (res.data.paymentUrl) {
-        window.location.href = res.data.paymentUrl; // ✅ Key aligned with backend response
+        window.location.href = res.data.paymentUrl;
       } else {
         toast.error("Payment URL not found.");
       }
+      
     } catch (err) {
       toast.error("Payment initiation failed.");
       console.error(err);
@@ -58,7 +61,7 @@ const CheckoutPage = () => {
     );
 
   return (
-    <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto mt-14 mb-14">
+    <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto mt-18 mb-26">
       <div className="bg-white p-6 md:p-10 rounded-2xl shadow-lg grid md:grid-cols-2 gap-8">
         <div>
           <img

@@ -56,7 +56,7 @@ const CourseDetails = () => {
   const fetchQuiz = async () => {
     try {
       setQuizLoading(true);
-      const res = await axiosInstance.get(`/api/quiz/quizzes/${id}`);
+      const res = await axiosInstance.get(`/quiz/quizzes/${id}`);
       setQuiz(res.data);
     } catch (err) {
       console.error("Failed to fetch quiz:", err);
