@@ -110,7 +110,7 @@ export const adminLogin = async (req, res) => {
 
     // Generate JWT token
     const payload = { email }; // Include relevant information in the token payload
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+    const token = jwt.sign(payload, process.env.ADMIN_JWT_SECRET, {
       expiresIn: '3d', // Token validity for 3 days
     });
 
