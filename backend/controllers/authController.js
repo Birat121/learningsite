@@ -37,7 +37,12 @@ export const login = async (req, res, next) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new CustomError("Invalid credentials", 401);
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    const token = jwt.sign(
+      { id: user._id, email: user.email }, // ✅ include email
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+    
 
     res.cookie("token", token, {
       httpOnly: true,

@@ -6,34 +6,33 @@ import Enrollment from '../models/paymentModel.js';  // Assuming Enrollment mode
 export const handleCoursePayment = async (req, res) => {
   try {
     const { videoId } = req.body;
-    const customer_email = req.user.email;
+    const customer_email = req.user?.email;
 
     if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
+    if (!customer_email) return res.status(400).json({ error: 'Missing customer email' });
 
-    // Log the email to ensure it's correctly fetched
     console.log('Initiating payment for email:', customer_email);
 
     const video = await Video.findById(videoId);
     if (!video) return res.status(404).json({ error: 'Video not found' });
 
-    // Log video info
-    console.log('Found video:', video);
-
-    const amountInFils = Math.round(video.price * 100); // Convert to fils for Ziina
+    const amountInFils = Math.round(video.price * 100);
 
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
       currency: 'AED',
       email: customer_email,
-      videoId: videoId,  // Ensure the videoId is passed to the payment creation service
+      videoId,
     });
 
-    // Add logging
     console.log("Ziina payment response:", paymentData);
 
-    const redirectUrl = paymentData.next_action?.redirect_url || paymentData.confirmation_url;
+    const redirectUrl =
+      paymentData.redirect_url ||
+      paymentData.confirmation_url;
 
     if (!redirectUrl) {
+      console.error('Redirect URL missing in Ziina response:', paymentData);
       return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
     }
 
@@ -43,9 +42,13 @@ export const handleCoursePayment = async (req, res) => {
     });
   } catch (err) {
     console.error('Payment error:', err);
-    res.status(500).json({ error: 'Payment intent creation failed', details: err.message });
+    res.status(500).json({
+      error: 'Payment intent creation failed',
+      details: err.response?.data || err.message,
+    });
   }
 };
+
 
 export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
