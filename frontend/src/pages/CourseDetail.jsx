@@ -34,28 +34,27 @@ const CourseDetails = () => {
         setLoading(false);
       }
     };
-
+  
     const fetchAccess = async () => {
       try {
-        // Make a request to your API to check the enrollment status for the specific video
         const res = await axiosInstance.get(`/videos/enrolled/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-    
-        // Set the access status based on the response
-        setHasAccess(res.data.enrolled); // This will set the state based on whether the user is enrolled or not
+        setHasAccess(res.data.enrolled);
       } catch (err) {
         console.error("Access check failed:", err);
-        setHasAccess(false); // If something goes wrong, assume no access
+        setHasAccess(false);
       }
     };
-    
-
-    fetchCourse();
-    fetchAccess();
-  }, [slug]); // ✅ use slug here
+  
+    if (id && slug) {
+      fetchCourse();
+      fetchAccess();
+    }
+  }, [id, slug]);
+   //✅ use slug here
 
   const fetchQuiz = async () => {
     try {
