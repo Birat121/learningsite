@@ -8,7 +8,7 @@ export const adminAuth = async (req, res, next) => {
       return res.status(401).json({message: 'Unauthorized'})
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, process.env.ADMIN_JWT_SECRET)
 
     if(decoded !== process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD){
       return res.status(401).json({message: 'Unauthorized'})

@@ -50,54 +50,68 @@ export const handleCoursePayment = async (req, res) => {
 export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
-  // Log the incoming webhook event to check its structure
-  console.log('Webhook event received:', event);
+  try {
+    // Log the incoming webhook event for debugging purposes
+    console.log('Webhook event received:', event);
 
-  if (event?.data?.status === "succeeded") {
-    const paymentIntentId = event.data.id;
-    const userEmail = event.data.customer_email;  // Assuming this is correct in the webhook
+    if (event?.data?.status === "succeeded") {
+      const paymentIntentId = event.data.id;
+      const userEmail = event.data.customer_email;  // Assuming this is correct in the webhook
 
-    // Log user email to verify
-    console.log('Received webhook for email:', userEmail);
+      // Log user email to verify
+      console.log('Received webhook for email:', userEmail);
 
-    // Find the user by email
-    const user = await User.findOne({ email: userEmail });
-    if (!user) {
-      console.error(`User with email ${userEmail} not found.`);
-      return res.status(404).send("User not found");
+      // Find the user by email
+      const user = await User.findOne({ email: userEmail });
+      if (!user) {
+        console.error(`User with email ${userEmail} not found.`);
+        return res.status(404).send("User not found");
+      }
+
+      const videoId = event.data.metadata?.videoId;  // Assuming videoId is in metadata
+      if (!videoId) {
+        console.error('videoId not found in metadata');
+        return res.status(400).send("Video ID missing in webhook");
+      }
+
+      const video = await Video.findById(videoId);
+      if (!video) {
+        console.error(`Video with ID ${videoId} not found.`);
+        return res.status(404).send("Video not found");
+      }
+
+      // Log video info
+      console.log('Found video:', video);
+
+      const existingEnrollment = await Enrollment.findOne({
+        user: user._id,
+        video: video._id,
+        paymentIntentId,
+      });
+
+      if (existingEnrollment) {
+        console.log('User already enrolled for this video.');
+        return res.status(200).send("User already enrolled");
+      }
+
+      // Create a new enrollment for the user and video
+      await Enrollment.create({
+        user: user._id,
+        video: video._id,
+        paymentIntentId,
+      });
+
+      // Successfully enrolled
+      console.log('Enrollment successfully recorded for user:', userEmail);
+      res.status(200).send("Enrollment recorded");
+
+    } else {
+      console.error("Payment not successful:", event);
+      return res.status(400).send("Payment not successful");
     }
-
-    const videoId = event.data.metadata?.videoId;  // Assuming videoId is in metadata
-    const video = await Video.findById(videoId);
-    if (!video) {
-      console.error(`Video with ID ${videoId} not found.`);
-      return res.status(404).send("Video not found");
-    }
-
-    // Log video info
-    console.log('Found video:', video);
-
-    const existingEnrollment = await Enrollment.findOne({
-      user: user._id,
-      video: video._id,
-      paymentIntentId,
-    });
-
-    if (existingEnrollment) {
-      console.log('User already enrolled for this video.');
-      return res.status(200).send("User already enrolled");
-    }
-
-    // Create a new enrollment for the user and video
-    await Enrollment.create({
-      user: user._id,
-      video: video._id,
-      paymentIntentId,
-    });
-
-    res.status(200).send("Enrollment recorded");
-  } else {
-    console.error("Payment not successful:", event);
-    res.status(400).send("Payment not successful");
+  } catch (error) {
+    // Catch any other unexpected errors
+    console.error("Error handling webhook:", error);
+    res.status(500).send("Internal Server Error");
   }
 };

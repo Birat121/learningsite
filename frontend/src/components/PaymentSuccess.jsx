@@ -22,7 +22,7 @@ const PaymentSuccess = () => {
           <p className="text-md text-gray-700">You will be redirected to your enrolled courses shortly...</p>
         </div>
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">If you are not redirected automatically, <a href="/user/enrolled-courses" className="text-blue-500">click here</a> to go to your courses.</p>
+          <p className="text-sm text-gray-500">If you are not redirected automatically, <a href="/enrolledCourse" className="text-blue-500">click here</a> to go to your courses.</p>
         </div>
       </div>
     </div>
