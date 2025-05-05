@@ -50,7 +50,7 @@ export const handleCoursePayment = async (req, res) => {
 };
 
 
-const handleZiinaWebhook = async (req, res) => {
+export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
   try {
