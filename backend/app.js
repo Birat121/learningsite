@@ -30,7 +30,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allow headers like Authorization
 }));
 app.use(express.json());
-app.use(cookieParser());
+
 app.use(express.urlencoded({ extended: true }));
 
 // Required for Passport session handling
@@ -43,6 +43,7 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/videos", router);

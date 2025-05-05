@@ -1,6 +1,6 @@
 import cloudinary from '../utils/cloudinary.js';
 import Video from '../models/videoModel.js';
-import Payment from '../models/paymentModel.js';
+import Enrollment from '../models/paymentModel.js';
 import slugify from 'slugify';
 
 // POST /videos - Create a video
@@ -177,7 +177,6 @@ export const deleteVideo = async (req, res) => {
 };
 
 
-import Enrollment from '../models/paymentModel.js';  // Import the Enrollment model
 
 export const getEnrolledVideos = async (req, res) => {
   try {
@@ -199,39 +198,40 @@ export const getEnrolledVideos = async (req, res) => {
 };
 
 
+import mongoose from 'mongoose';
+const { Types } = mongoose;
+
+
+
 export const checkEnrollmentStatus = async (req, res) => {
   try {
     const { slug } = req.params;
-    const userId = req.user?._id;
+    const userId = req.user?.id;
 
-    if (!userId || !slug) {
-      return res.status(400).json({ enrolled: false, error: "Missing data" });
+    if (!slug || !userId) {
+      console.warn("Missing slug or user ID", {
+        slug,
+        userId,
+        cookies: req.cookies,
+        headers: req.headers,
+      });
+      return res.status(400).json({ enrolled: false, error: "Missing slug or user ID" });
     }
 
-    // Check if the slug is a valid ObjectId
-    const isValidId = Types.ObjectId.isValid(slug);
-    let course;
-    if (isValidId) {
-      // If slug is a valid ObjectId, find by _id
-      course = await Video.findById(slug);
-    } else {
-      // Otherwise, find by slug
-      course = await Video.findOne({ slug });
-    }
+    const course = Types.ObjectId.isValid(slug)
+      ? await Video.findById(slug)
+      : await Video.findOne({ slug });
 
     if (!course) {
+      console.warn("Course not found for slug:", slug);
       return res.status(404).json({ enrolled: false, error: "Course not found" });
     }
 
-    // Check if the user is enrolled in the course
-    const enrollment = await Enrollment.exists({ user: userId, course: course._id });
+    const isEnrolled = await Enrollment.exists({ user: userId, course: course._id });
 
-    res.json({ enrolled: !!enrollment });
+    return res.status(200).json({ enrolled: Boolean(isEnrolled) });
   } catch (error) {
-    console.error("Enrollment check failed:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error checking enrollment status:", error);
+    return res.status(500).json({ enrolled: false, error: "Internal server error" });
   }
 };
-
-
-
