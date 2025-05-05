@@ -24,7 +24,8 @@ import AdminLogin from "./pages/AdminLogin";
 import QuizPage from "./components/QuizPage";
 import QuizList from "./components/quizList";
 import OAuthHandler from "./components/OAuth";
-import PayPalSuccess from "./components/PayPalSuccess";
+import PaymentSuccess from "./components/PaymentSuccess";
+import PaymentCancel from "./components/PaymentFailure";
 import AddBlog from "./components/AddBlog";
 import ListBlogs from "./components/ListBlog";
 import BlogDetail from "./components/BlogDetail";
@@ -51,7 +52,8 @@ function App() {
         <Route path="/checkout/:slug" element={<CheckoutPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/oauth-success" element={<OAuthHandler />} />
-        <Route path="/paypal/success" element={<PayPalSuccess />} />
+       <Route path ='/success' element={<PaymentSuccess />} />
+       <Route path ='/cancel' element={<PaymentCancel />} />
         <Route path ="/blogs/:slug" element={<BlogDetail />} />
 
 
