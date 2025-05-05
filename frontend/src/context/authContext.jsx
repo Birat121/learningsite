@@ -33,9 +33,14 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.get("/auth/user", { withCredentials: true });
       setUser(response.data.user);
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.status === 401) {
+        // If the status code is 401 (unauthorized), logout the user
+        logout();
+      }
+      console.error("Error fetching user:", error);
     }
   };
+  
 
   useEffect(() => {
     if (authToken) {

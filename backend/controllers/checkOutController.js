@@ -10,8 +10,14 @@ export const handleCoursePayment = async (req, res) => {
 
     if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
 
+    // Log the email to ensure it's correctly fetched
+    console.log('Initiating payment for email:', customer_email);
+
     const video = await Video.findById(videoId);
     if (!video) return res.status(404).json({ error: 'Video not found' });
+
+    // Log video info
+    console.log('Found video:', video);
 
     const amountInFils = Math.round(video.price * 100); // Convert to fils for Ziina
 
@@ -23,20 +29,18 @@ export const handleCoursePayment = async (req, res) => {
     });
 
     // Add logging
-console.log("Ziina payment response:", paymentData);
+    console.log("Ziina payment response:", paymentData);
 
-const redirectUrl = paymentData.next_action?.redirect_url || paymentData.confirmation_url;
+    const redirectUrl = paymentData.next_action?.redirect_url || paymentData.confirmation_url;
 
-if (!redirectUrl) {
-  return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
-}
+    if (!redirectUrl) {
+      return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
+    }
 
-res.json({
-  paymentUrl: redirectUrl,
-  payment_intent_id: paymentData.id,
-});
-
-    
+    res.json({
+      paymentUrl: redirectUrl,
+      payment_intent_id: paymentData.id,
+    });
   } catch (err) {
     console.error('Payment error:', err);
     res.status(500).json({ error: 'Payment intent creation failed', details: err.message });
@@ -46,22 +50,32 @@ res.json({
 export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
+  // Log the incoming webhook event to check its structure
+  console.log('Webhook event received:', event);
+
   if (event?.data?.status === "succeeded") {
     const paymentIntentId = event.data.id;
-    const userEmail = event.data.customer_email;
+    const userEmail = event.data.customer_email;  // Assuming this is correct in the webhook
 
+    // Log user email to verify
+    console.log('Received webhook for email:', userEmail);
+
+    // Find the user by email
     const user = await User.findOne({ email: userEmail });
     if (!user) {
-      console.error(`User not found with email: ${userEmail}`);
+      console.error(`User with email ${userEmail} not found.`);
       return res.status(404).send("User not found");
     }
 
-    const videoId = event.data.metadata?.videoId;
+    const videoId = event.data.metadata?.videoId;  // Assuming videoId is in metadata
     const video = await Video.findById(videoId);
     if (!video) {
-      console.error(`Video not found with ID: ${videoId}`);
+      console.error(`Video with ID ${videoId} not found.`);
       return res.status(404).send("Video not found");
     }
+
+    // Log video info
+    console.log('Found video:', video);
 
     const existingEnrollment = await Enrollment.findOne({
       user: user._id,
@@ -70,9 +84,11 @@ export const handleZiinaWebhook = async (req, res) => {
     });
 
     if (existingEnrollment) {
+      console.log('User already enrolled for this video.');
       return res.status(200).send("User already enrolled");
     }
 
+    // Create a new enrollment for the user and video
     await Enrollment.create({
       user: user._id,
       video: video._id,
@@ -80,8 +96,8 @@ export const handleZiinaWebhook = async (req, res) => {
     });
 
     res.status(200).send("Enrollment recorded");
-
   } else {
+    console.error("Payment not successful:", event);
     res.status(400).send("Payment not successful");
   }
 };

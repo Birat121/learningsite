@@ -9,7 +9,7 @@ const PaymentSuccess = () => {
   // Redirect the user to the enrolled courses page after 5 seconds
   useEffect(() => {
     setTimeout(() => {
-      navigate('/enrolledcourses');  // Adjust to the actual route for enrolled courses
+      navigate('/enrolledCourse');  // Adjust to the actual route for enrolled courses
     }, 5000); // Redirect after 5 seconds
   }, [navigate]);
 

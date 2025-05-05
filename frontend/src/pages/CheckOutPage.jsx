@@ -1,63 +1,61 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 
 const CheckoutPage = () => {
-  const { slug } = useParams();
-  const navigate = useNavigate();
-  const [course, setCourse] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [paying, setPaying] = useState(false);
+  const { slug } = useParams(); // Get course slug from URL
+  const navigate = useNavigate(); // Navigate to other pages
+  const { user, authToken, logout } = useAuth(); // Get user data and token from context
+  const [course, setCourse] = useState(null); // Store course details
+  const [loading, setLoading] = useState(true); // Loading state
+  const [paying, setPaying] = useState(false); // Payment processing state
 
+  // Fetch course details when the component mounts
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        console.log("Fetching course details for slug:", slug);
         const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
-        console.log("Course details fetched:", res.data);
-        setCourse(res.data);
+        setCourse(res.data); // Set course details
       } catch (error) {
         console.error("Error fetching course details:", error);
         toast.error("Failed to fetch course details");
-        navigate("/");
+        navigate("/"); // Navigate to homepage if course not found
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading state to false
       }
     };
 
     fetchCourse();
   }, [slug, navigate]);
 
+  // Handle payment initiation
   const handlePayment = async () => {
-    if (!course) return;
-    setPaying(true);
-    try {
-      console.log("Initiating payment for course:", course._id);
+    if (!course || !user) return; // Ensure course and user exist before proceeding
 
+    setPaying(true); // Set paying state to true
+    try {
       const res = await axiosInstance.post("/payment/initiate", {
         videoId: course._id,
+        email: user.email, // Pass the user's email for payment processing
       });
 
-      console.log("Payment initiation response:", res.data);
-
+      // If payment URL is returned, redirect the user to the payment gateway
       if (res.data.paymentUrl) {
-        console.log("Redirecting to payment URL:", res.data.paymentUrl);
         window.location.href = res.data.paymentUrl;
       } else {
         toast.error("Payment URL not found.");
       }
-      
     } catch (err) {
       console.error("Payment initiation failed:", err);
       toast.error("Payment initiation failed.");
     } finally {
-      setPaying(false);
+      setPaying(false); // Reset paying state
     }
   };
 
-  if (loading)
-    return <div className="pt-24 text-center text-lg">Loading checkout…</div>;
+  if (loading) return <div className="pt-24 text-center text-lg">Loading checkout…</div>;
 
   if (!course)
     return (
