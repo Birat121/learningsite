@@ -201,14 +201,21 @@ export const getEnrolledVideos = async (req, res) => {
 
 export const checkEnrollmentStatus = async (req, res) => {
   try {
-    const { videoId } = req.params;
+    const { slug } = req.params;
     const userId = req.user?._id;
 
-    if (!userId || !videoId) {
+    if (!userId || !slug) {
       return res.status(400).json({ enrolled: false, error: "Missing data" });
     }
 
-    const enrollment = await Enrollment.exists({ user: userId, video: videoId });
+    // Find the course by slug
+    const course = await Course.findOne({ slug });
+    if (!course) {
+      return res.status(404).json({ enrolled: false, error: "Course not found" });
+    }
+
+    // Check if the user is enrolled in the course
+    const enrollment = await Enrollment.exists({ user: userId, course: course._id });
 
     res.json({ enrolled: !!enrollment });
   } catch (error) {
@@ -216,4 +223,5 @@ export const checkEnrollmentStatus = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 

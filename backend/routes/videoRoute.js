@@ -21,7 +21,8 @@ router.delete('/videos/:id',  deleteVideo);
 
 // Enrollment
 router.get('/videos/enrolled', authMiddleware, getEnrolledVideos);
-router.get('/videos/enrolled/:videoId', authMiddleware, checkEnrollmentStatus);
+router.get('/videos/enrolled/:slug', authMiddleware, checkEnrollmentStatus);
+
 
 
 
