@@ -39,9 +39,7 @@ const CourseDetails = () => {
       try {
         // Make a request to your API to check the enrollment status for the specific video
         const res = await axiosInstance.get(`/videos/enrolled/${slug}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          withCredentials: true, // Ensure cookies are sent with the request
         });
     
         // Set the access status based on the response
@@ -51,6 +49,7 @@ const CourseDetails = () => {
         setHasAccess(false); // If something goes wrong, assume no access
       }
     };
+    
     
 
     fetchCourse();
