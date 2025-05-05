@@ -13,9 +13,12 @@ const CheckoutPage = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
+        console.log("Fetching course details for slug:", slug);
         const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
+        console.log("Course details fetched:", res.data);
         setCourse(res.data);
       } catch (error) {
+        console.error("Error fetching course details:", error);
         toast.error("Failed to fetch course details");
         navigate("/");
       } finally {
@@ -30,21 +33,24 @@ const CheckoutPage = () => {
     if (!course) return;
     setPaying(true);
     try {
+      console.log("Initiating payment for course:", course._id);
+
       const res = await axiosInstance.post("/payment/initiate", {
         videoId: course._id,
       });
-      
+
       console.log("Payment initiation response:", res.data);
-      
+
       if (res.data.paymentUrl) {
+        console.log("Redirecting to payment URL:", res.data.paymentUrl);
         window.location.href = res.data.paymentUrl;
       } else {
         toast.error("Payment URL not found.");
       }
       
     } catch (err) {
+      console.error("Payment initiation failed:", err);
       toast.error("Payment initiation failed.");
-      console.error(err);
     } finally {
       setPaying(false);
     }
