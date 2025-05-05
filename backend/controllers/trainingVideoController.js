@@ -213,10 +213,10 @@ export const checkEnrollmentStatus = async (req, res) => {
     let course;
     if (isValidId) {
       // If slug is a valid ObjectId, find by _id
-      course = await Course.findById(slug);
+      course = await Video.findById(slug);
     } else {
       // Otherwise, find by slug
-      course = await Course.findOne({ slug });
+      course = await Video.findOne({ slug });
     }
 
     if (!course) {
