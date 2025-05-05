@@ -12,7 +12,13 @@ const EnrolledCoursesPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const enrolledCourses = Array.isArray(response.data) ? response.data : [];
+        // Log the response to check the structure
+        console.log("Fetched courses:", response.data);
+
+        // If the response data contains the courses in the 'courses' field, update state
+        const enrolledCourses = Array.isArray(response.data.courses)
+          ? response.data.courses
+          : [];
         setCourses(enrolledCourses);
       } catch (err) {
         console.error("Failed to fetch enrolled courses", err);
@@ -55,6 +61,11 @@ const EnrolledCoursesPage = () => {
                   <h2 className="text-xl font-semibold text-gray-800">
                     {course.title}
                   </h2>
+                  {/* Optional: Include a video player */}
+                  <video controls className="w-full mt-2">
+                    <source src={course.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                 </div>
               </div>
             ))}
