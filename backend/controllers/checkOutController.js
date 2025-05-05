@@ -6,7 +6,7 @@ import Enrollment from '../models/paymentModel.js';  // Assuming Enrollment mode
 export const handleCoursePayment = async (req, res) => {
   try {
     const { videoId } = req.body;
-    const customer_email = req.user.email;
+    const customer_email = req.user?.email;
 
     if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
     if (!customer_email) return res.status(400).json({ error: 'Missing customer email' });

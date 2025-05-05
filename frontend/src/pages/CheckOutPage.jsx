@@ -50,7 +50,7 @@ const CheckoutPage = () => {
     try {
       const payload = {
         videoId: course._id,
-        email: user.email,
+        email: "test@example.com",
       };
 
       console.log(`${DEBUG_TAG} Sending payment initiation request:`, payload);
