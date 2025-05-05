@@ -1,6 +1,5 @@
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
 import { useState } from 'react';
+import TiptapEditor from './TipTapEditor'; // import the TipTap component
 import axiosInstance from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 
@@ -8,20 +7,15 @@ const BlogForm = () => {
   const [formData, setFormData] = useState({
     title: '',
     author: '',
+    description: '',
   });
   const [image, setImage] = useState(null);
 
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: '',
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      setFormData(prev => ({ ...prev, description: html }));
-    },
-  });
-
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleInputChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleImageChange = (e) => {
@@ -34,8 +28,8 @@ const BlogForm = () => {
     try {
       const payload = new FormData();
       payload.append('title', formData.title);
-      payload.append('description', formData.description);
       payload.append('author', formData.author);
+      payload.append('description', formData.description);
       if (image) payload.append('image', image);
 
       await axiosInstance.post('/blogs/blogs', payload, {
@@ -45,74 +39,61 @@ const BlogForm = () => {
       toast.success('Blog created successfully');
       setFormData({ title: '', author: '', description: '' });
       setImage(null);
-      editor.commands.clearContent();
     } catch (err) {
-      console.error('Error creating blog:', err.response?.data || err.message);
       toast.error('Failed to create blog');
     }
   };
 
   return (
-    <div className="min-h-screen py-10 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg space-y-6"
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto p-6">
+      <h2 className="text-2xl font-bold text-center">📝 Create Blog</h2>
+
+      <div>
+        <label className="block font-medium">Title</label>
+        <input
+          type="text"
+          name="title"
+          value={formData.title}
+          onChange={handleInputChange}
+          className="w-full border px-4 py-2 rounded"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium mb-1">Description</label>
+        <TiptapEditor onChange={(html) => setFormData(prev => ({ ...prev, description: html }))} />
+      </div>
+
+      <div>
+        <label className="block font-medium">Author</label>
+        <input
+          type="text"
+          name="author"
+          value={formData.author}
+          onChange={handleInputChange}
+          className="w-full border px-4 py-2 rounded"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block font-medium">Image</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="w-full border px-4 py-2 rounded"
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
       >
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
-          📝 Create a New Blog Post
-        </h2>
-
-        <div>
-          <label className="block text-lg font-medium mb-2">Blog Title</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter blog title"
-            className="w-full px-4 py-3 border rounded-lg"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-lg font-medium mb-2">Description</label>
-          <div className="border rounded-lg p-3 min-h-[200px]">
-            <EditorContent editor={editor} />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-lg font-medium mb-2">Author</label>
-          <input
-            type="text"
-            name="author"
-            value={formData.author}
-            onChange={handleChange}
-            placeholder="Author name"
-            className="w-full px-4 py-3 border rounded-lg"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-lg font-medium mb-2">Thumbnail Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full px-4 py-2 border rounded-lg"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-lg transition"
-        >
-          Publish Blog
-        </button>
-      </form>
-    </div>
+        Publish Blog
+      </button>
+    </form>
   );
 };
 
