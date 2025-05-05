@@ -19,12 +19,6 @@ const AddPage = () => {
     const { name, value, files } = e.target;
     if (files && files.length > 0) {
       const file = files[0];
-      const isImage = name === "thumbnail";
-      const maxSize = isImage ? 2 * 1024 * 1024 : 100 * 1024 * 1024; // 2MB for image / 100MB for video
-      if (file.size > maxSize) {
-        toast.error(`${isImage ? "Image" : "Video"} is too large.`);
-        return;
-      }
       setFormData((f) => ({ ...f, [name]: file }));
     } else {
       setFormData((f) => ({ ...f, [name]: value }));
@@ -79,7 +73,6 @@ const AddPage = () => {
       toast.dismiss(toastId); // ❗️Dismiss progress toast
       toast.error(err.response?.data?.message || "❌ Upload failed.");
       console.log("Upload Error:", err.response?.data || err.message);
-
     } finally {
       setLoading(false);
     }
@@ -103,22 +96,18 @@ const AddPage = () => {
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4"
       >
-        {[
-          {
+        {[{
             label: "Course Title",
             name: "title",
             type: "text",
             placeholder: "Enter course title",
           },
-          
-            {
-              label: "Price (in AED)",
-              name: "price",
-              type: "number",
-              placeholder: "Enter course price in AED",
-            },
-            
-          
+          {
+            label: "Price (in AED)",
+            name: "price",
+            type: "number",
+            placeholder: "Enter course price in AED",
+          },
         ].map(({ label, name, type, placeholder }) => (
           <div className="flex flex-col" key={name}>
             <label className="text-sm font-medium text-gray-700 mb-1">
