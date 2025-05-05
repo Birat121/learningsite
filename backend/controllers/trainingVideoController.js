@@ -208,8 +208,17 @@ export const checkEnrollmentStatus = async (req, res) => {
       return res.status(400).json({ enrolled: false, error: "Missing data" });
     }
 
-    // Find the course by slug
-    const course = await Course.findOne({ slug });
+    // Check if the slug is a valid ObjectId
+    const isValidId = Types.ObjectId.isValid(slug);
+    let course;
+    if (isValidId) {
+      // If slug is a valid ObjectId, find by _id
+      course = await Course.findById(slug);
+    } else {
+      // Otherwise, find by slug
+      course = await Course.findOne({ slug });
+    }
+
     if (!course) {
       return res.status(404).json({ enrolled: false, error: "Course not found" });
     }
@@ -223,5 +232,6 @@ export const checkEnrollmentStatus = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 

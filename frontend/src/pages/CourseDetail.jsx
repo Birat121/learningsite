@@ -114,7 +114,7 @@ const CourseDetails = () => {
       </Helmet>
 
       {/* Course Main Section */}
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
+      <div className=" mt-12 max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
         {/* Left: Course Info */}
         <div className="lg:w-2/3 bg-white p-8 rounded-xl shadow">
           <h1 className="text-4xl font-bold mb-4 text-gray-900">{course.title}</h1>
