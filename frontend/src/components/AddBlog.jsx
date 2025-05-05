@@ -23,7 +23,7 @@ const BlogForm = () => {
     try {
       const payload = new FormData();
       payload.append('title', formData.title);
-      payload.append('description', formData.description);
+      payload.append('description', formData.description); // Contains HTML
       payload.append('author', formData.author);
       if (image) payload.append('image', image);
 
@@ -32,8 +32,6 @@ const BlogForm = () => {
       });
 
       toast.success('Blog created successfully');
-
-      
       setFormData({ title: '', description: '', author: '' });
       setImage(null);
     } catch (err) {
@@ -42,8 +40,12 @@ const BlogForm = () => {
     }
   };
 
+  const applyFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+  };
+
   return (
-    <div className="min-h-screen  py-10 px-4">
+    <div className="min-h-screen py-10 px-4">
       <form
         onSubmit={handleSubmit}
         className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg space-y-6"
@@ -65,17 +67,26 @@ const BlogForm = () => {
           />
         </div>
 
+        {/* Formatting Buttons */}
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => applyFormat('bold')} className="btn">Bold</button>
+          <button type="button" onClick={() => applyFormat('italic')} className="btn">Italic</button>
+          <button type="button" onClick={() => applyFormat('underline')} className="btn">Underline</button>
+          <button type="button" onClick={() => applyFormat('formatBlock', '<h1>')} className="btn">H1</button>
+          <button type="button" onClick={() => applyFormat('formatBlock', '<h2>')} className="btn">H2</button>
+          <button type="button" onClick={() => applyFormat('insertUnorderedList')} className="btn">Bullet List</button>
+          <button type="button" onClick={() => applyFormat('insertOrderedList')} className="btn">Numbered List</button>
+        </div>
+
+        {/* Native Rich Text Editor */}
         <div>
           <label className="block text-lg font-medium mb-2">Description</label>
-          <textarea
-            name="description"
-            rows="10"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Write your blog content here..."
-            className="w-full px-4 py-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          ></textarea>
+          <div
+            contentEditable
+            className="w-full min-h-[200px] px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onInput={(e) => setFormData(prev => ({ ...prev, description: e.currentTarget.innerHTML }))}
+            dangerouslySetInnerHTML={{ __html: formData.description }}
+          ></div>
         </div>
 
         <div>
@@ -108,6 +119,21 @@ const BlogForm = () => {
           Publish Blog
         </button>
       </form>
+
+      {/* Tailwind button style */}
+      <style>{`
+        .btn {
+          padding: 6px 12px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          background: #f3f4f6;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+        .btn:hover {
+          background-color: #e5e7eb;
+        }
+      `}</style>
     </div>
   );
 };
