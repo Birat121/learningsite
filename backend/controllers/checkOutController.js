@@ -50,13 +50,14 @@ export const handleCoursePayment = async (req, res) => {
 };
 
 
-export const handleZiinaWebhook = async (req, res) => {
+const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
   try {
     // Log the incoming webhook event for debugging purposes
     console.log('Webhook event received:', event);
 
+    // Check if the payment was successful
     if (event?.data?.status === "succeeded") {
       const paymentIntentId = event.data.id;
       const userEmail = event.data.customer_email;  // Assuming this is correct in the webhook
@@ -86,6 +87,7 @@ export const handleZiinaWebhook = async (req, res) => {
       // Log video info
       console.log('Found video:', video);
 
+      // Check if the user is already enrolled for this course
       const existingEnrollment = await Enrollment.findOne({
         user: user._id,
         video: video._id,
@@ -97,7 +99,7 @@ export const handleZiinaWebhook = async (req, res) => {
         return res.status(200).send("User already enrolled");
       }
 
-      // Create a new enrollment for the user and video
+      // Create a new enrollment record
       await Enrollment.create({
         user: user._id,
         video: video._id,

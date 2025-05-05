@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { createVideo, getVideoBySlug, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,postEnrolledVideo } from '../controllers/trainingVideoController.js';
+import { createVideo, getVideoBySlug, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,checkEnrollmentStatus} from '../controllers/trainingVideoController.js';
 
 import  authMiddleware  from '../middleware/authMiddleware.js';
 
@@ -21,7 +21,8 @@ router.delete('/videos/:id',  deleteVideo);
 
 // Enrollment
 router.get('/videos/enrolled', authMiddleware, getEnrolledVideos);
-router.post('/videos/enrolled', authMiddleware, postEnrolledVideo);
+router.get('/videos/enrolled/:videoId', authMiddleware, checkEnrollmentStatus);
+
 
 
 export default router;

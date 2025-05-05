@@ -198,39 +198,22 @@ export const getEnrolledVideos = async (req, res) => {
   }
 };
 
-export const postEnrolledVideo = async (req, res) => {
+
+export const checkEnrollmentStatus = async (req, res) => {
   try {
-    const { courseId, method, status } = req.body;
-    const userId = req.user.id;
+    const { videoId } = req.params;
+    const userId = req.user?._id;
 
-    // Check if course exists
-    const course = await Video.findById(courseId);
-    if (!course) return res.status(404).json({ message: "Course not found" });
-
-    // Prevent duplicate enrollments
-    const alreadyEnrolled = await Payment.findOne({
-      userId,
-      courseId,
-      status: "success",
-    });
-
-    if (alreadyEnrolled) {
-      return res.status(400).json({ message: "Already enrolled in this course" });
+    if (!userId || !videoId) {
+      return res.status(400).json({ enrolled: false, error: "Missing data" });
     }
 
-    // Save payment/enrollment
-    const payment = new Payment({
-      userId,
-      courseId,
-      method: method || "paypal", // default to paypal
-      status: status || "success", // assume payment went through
-    });
+    const enrollment = await Enrollment.exists({ user: userId, video: videoId });
 
-    await payment.save();
-
-    res.status(201).json({ message: "Enrollment successful", payment });
+    res.json({ enrolled: !!enrollment });
   } catch (error) {
-    console.error("Enrollment error:", error);
-    res.status(500).json({ message: "Server error during enrollment" });
+    console.error("Enrollment check failed:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
+

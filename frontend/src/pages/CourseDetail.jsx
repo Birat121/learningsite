@@ -37,17 +37,21 @@ const CourseDetails = () => {
 
     const fetchAccess = async () => {
       try {
-        const res = await axiosInstance.get(`/purchases/${slug}`, {
+        // Make a request to your API to check the enrollment status for the specific video
+        const res = await axiosInstance.get(`/videos/enrolled/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setHasAccess(res.data.hasAccess);
+    
+        // Set the access status based on the response
+        setHasAccess(res.data.enrolled); // This will set the state based on whether the user is enrolled or not
       } catch (err) {
         console.error("Access check failed:", err);
-        setHasAccess(false);
+        setHasAccess(false); // If something goes wrong, assume no access
       }
     };
+    
 
     fetchCourse();
     fetchAccess();
