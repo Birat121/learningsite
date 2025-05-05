@@ -5,77 +5,81 @@ import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 
 const CheckoutPage = () => {
-  const { slug } = useParams(); // Get course slug from URL
-  const navigate = useNavigate(); // Navigate to other pages
-  const { user, authToken, logout } = useAuth(); // Get user data and token from context
-  const [course, setCourse] = useState(null); // Store course details
-  const [loading, setLoading] = useState(true); // Loading state
-  const [paying, setPaying] = useState(false); // Payment processing state
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const { user, authToken, logout } = useAuth();
 
-  // Fetch course details when the component mounts
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [paying, setPaying] = useState(false);
+
+  // DEBUG tag for structured logs
+  const DEBUG_TAG = "[CheckoutPage]";
+
+  // Fetch course details on mount
   useEffect(() => {
-    console.log("useEffect triggered - fetching course details");
     const fetchCourse = async () => {
+      console.log(`${DEBUG_TAG} Fetching course details for slug: "${slug}"`);
       try {
-        console.log("Making API request to fetch course details for slug:", slug);
         const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
-        console.log("Course details fetched:", res.data);
-        setCourse(res.data); // Set course details
+        console.log(`${DEBUG_TAG} Course fetch success:`, res.data);
+        setCourse(res.data);
       } catch (error) {
-        console.error("Error fetching course details:", error);
+        console.error(`${DEBUG_TAG} Course fetch failed:`, error?.response?.data || error.message);
         toast.error("Failed to fetch course details");
-        navigate("/"); // Navigate to homepage if course not found
+        navigate("/");
       } finally {
-        console.log("Setting loading state to false");
-        setLoading(false); // Set loading state to false
+        setLoading(false);
+        console.log(`${DEBUG_TAG} Course fetch completed (loading=false)`);
       }
     };
 
     fetchCourse();
   }, [slug, navigate]);
 
-  // Handle payment initiation
+  // Handle payment
   const handlePayment = async () => {
     if (!course || !user) {
-      console.warn("No course or user data available. Payment cannot proceed.");
-      return; // Ensure course and user exist before proceeding
+      console.warn(`${DEBUG_TAG} Payment blocked: Missing course or user`);
+      return;
     }
 
-    console.log("Payment initiation started for course:", course.title);
-    setPaying(true); // Set paying state to true
+    console.log(`${DEBUG_TAG} Starting payment for: ${course.title}`);
+    setPaying(true);
 
     try {
-      console.log("Sending payment request with videoId:", course._id, "and email:", user.email);
-      const res = await axiosInstance.post("/payment/initiate", {
+      const payload = {
         videoId: course._id,
-        email: user.email, // Pass the user's email for payment processing
-      });
-      console.log("Payment initiation response:", res.data);
+        email: user.email,
+      };
 
-      // If payment URL is returned, redirect the user to the payment gateway
-      if (res.data.paymentUrl) {
-        console.log("Redirecting to payment gateway with URL:", res.data.paymentUrl);
+      console.log(`${DEBUG_TAG} Sending payment initiation request:`, payload);
+      const res = await axiosInstance.post("/payment/initiate", payload);
+
+      if (res.data?.paymentUrl) {
+        console.log(`${DEBUG_TAG} Payment URL received: ${res.data.paymentUrl}`);
         window.location.href = res.data.paymentUrl;
       } else {
-        console.error("Payment URL not found in response:", res.data);
+        console.error(`${DEBUG_TAG} Payment URL not found in response:`, res.data);
         toast.error("Payment URL not found.");
       }
     } catch (err) {
-      console.error("Payment initiation failed:", err);
+      console.error(`${DEBUG_TAG} Payment initiation failed:`, err?.response?.data || err.message);
       toast.error("Payment initiation failed.");
     } finally {
-      console.log("Payment processing complete. Resetting 'paying' state.");
-      setPaying(false); // Reset paying state
+      setPaying(false);
+      console.log(`${DEBUG_TAG} Payment process ended (paying=false)`);
     }
   };
 
+  // Conditional UI
   if (loading) {
-    console.log("Loading course data, returning loading state...");
+    console.log(`${DEBUG_TAG} UI: Loading course data...`);
     return <div className="pt-24 text-center text-lg">Loading checkout…</div>;
   }
 
   if (!course) {
-    console.warn("Course data not available, displaying error message.");
+    console.warn(`${DEBUG_TAG} UI: No course data available.`);
     return (
       <div className="pt-24 text-center text-red-500 text-lg">
         Course not found.
@@ -83,7 +87,7 @@ const CheckoutPage = () => {
     );
   }
 
-  console.log("Rendering checkout page for course:", course.title);
+  console.log(`${DEBUG_TAG} UI Render: Checkout ready for course "${course.title}"`);
 
   return (
     <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto mt-18 mb-26">
@@ -103,9 +107,11 @@ const CheckoutPage = () => {
               <strong>Course:</strong> {course.title}
             </p>
             <p className="mb-3 text-gray-700 text-lg">
-              <strong>Price:</strong> AED {course.price.toFixed(2)}
+              <strong>Price:</strong> AED {course.price?.toFixed(2)}
             </p>
-            <p className="text-gray-600">{course.description?.substring(0, 150)}...</p>
+            <p className="text-gray-600">
+              {course.description?.substring(0, 150)}...
+            </p>
           </div>
 
           <button
