@@ -43,22 +43,41 @@ const WatchCourse = () => {
   if (!course) return <div className="text-center py-10">Loading course...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold mb-4">{course.title}</h1>
+    <div className="max-w-6xl mx-auto px-4 py-20 mt-16 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Left: Title, description, outcome */}
+        <div>
+          <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
+          <p className="text-gray-700 mb-6">{course.description}</p>
 
-      <video
-        ref={videoRef}
-        controls
-        className="w-full rounded"
-        src={course.videoUrl}
-        onEnded={handleVideoEnded}
-      />
+          {course.outcome && (
+            <div className="bg-gray-100 p-4 rounded">
+              <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
+              <ul className="list-disc list-inside text-gray-600">
+                {course.outcome.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
 
-      <p className="mt-4 text-gray-700">{course.description}</p>
+        {/* Right: Video player */}
+        <div>
+          <video
+            ref={videoRef}
+            controls
+            className="w-full h-64 md:h-80 rounded shadow"
+            src={course.videoUrl}
+            onEnded={handleVideoEnded}
+          />
+        </div>
+      </div>
 
+      {/* Quiz Section */}
       {showQuiz && quiz.length > 0 && (
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold mb-4">Quiz</h2>
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Quiz</h2>
           {quiz.map((question, idx) => (
             <div key={question._id} className="mb-6">
               <p className="font-medium">{idx + 1}. {question.question}</p>
