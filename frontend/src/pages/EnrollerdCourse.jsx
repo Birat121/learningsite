@@ -4,6 +4,7 @@ import axiosInstance from "../api/axiosInstance";
 
 const EnrolledCoursesPage = () => {
   const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true); // NEW: Loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +22,8 @@ const EnrolledCoursesPage = () => {
       } catch (err) {
         console.error("Failed to fetch enrolled courses", err);
         setCourses([]);
+      } finally {
+        setLoading(false); // Set loading to false regardless of success or failure
       }
     };
 
@@ -39,7 +42,9 @@ const EnrolledCoursesPage = () => {
       </div>
 
       <div className="px-4 sm:px-10 py-12">
-        {courses.length === 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-500 text-lg">Loading courses...</p>
+        ) : courses.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
             You have not enrolled in any courses yet.
           </p>
