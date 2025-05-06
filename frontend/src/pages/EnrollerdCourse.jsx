@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
 const EnrolledCoursesPage = () => {
   const [courses, setCourses] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -12,10 +14,6 @@ const EnrolledCoursesPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Log the response to check the structure
-        console.log("Fetched courses:", response.data);
-
-        // If the response data contains the courses in the 'courses' field, update state
         const enrolledCourses = Array.isArray(response.data.courses)
           ? response.data.courses
           : [];
@@ -43,14 +41,15 @@ const EnrolledCoursesPage = () => {
       <div className="px-4 sm:px-10 py-12">
         {courses.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
-            You have not enrolled in any courses yet. Please browse our training programs and enroll to get started.
+            You have not enrolled in any courses yet.
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {courses.map((course) => (
               <div
                 key={course._id}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transform hover:-translate-y-1 transition duration-300"
+                onClick={() => navigate(`/courses/${course.slug || course._id}`)}
+                className="cursor-pointer bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transform hover:-translate-y-1 transition duration-300"
               >
                 <img
                   src={course.thumbnailUrl}
@@ -61,11 +60,10 @@ const EnrolledCoursesPage = () => {
                   <h2 className="text-xl font-semibold text-gray-800">
                     {course.title}
                   </h2>
-                  {/* Optional: Include a video player */}
-                  <video controls className="w-full mt-2">
-                    <source src={course.videoUrl} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+                  <p className="text-sm text-gray-600 mt-2">
+                    {course.description?.substring(0, 100)}...
+                  </p>
+                  <p className="text-green-600 mt-3 font-medium">View Course</p>
                 </div>
               </div>
             ))}
