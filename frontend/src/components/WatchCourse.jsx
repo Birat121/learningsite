@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/authContext";
 
 const WatchCourse = () => {
   const { slug } = useParams();
