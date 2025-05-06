@@ -40,9 +40,10 @@ const WatchCourse = () => {
     }
   };
 
-  const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
-
   if (!course) return <div className="text-center py-10">Loading course...</div>;
+
+const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 mt-16 mb-20">
