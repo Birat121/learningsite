@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../context/authContext";
 
 const CourseDetails = () => {
   const { slug } = useParams();
