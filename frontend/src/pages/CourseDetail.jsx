@@ -50,8 +50,6 @@ const CourseDetails = () => {
       }
     };
     
-    
-
     fetchCourse();
     fetchAccess();
   }, [slug]); // ✅ use slug here
@@ -78,10 +76,26 @@ const CourseDetails = () => {
     // Optional: Submit answers to backend
   };
 
-  const handleBuyNowClick = () => {
+  const handleBuyNowClick = async () => {
     const token = localStorage.getItem("token");
     if (token) {
-      navigate(`/checkout/${slug}`);
+      try {
+        // Make a purchase request (assuming you have an API endpoint for purchasing the course)
+        const res = await axiosInstance.post(
+          `/videos/purchase/${slug}`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
+        if (res.status === 200) {
+          // Successfully purchased, update hasAccess state
+          setHasAccess(true);
+          toast.success("Course purchased successfully!");
+        }
+      } catch (error) {
+        console.error("Purchase failed:", error);
+        toast.error("Purchase failed. Please try again.");
+      }
     } else {
       toast.error("Please log in to buy this course.");
       navigate("/login");
@@ -96,7 +110,6 @@ const CourseDetails = () => {
 
   return (
     <div className="pt-32 pb-20 px-4">
-
       {/* Meta Tags for SEO using React Helmet */}
       <Helmet>
         <title>{course.title} | Koffee With Kirren</title>
@@ -177,12 +190,14 @@ const CourseDetails = () => {
 
           <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-4">
             <div className="text-3xl font-bold text-gray-900">AED {course.price.toFixed(2)}</div>
-            <button
-              onClick={handleBuyNowClick}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
-            >
-              Buy Now
-            </button>
+            {!hasAccess && (
+              <button
+                onClick={handleBuyNowClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
+              >
+                Buy Now
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -207,7 +222,7 @@ const CourseDetails = () => {
                           name={`question-${qIndex}`}
                           value={i}
                           checked={answers[qIndex] === i}
-                          onChange={() => setAnswers((prev) => ({ ...prev, [qIndex]: i }))}
+                          onChange={() => setAnswers((prev) => ({ ...prev, [qIndex]: i }))} 
                           className="mr-2"
                           disabled={submitted}
                         />
@@ -235,7 +250,7 @@ const CourseDetails = () => {
                         </p>
                       ) : (
                         <p className="text-red-500">
-                          Question {i + 1}: Incorrect.
+                          Question {i + 1}: Incorrect. Correct answer: {q.options[q.correctOption]}
                         </p>
                       )}
                     </div>
@@ -244,7 +259,7 @@ const CourseDetails = () => {
               )}
             </>
           ) : (
-            <p className="text-gray-600">No quiz available for this course.</p>
+            <p>No quiz available for this course.</p>
           )}
         </div>
       )}
@@ -253,4 +268,3 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
-
