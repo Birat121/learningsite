@@ -41,11 +41,13 @@ const CourseDetails = () => {
     navigate(`/watch/${slug}`);
   };
 
+   const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (!course) return <div className="text-center py-10">Course not found</div>;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-20 mt-16 mb-20">
+    <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
         {/* Left Section: Text */}
         <div>
@@ -55,9 +57,9 @@ const CourseDetails = () => {
             <div className="bg-gray-100 p-4 rounded">
               <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
               <ul className="list-disc list-inside text-gray-600">
-                {course.outcome.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
+                {outcomes.map((o, idx) => (
+                <li key={idx}>{o}</li>
+              ))}
               </ul>
             </div>
           )}
