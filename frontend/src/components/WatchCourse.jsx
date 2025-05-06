@@ -40,6 +40,8 @@ const WatchCourse = () => {
     }
   };
 
+  const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+
   if (!course) return <div className="text-center py-10">Loading course...</div>;
 
   return (
@@ -50,16 +52,17 @@ const WatchCourse = () => {
           <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
           <p className="text-gray-700 mb-6">{course.description}</p>
 
-          {course.outcome && (
-            <div className="bg-gray-100 p-4 rounded">
-              <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
-              <ul className="list-disc list-inside text-gray-600">
-                {course.outcome.map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {outcomes.length > 0 && (
+  <div className="bg-gray-100 p-4 rounded">
+    <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
+    <ul className="list-disc list-inside text-gray-600">
+      {outcomes.map((o, idx) => (
+        <li key={idx}>{o}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
         </div>
 
         {/* Right: Video player */}
