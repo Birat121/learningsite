@@ -29,6 +29,7 @@ import PaymentCancel from "./components/PaymentFailure";
 import AddBlog from "./components/AddBlog";
 import ListBlogs from "./components/ListBlog";
 import BlogDetail from "./components/BlogDetail";
+import WatchCourse from "./components/WatchCourse";
 
 function App() {
   const location = useLocation();
@@ -82,6 +83,15 @@ function App() {
           element={
             <PrivateRoute>
               <EnrolledCoursesPage />
+            </PrivateRoute>
+          }
+        />
+
+<Route
+          path="/watch/:slug"
+          element={
+            <PrivateRoute>
+              <WatchCourse />
             </PrivateRoute>
           }
         />

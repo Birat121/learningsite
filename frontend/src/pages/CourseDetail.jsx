@@ -1,268 +1,77 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import { toast } from "react-hot-toast";
-import { Helmet } from "react-helmet"; // Import React Helmet
+import { toast } from "react-toastify";
+import { useAuth } from "../contexts/authContext";
 
 const CourseDetails = () => {
-  const { id, slug } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-
+  const { user, authToken, hasCourseAccess } = useAuth();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [hasAccess, setHasAccess] = useState(false);
-
-  const [showVideo, setShowVideo] = useState(false);
-  const [videoEnded, setVideoEnded] = useState(false);
-
-  const [quiz, setQuiz] = useState(null);
-  const [quizLoading, setQuizLoading] = useState(false);
-  const [answers, setAnswers] = useState({});
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        setLoading(true);
-        const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
-        setCourse(res.data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load course details.");
+        const response = await axiosInstance.get(`/videos/videos/slug/${slug}`);
+        setCourse(response.data);
+      } catch (error) {
+        console.error("Error fetching course:", error);
+        toast.error("Failed to load course");
       } finally {
         setLoading(false);
       }
     };
 
-    const fetchAccess = async () => {
-      try {
-        // Make a request to your API to check the enrollment status for the specific video
-        const res = await axiosInstance.get(`/videos/enrolled/${slug}`, {
-          withCredentials: true, // Ensure cookies are sent with the request
-        });
-    
-        // Set the access status based on the response
-        setHasAccess(res.data.enrolled); // This will set the state based on whether the user is enrolled or not
-      } catch (err) {
-        console.error("Access check failed:", err);
-        setHasAccess(false); // If something goes wrong, assume no access
-      }
-    };
-    
     fetchCourse();
-    fetchAccess();
-  }, [slug]); // ✅ use slug here
+  }, [slug]);
 
-  const fetchQuiz = async () => {
-    try {
-      setQuizLoading(true);
-      const res = await axiosInstance.get(`/quiz/quizzes/${id}`);
-      setQuiz(res.data);
-    } catch (err) {
-      console.error("Failed to fetch quiz:", err);
-    } finally {
-      setQuizLoading(false);
-    }
-  };
-
-  const handleVideoEnd = () => {
-    setVideoEnded(true);
-    fetchQuiz();
-  };
-
-  const handleQuizSubmit = () => {
-    setSubmitted(true);
-    // Optional: Submit answers to backend
-  };
-
-  const handleBuyNowClick = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        // Make a purchase request (assuming you have an API endpoint for purchasing the course)
-        const res = await axiosInstance.post(
-          `/videos/purchase/${slug}`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        
-        if (res.status === 200) {
-          // Successfully purchased, update hasAccess state
-          setHasAccess(true);
-          toast.success("Course purchased successfully!");
-        }
-      } catch (error) {
-        console.error("Purchase failed:", error);
-        toast.error("Purchase failed. Please try again.");
-      }
-    } else {
-      toast.error("Please log in to buy this course.");
+  const handleBuyNowClick = () => {
+    if (!user || !authToken) {
+      toast.error("Please log in to purchase this course.");
       navigate("/login");
+      return;
     }
+
+    navigate(`/checkout/${slug}`);
   };
 
-  if (loading) return <div className="pt-24 text-center">Loading course…</div>;
-  if (error) return <div className="pt-24 text-center text-red-500">{error}</div>;
-  if (!course) return <div className="pt-24 text-center text-red-600">Course not found.</div>;
+  const handleGoToCourseClick = () => {
+    navigate(`/watch/${slug}`);
+  };
 
-  const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+
+  if (!course) return <div className="text-center py-10">Course not found</div>;
 
   return (
-    <div className="pt-32 pb-20 px-4">
-      {/* Meta Tags for SEO using React Helmet */}
-      <Helmet>
-        <title>{course.title} | Koffee With Kirren</title>
-        <meta name="description" content={course.description} />
-        <meta property="og:title" content={course.title} />
-        <meta property="og:description" content={course.description} />
-        <meta property="og:image" content={course.thumbnailUrl} />
-        <meta property="og:url" content={`https://yourdomain.com/courses/${slug}`} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={course.title} />
-        <meta name="twitter:description" content={course.description} />
-        <meta name="twitter:image" content={course.thumbnailUrl} />
-        <link rel="canonical" href={`https://yourdomain.com/courses/${slug}`} />
-      </Helmet>
-
-      {/* Course Main Section */}
-      <div className=" mt-12 max-w-7xl mx-auto flex flex-col lg:flex-row gap-10">
-        {/* Left: Course Info */}
-        <div className="lg:w-2/3 bg-white p-8 rounded-xl shadow">
-          <h1 className="text-4xl font-bold mb-4 text-gray-900">{course.title}</h1>
-          <p className="text-gray-700 mb-6">{course.description}</p>
-
-          <div>
-            <h2 className="text-2xl font-semibold mb-4 text-gray-800">What you’ll learn</h2>
-            <ul className="list-disc ml-6 space-y-2 text-gray-700">
-              {outcomes.map((o, idx) => (
-                <li key={idx}>{o}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        {/* Right: Video and Buy Section */}
-        <div className="lg:w-1/3">
-          <div className="bg-white rounded-xl shadow overflow-hidden mb-6">
-            {hasAccess ? (
-              showVideo ? (
-                <video
-                  controls
-                  autoPlay
-                  poster={course.thumbnailUrl}
-                  className="w-full h-[400px] object-cover"
-                  onEnded={handleVideoEnd}
-                >
-                  <source src={course.videoUrl} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <div
-                  onClick={() => setShowVideo(true)}
-                  className="relative w-full h-[400px] bg-gray-300 flex items-center justify-center cursor-pointer"
-                >
-                  <img
-                    src={course.thumbnailUrl}
-                    alt="Click to play"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                  <div className="relative z-10 bg-black bg-opacity-50 px-4 py-2 rounded">
-                    <p className="text-white text-lg font-semibold">▶ Click to watch video</p>
-                  </div>
-                </div>
-              )
-            ) : (
-              <div className="relative w-full h-[400px] bg-gray-200 flex items-center justify-center">
-                <img
-                  src={course.thumbnailUrl}
-                  alt="Course Thumbnail"
-                  className="absolute inset-0 w-full h-full object-cover opacity-50"
-                />
-                <div className="relative z-10 text-center px-4">
-                  <p className="text-gray-800 font-semibold mb-2">
-                    Purchase to access this video
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow flex flex-col gap-4">
-            <div className="text-3xl font-bold text-gray-900">AED {course.price.toFixed(2)}</div>
-            {!hasAccess && (
-              <button
-                onClick={handleBuyNowClick}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
-              >
-                Buy Now
-              </button>
-            )}
-          </div>
-        </div>
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
+      <img
+        src={course.thumbnailUrl || "/default-course.jpg"}
+        alt={course.title}
+        className="w-full h-64 object-cover rounded-lg mb-6"
+      />
+      <p className="text-gray-700 mb-6">{course.description}</p>
+      <div className="flex items-center justify-between">
+        <span className="text-xl font-semibold">Price: AED {course.price}</span>
+        {hasCourseAccess(slug) ? (
+          <button
+            onClick={handleGoToCourseClick}
+            className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition"
+          >
+            Go to Course
+          </button>
+        ) : (
+          <button
+            onClick={handleBuyNowClick}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            Buy Now
+          </button>
+        )}
       </div>
-
-      {/* Quiz Section */}
-      {videoEnded && (
-        <div className="max-w-4xl mx-auto mt-16 bg-white p-8 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-800">Quick Quiz</h2>
-          {quizLoading ? (
-            <p className="text-gray-600">Loading quiz…</p>
-          ) : quiz && quiz.questions && quiz.questions.length > 0 ? (
-            <>
-              <p className="text-gray-700 mb-6">Test your knowledge from the video.</p>
-              {quiz.questions.map((q, qIndex) => (
-                <div key={qIndex} className="mb-6">
-                  <p className="font-medium mb-2">{qIndex + 1}. {q.question}</p>
-                  <div className="space-y-2">
-                    {q.options.map((opt, i) => (
-                      <label key={i} className="block">
-                        <input
-                          type="radio"
-                          name={`question-${qIndex}`}
-                          value={i}
-                          checked={answers[qIndex] === i}
-                          onChange={() => setAnswers((prev) => ({ ...prev, [qIndex]: i }))} 
-                          className="mr-2"
-                          disabled={submitted}
-                        />
-                        {opt}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {!submitted && (
-                <button
-                  onClick={handleQuizSubmit}
-                  className="mt-4 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg"
-                >
-                  Submit Answers
-                </button>
-              )}
-              {submitted && (
-                <div className="mt-6 space-y-4 text-lg">
-                  {quiz.questions.map((q, i) => (
-                    <div key={i}>
-                      {answers[i] === q.correctOption ? (
-                        <p className="text-green-500">
-                          Question {i + 1}: Correct!
-                        </p>
-                      ) : (
-                        <p className="text-red-500">
-                          Question {i + 1}: Incorrect. Correct answer: {q.options[q.correctOption]}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <p>No quiz available for this course.</p>
-          )}
-        </div>
-      )}
     </div>
   );
 };
