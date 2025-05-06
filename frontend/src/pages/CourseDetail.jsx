@@ -41,10 +41,11 @@ const CourseDetails = () => {
     navigate(`/watch/${slug}`);
   };
 
-   const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+   if (loading) return <div className="text-center py-10">Loading...</div>;
+if (!course) return <div className="text-center py-10">Course not found</div>;
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
-  if (!course) return <div className="text-center py-10">Course not found</div>;
+const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24">
@@ -53,16 +54,17 @@ const CourseDetails = () => {
         <div>
           <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
           <p className="text-gray-700 mb-6">{course.description}</p>
-          {course.outcome && (
-            <div className="bg-gray-100 p-4 rounded">
-              <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
-              <ul className="list-disc list-inside text-gray-600">
-                {outcomes.map((o, idx) => (
-                <li key={idx}>{o}</li>
-              ))}
-              </ul>
-            </div>
-          )}
+          {outcomes.length > 0 && (
+  <div className="bg-gray-100 p-4 rounded">
+    <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
+    <ul className="list-disc list-inside text-gray-600">
+      {outcomes.map((o, idx) => (
+        <li key={idx}>{o}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
         </div>
 
         {/* Right Section: Thumbnail + Buttons */}
