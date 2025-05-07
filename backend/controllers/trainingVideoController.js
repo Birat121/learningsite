@@ -130,8 +130,9 @@ export const updateVideo = async (req, res) => {
           }
         ).end(req.files.video[0].buffer);
       });
-      updatedData.videoUrl = videoResult.url;
-      updatedData.videoPublicId = videoResult.public_id;
+     updatedData.videoUrl = videoResult.secure_url;
+updatedData.thumbnailUrl = thumbnailResult.secure_url;
+
     }
 
     // Upload new thumbnail if present
