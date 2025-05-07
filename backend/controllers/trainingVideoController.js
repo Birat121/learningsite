@@ -120,36 +120,34 @@ export const updateVideo = async (req, res) => {
     }
 
     // Upload new video if present
-    if (req.files && req.files.video) {
-      const videoResult = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          { resource_type: 'video' },
-          (error, video) => {
-            if (error) reject(error);
-            resolve(video);
-          }
-        ).end(req.files.video[0].buffer);
-      });
-     updatedData.videoUrl = videoResult.secure_url;
-updatedData.thumbnailUrl = thumbnailResult.secure_url;
+    // Upload new video if present
+if (req.files && req.files.video) {
+  const videoResult = await new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      { resource_type: 'video' },
+      (error, video) => {
+        if (error) reject(error);
+        resolve(video);
+      }
+    ).end(req.files.video[0].buffer);
+  });
+  updatedData.videoUrl = videoResult.secure_url;
+}
 
-    }
+// Upload new thumbnail if present
+if (req.files && req.files.thumbnail) {
+  const thumbnailResult = await new Promise((resolve, reject) => {
+    cloudinary.uploader.upload_stream(
+      { resource_type: 'image' },
+      (error, thumbnail) => {
+        if (error) reject(error);
+        resolve(thumbnail);
+      }
+    ).end(req.files.thumbnail[0].buffer);
+  });
+  updatedData.thumbnailUrl = thumbnailResult.secure_url;
+}
 
-    // Upload new thumbnail if present
-    if (req.files && req.files.thumbnail) {
-      const thumbnailResult = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          { resource_type: 'image' },
-          (error, thumbnail) => {
-            if (error) reject(error);
-            resolve(thumbnail);
-          }
-        ).end(req.files.thumbnail[0].buffer);
-      });
-      updatedData.videoUrl = videoResult.secure_url;
-updatedData.thumbnailUrl = thumbnailResult.secure_url;
-
-    }
 
     // Update the video in the database with the new data
     const updatedVideo = await Video.findByIdAndUpdate(req.params.id, updatedData, { new: true });
