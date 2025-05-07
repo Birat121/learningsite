@@ -68,13 +68,17 @@ const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : []
 
         {/* Right: Video player */}
         <div>
-          <video
-            ref={videoRef}
-            controls
-            className="w-full h-64 md:h-80 rounded shadow"
-            src={course.videoUrl}
-            onEnded={handleVideoEnded}
-          />
+         <video
+  ref={videoRef}
+  controls
+  controlsList="nodownload noremoteplayback"
+  disablePictureInPicture
+  onContextMenu={(e) => e.preventDefault()}
+  className="w-full h-64 md:h-80 rounded shadow"
+  src={course.videoUrl}
+  onEnded={handleVideoEnded}
+/>
+
         </div>
       </div>
 
