@@ -210,68 +210,77 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Slide Menu */}
-      <div
-        className={`fixed inset-0 z-40 md:hidden transition-transform duration-300 ease-in-out transform ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+     {/* Mobile Slide Menu */}
+<div
+  className={`fixed inset-0 z-40 md:hidden transition-transform duration-300 ease-in-out transform ${
+    isMenuOpen ? "translate-x-0" : "translate-x-full"
+  }`}
+>
+  <div className="w-full h-screen bg-white flex flex-col justify-center items-center text-black font-medium space-y-6">
+    {links.map((link) => (
+      <NavLink
+        key={link.to}
+        to={link.to}
+        onClick={closeMenu}
+        className={({ isActive }) =>
+          `text-lg transition duration-200 ${
+            isActive ? "text-yellow-500" : "hover:text-[rgb(0,104,80)]"
+          }`
+        }
       >
-        <div className="w-full h-screen bg-white flex flex-col justify-center items-center text-black font-medium space-y-6">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              onClick={closeMenu}
-              className={({ isActive }) =>
-                `text-lg transition duration-200 ${
-                  isActive ? "text-yellow-500" : "hover:text-[rgb(0,104,80)]"
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
+        {link.label}
+      </NavLink>
+    ))}
 
-          {/* Mobile Auth Buttons */}
-          {authToken ? (
-            <div className="mt-6 w-4/5 space-y-2">
-              <button
-                onClick={() => {
-                  closeMenu();
-                  navigate("/profile");
-                }}
-                className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
-              >
-                Profile
-              </button>
-              <button
-                onClick={() => {
-                  logout();
-                  closeMenu();
-                  toast.success("Logged out successfully!");
-                  navigate("/");
-                }}
-                
-                className="w-full px-6 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors duration-300"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <div className="mt-6 w-4/5">
-              <button
-                onClick={() => {
-                  closeMenu();
-                  navigate("/login");
-                }}
-                className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
-              >
-                Login
-              </button>
-            </div>
-          )}
-        </div>
+    {/* Mobile Auth Buttons */}
+    {authToken ? (
+      <div className="mt-6 w-4/5 space-y-2">
+        <button
+          onClick={() => {
+            closeMenu();
+            navigate("/profile");
+          }}
+          className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
+        >
+          Profile
+        </button>
+        <button
+          onClick={() => {
+            closeMenu();
+            navigate("/enrolledCourse"); // Add this line to navigate to Enrolled Courses
+          }}
+          className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
+        >
+          Enrolled Courses
+        </button>
+        <button
+          onClick={() => {
+            logout();
+            closeMenu();
+            toast.success("Logged out successfully!");
+            navigate("/");
+          }}
+          className="w-full px-6 py-2 rounded-md bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors duration-300"
+        >
+          Logout
+        </button>
       </div>
+    ) : (
+      <div className="mt-6 w-4/5">
+        <button
+          onClick={() => {
+            closeMenu();
+            navigate("/login");
+          }}
+          className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
+        >
+          Login
+        </button>
+      </div>
+    )}
+  </div>
+</div>
+
     </nav>
   );
 };
