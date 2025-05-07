@@ -39,8 +39,9 @@ export const createVideo = async (req, res) => {
       courseOutcome: req.body.courseOutcome,
       price: req.body.price,
       videoUrl: videoResult.url,
-      videoPublicId: videoResult.public_id,
-      thumbnailUrl: thumbnailResult.url,
+      videoUrl: videoResult.secure_url,
+thumbnailUrl: thumbnailResult.secure_url,
+
       thumbnailPublicId: thumbnailResult.public_id,
       slug: slug,  // Add the generated slug to the video
     });
@@ -144,8 +145,9 @@ export const updateVideo = async (req, res) => {
           }
         ).end(req.files.thumbnail[0].buffer);
       });
-      updatedData.thumbnailUrl = thumbnailResult.url;
-      updatedData.thumbnailPublicId = thumbnailResult.public_id;
+      updatedData.videoUrl = videoResult.secure_url;
+updatedData.thumbnailUrl = thumbnailResult.secure_url;
+
     }
 
     // Update the video in the database with the new data
