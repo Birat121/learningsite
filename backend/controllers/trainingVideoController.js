@@ -38,7 +38,7 @@ export const createVideo = async (req, res) => {
       description: req.body.description,
       courseOutcome: req.body.courseOutcome,
       price: req.body.price,
-      videoUrl: videoResult.url,
+       videoPublicId: videoResult.public_id,
       videoUrl: videoResult.secure_url,
 thumbnailUrl: thumbnailResult.secure_url,
 
