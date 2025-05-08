@@ -9,6 +9,14 @@ import {
 import axiosInstance from "../api/axiosInstance";
 import { Link } from "react-router-dom";
 
+// Utility to clean HTML and truncate
+const stripHtmlAndTruncate = (html, maxLength = 150) => {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  const text = tmp.textContent || tmp.innerText || "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
 const reasons = [
   {
     icon: <FaBuilding className="text-3xl sm:text-4xl text-white" />,
@@ -106,7 +114,9 @@ const ReasonsToChooseDubaiRealEstate = () => {
             Dubai's Investment Advantages:
           </h3>
 
-          <p>Several key factors distinguish Dubai as an exceptional investment destination</p>
+          <p>
+            Several key factors distinguish Dubai as an exceptional investment destination
+          </p>
 
           <p className="text-sm sm:text-base text-gray-600">
             <strong>Resilient Economic Foundation:</strong> Dubai's economy thrives on a diversified base of tourism, real estate, and international trade. Its strategic geographical position, world-class infrastructure, and pro-business government policies foster a stable environment conducive to long-term investment success. Continuous development and economic diversification further mitigate the impact of global economic shifts.
@@ -173,7 +183,7 @@ const ReasonsToChooseDubaiRealEstate = () => {
                     {blog.title}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-4">
-                    {blog.description}
+                    {stripHtmlAndTruncate(blog.description)}
                   </p>
                   <Link
                     to={`/blogs/${blog.slug}`}
@@ -196,3 +206,4 @@ const ReasonsToChooseDubaiRealEstate = () => {
 };
 
 export default ReasonsToChooseDubaiRealEstate;
+

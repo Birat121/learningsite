@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import toast from "react-hot-toast";
-import { EditorState, convertToRaw } from "draft-js";
-import { Editor } from "draft-js";
-import "draft-js/dist/Draft.css"; // Import Draft.js styles
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import the React Quill styles
 
 const AddPage = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +15,6 @@ const AddPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
 
   // Handle input changes for form data
   const handleChange = (e) => {
@@ -29,12 +27,9 @@ const AddPage = () => {
     }
   };
 
-  // Handle Draft.js editor state changes
-  const handleEditorChange = (newEditorState) => {
-    setEditorState(newEditorState);
-    const contentState = newEditorState.getCurrentContent();
-    const rawContent = convertToRaw(contentState);
-    setFormData((f) => ({ ...f, outcome: JSON.stringify(rawContent) }));
+  // Handle React Quill change
+  const handleEditorChange = (value) => {
+    setFormData((f) => ({ ...f, outcome: value }));
   };
 
   // Handle form submission and send data to the backend
@@ -45,11 +40,12 @@ const AddPage = () => {
     data.append("title", formData.title);
     data.append("description", formData.description);
 
+    // Split the outcome text (if needed) into array
     const outcomes = formData.outcome
       .split("\n")
       .map((point) => point.trim())
       .filter(Boolean);
-    outcomes.forEach((item) => data.append("courseOutcome[]", item)); // send as array
+    outcomes.forEach((item) => data.append("courseOutcome[]", item));
 
     data.append("price", formData.price);
     data.append("thumbnail", formData.thumbnail);
@@ -81,7 +77,6 @@ const AddPage = () => {
         thumbnail: null,
         video: null,
       });
-      setEditorState(EditorState.createEmpty());
     } catch (err) {
       toast.dismiss(toastId); // ❗️Dismiss progress toast
       toast.error(err.response?.data?.message || "❌ Upload failed.");
@@ -155,9 +150,9 @@ const AddPage = () => {
           <label className="text-sm font-medium text-gray-700 mb-1">
             Course Outcome
           </label>
-          <Editor
-            editorState={editorState}
-            onEditorStateChange={handleEditorChange}
+          <ReactQuill
+            value={formData.outcome}
+            onChange={handleEditorChange}
             placeholder="Enter course outcome here"
             className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />

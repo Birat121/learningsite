@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Editor, EditorState, RichUtils } from 'draft-js';  // import Draft.js components
+import React, { useState } from 'react';
+import ReactQuill from 'react-quill'; // Import React Quill
+import 'react-quill/dist/quill.snow.css'; // Import Quill's CSS
 import axiosInstance from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 
@@ -10,7 +11,7 @@ const BlogForm = () => {
     description: '',
   });
   const [image, setImage] = useState(null);
-  const [editorState, setEditorState] = useState(EditorState.createEmpty()); // initial empty editor state
+  const [editorContent, setEditorContent] = useState(''); // State to hold editor content
 
   // Handle input changes for title and author
   const handleInputChange = (e) => {
@@ -25,13 +26,12 @@ const BlogForm = () => {
     setImage(e.target.files[0]);
   };
 
-  // Handle changes in the Draft.js editor
-  const handleEditorChange = (state) => {
-    setEditorState(state);
-    const description = state.getCurrentContent().getPlainText(); // convert content to plain text
+  // Handle changes in the React Quill editor
+  const handleEditorChange = (content) => {
+    setEditorContent(content);
     setFormData(prev => ({
       ...prev,
-      description: description, // store plain text description
+      description: content, // Store HTML content
     }));
   };
 
@@ -53,7 +53,7 @@ const BlogForm = () => {
       toast.success('Blog created successfully');
       setFormData({ title: '', author: '', description: '' });
       setImage(null);
-      setEditorState(EditorState.createEmpty());  // Reset editor
+      setEditorContent('');  // Reset editor
     } catch (err) {
       toast.error('Failed to create blog');
     }
@@ -77,10 +77,9 @@ const BlogForm = () => {
 
       <div>
         <label className="block font-medium mb-1">Description</label>
-        <Editor
-          editorState={editorState}
+        <ReactQuill
+          value={editorContent}
           onChange={handleEditorChange}
-          handleKeyCommand={(command) => RichUtils.handleKeyCommand(editorState, command)} // optional for command handling
           placeholder="Write your blog description here..."
           className="border p-4 rounded"
         />
