@@ -1,10 +1,11 @@
 import { createPaymentIntent } from '../services/ziinaService.js';
 import Video from '../models/videoModel.js';
 import User from '../models/userModel.js';
-import Enrollment from '../models/paymentModel.js';  // Assuming Enrollment model exists
+import Enrollment from '../models/paymentModel.js'; // Your enrollment/payment schema
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
+dotenv.config();
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
 export const handleCoursePayment = async (req, res) => {
@@ -17,43 +18,37 @@ export const handleCoursePayment = async (req, res) => {
 
     console.log('Initiating payment for email:', customer_email);
 
-    // Fetch the video details
     const video = await Video.findById(videoId);
     if (!video) return res.status(404).json({ error: 'Video not found' });
 
-    // Convert video price to fils (1 AED = 100 fils)
     const amountInFils = Math.round(video.price * 100);
 
-    // Create a payment intent
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
       currency: 'AED',
       email: customer_email,
-      videoId,
+      metadata: {
+        userEmail: customer_email,
+        videoId: videoId,
+      },
     });
 
     console.log("Ziina payment response:", paymentData);
 
-    // Store payment intent information in Enrollment before redirecting to payment page
-    const enrollment = await Enrollment.create({
-      user: req.user._id,  // Assuming `req.user._id` is available from authentication
+    await Enrollment.create({
+      user: req.user._id,
       video: video._id,
       paymentIntentId: paymentData.id,
-      status: 'pending', // Payment is pending until webhook confirms success
+      status: 'pending',
     });
 
-    console.log('Temporary Enrollment created:', enrollment);
-
-    const redirectUrl =
-      paymentData.redirect_url ||
-      paymentData.confirmation_url;
+    const redirectUrl = paymentData.redirect_url || paymentData.confirmation_url;
 
     if (!redirectUrl) {
       console.error('Redirect URL missing in Ziina response:', paymentData);
       return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
     }
 
-    // Return the payment URL to the frontend
     res.json({
       paymentUrl: redirectUrl,
       payment_intent_id: paymentData.id,
@@ -68,83 +63,86 @@ export const handleCoursePayment = async (req, res) => {
   }
 };
 
-
-
 export const handleZiinaWebhook = async (req, res) => {
-  const event = req.body;
-
   try {
-    // Verify HMAC signature (optional but recommended)
+    const rawBody = JSON.stringify(req.body);
     const signature = req.headers['x-hmac-signature'];
-    const computedSignature = crypto
-      .createHmac('sha256', ZIINA_SECRET_KEY)
-      .update(JSON.stringify(event))
-      .digest('hex');
 
-    if (signature !== computedSignature) {
-      console.error('Invalid signature', { receivedSignature: signature, computedSignature });
+    const computedHmac = crypto
+      .createHmac('sha256', ZIINA_SECRET_KEY)
+      .update(rawBody)
+      .digest();
+
+    const incomingSig = Buffer.from(signature, 'hex');
+
+    if (
+      incomingSig.length !== computedHmac.length ||
+      !crypto.timingSafeEqual(incomingSig, computedHmac)
+    ) {
+      console.error('Invalid signature', { receivedSignature: signature });
       return res.status(400).send('Invalid signature');
     }
 
+    const event = req.body;
     console.log('Webhook event received:', event);
 
-    // Check if the payment succeeded
-    if (['succeeded', 'completed'].includes(event?.data?.status)) {
-      const paymentIntentId = event.data.id;
+    const status = event?.data?.status;
+    const paymentIntentId = event?.data?.id;
+    const userEmail = event?.data?.metadata?.userEmail;
+    const videoId = event?.data?.metadata?.videoId;
 
-      // Fetch metadata
-      const userEmail = event.data.metadata?.userEmail;
-      const videoId = event.data.metadata?.videoId;
+    if (!userEmail || !videoId || !paymentIntentId) {
+      console.error('Missing metadata or payment ID');
+      return res.status(400).send('Invalid webhook payload');
+    }
 
-      if (!userEmail || !videoId) {
-        console.error('Missing metadata fields:', { userEmail, videoId });
-        return res.status(400).send('Metadata incomplete');
-      }
-
-      console.log('Received webhook for userEmail:', userEmail);
-
-      // Find the user and video
-      const user = await User.findOne({ email: userEmail });
-      if (!user) {
-        console.error('User not found:', userEmail);
-        return res.status(404).send('User not found');
-      }
-
-      const video = await Video.findById(videoId);
-      if (!video) {
-        console.error('Video not found:', videoId);
-        return res.status(404).send('Video not found');
-      }
-
-      // Find the existing enrollment
-      const existingEnrollment = await Enrollment.findOne({
-        user: user._id,
-        video: video._id,
-        paymentIntentId,
-      });
-
-      if (existingEnrollment) {
-        console.log('User already enrolled:', userEmail);
-        return res.status(200).send('Already enrolled');
-      }
-
-      // Create new enrollment and update status
-      await Enrollment.create({
-        user: user._id,
-        video: video._id,
-        paymentIntentId,
-        status: 'completed', // Payment was successful
-      });
-
-      console.log('Enrollment successful:', userEmail);
-      return res.status(201).send('Enrollment recorded');
-    } else {
-      console.warn('Ignoring non-successful payment status:', event?.data?.status);
+    if (!['succeeded', 'completed'].includes(status)) {
+      console.warn('Ignoring non-successful payment status:', status);
       return res.status(400).send('Payment not successful');
     }
 
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      console.error('User not found:', userEmail);
+      return res.status(404).send('User not found');
+    }
+
+    const video = await Video.findById(videoId);
+    if (!video) {
+      console.error('Video not found:', videoId);
+      return res.status(404).send('Video not found');
+    }
+
+    const existingEnrollment = await Enrollment.findOne({
+      user: user._id,
+      video: video._id,
+      paymentIntentId,
+    });
+
+    if (existingEnrollment) {
+      if (existingEnrollment.status !== 'completed') {
+        existingEnrollment.status = 'completed';
+        await existingEnrollment.save();
+        console.log('Updated enrollment to completed for:', userEmail);
+      } else {
+        console.log('Enrollment already marked as completed.');
+      }
+      return res.status(200).send('Enrollment updated');
+    }
+
+    // Fallback if enrollment wasn't created at intent stage (rare case)
+    await Enrollment.create({
+      user: user._id,
+      video: video._id,
+      paymentIntentId,
+      status: 'completed',
+    });
+
+    console.log('Enrollment created via webhook:', userEmail);
+    res.status(201).send('Enrollment recorded');
+
   } catch (error) {
     console.error('Webhook processing error:', error);
-    return res.status(500).send('Internal Server Error');
+    res.status(500).send('Internal Server Error');
   }
 };

@@ -5,37 +5,36 @@ dotenv.config();
 
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 const ZIINA_API_URL = process.env.ZIINA_API_URL;
+const SUCCESS_URL = process.env.SUCCESS_URL;
+const CANCEL_URL = process.env.CANCEL_URL;
+const WEBHOOK_URL = process.env.WEBHOOK_URL;
+
+let webhookInitialized = false; // ensures webhook is not created repeatedly
 
 export async function createPaymentIntent({ amount, currency, email, videoId }) {
   try {
-    // Log the request details
-    console.log('Creating payment intent with the following details:');
-    console.log({
+    const metadata = {
+      videoId,
+      userEmail: email,
+    };
+
+    const paymentPayload = {
       amount,
       currency_code: currency,
       email,
-      success_url: process.env.SUCCESS_URL,
-      cancel_url: process.env.CANCEL_URL,
-      metadata: { videoId, userEmail: email } // ✅ add userEmail here too
-    });
+      capture_method: 'automatic',
+      confirmation_method: 'automatic',
+      success_url: SUCCESS_URL,
+      cancel_url: CANCEL_URL,
+      test: true,
+      metadata,
+    };
 
-    // Create payment intent
+    console.log('Creating payment intent with:', paymentPayload);
+
     const paymentIntentResponse = await axios.post(
       `${ZIINA_API_URL}/payment_intent`,
-      {
-        amount,
-        currency_code: currency,
-        email,
-        capture_method: 'automatic',
-        confirmation_method: 'automatic',
-        success_url: process.env.SUCCESS_URL,
-        cancel_url: process.env.CANCEL_URL,
-        test: true,
-        metadata: {
-          videoId: videoId,
-          userEmail: email, // ✅ this is what your webhook depends on
-        },
-      },
+      paymentPayload,
       {
         headers: {
           Authorization: `Bearer ${ZIINA_SECRET_KEY}`,
@@ -44,15 +43,33 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
       }
     );
 
-    // Log the successful response
-    console.log('Payment intent created successfully:', paymentIntentResponse.data);
+    const paymentIntentData = paymentIntentResponse.data;
+    console.log('✅ Payment intent created:', paymentIntentData);
 
-    // Set the webhook URL (optional)
+    // Optional: Setup webhook only once per runtime
+    if (!webhookInitialized) {
+      await setupWebhook();
+      webhookInitialized = true;
+    }
+
+    return paymentIntentData;
+
+  } catch (error) {
+    console.error('❌ Failed to create payment intent:', error.message);
+    if (error.response) {
+      console.error('Ziina API error response:', error.response.data);
+    }
+    throw new Error('Failed to create Ziina payment intent');
+  }
+}
+
+async function setupWebhook() {
+  try {
     const webhookResponse = await axios.post(
       `${ZIINA_API_URL}/webhook`,
       {
-        url: process.env.WEBHOOK_URL,
-        secret: process.env.ZIINA_SECRET_KEY,
+        url: WEBHOOK_URL,
+        secret: ZIINA_SECRET_KEY,
       },
       {
         headers: {
@@ -61,19 +78,14 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
         },
       }
     );
-
-    console.log('Webhook URL set successfully:', webhookResponse.data);
-
-    return paymentIntentResponse.data;
-
-  } catch (error) {
-    console.error('Error creating payment intent or setting webhook:', error.message);
-    if (error.response) {
-      console.error('Error response from Ziina API:', error.response.data);
+    console.log('✅ Webhook URL registered:', webhookResponse.data);
+  } catch (err) {
+    if (err.response?.status === 409) {
+      console.warn('⚠️ Webhook already exists, skipping setup.');
+    } else {
+      console.error('❌ Failed to setup webhook:', err.message);
+      throw new Error('Failed to register Ziina webhook');
     }
-    if (error.stack) {
-      console.error('Error stack trace:', error.stack);
-    }
-    throw new Error('Ziina payment intent creation or webhook setup failed');
   }
 }
+
