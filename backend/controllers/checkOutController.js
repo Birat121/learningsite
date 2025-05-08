@@ -2,6 +2,10 @@ import { createPaymentIntent } from '../services/ziinaService.js';
 import Video from '../models/videoModel.js';
 import User from '../models/userModel.js';
 import Enrollment from '../models/paymentModel.js';  // Assuming Enrollment model exists
+import crypto from 'crypto';
+import dotenv from 'dotenv';
+const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
+
 
 export const handleCoursePayment = async (req, res) => {
   try {
@@ -54,13 +58,25 @@ export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
   try {
+    // Verify HMAC signature for security
+    const signature = req.headers['x-hmac-signature'];
+    const computedSignature = crypto
+      .createHmac('sha256', ZIINA_SECRET_KEY)
+      .update(JSON.stringify(event))
+      .digest('hex');
+
+    if (signature !== computedSignature) {
+      console.error('Invalid signature');
+      return res.status(400).send('Invalid signature');
+    }
+
     // Log the incoming webhook event for debugging purposes
     console.log('Webhook event received:', event);
 
     // Check if the payment was successful
-    if (event?.data?.status === "succeeded") {
+    if (event?.data?.status === 'succeeded') {
       const paymentIntentId = event.data.id;
-      const userEmail = event.data.customer_email;  // Assuming this is correct in the webhook
+      const userEmail = event.data.customer_email; // Assuming this is correct in the webhook
 
       // Log user email to verify
       console.log('Received webhook for email:', userEmail);
@@ -69,19 +85,19 @@ export const handleZiinaWebhook = async (req, res) => {
       const user = await User.findOne({ email: userEmail });
       if (!user) {
         console.error(`User with email ${userEmail} not found.`);
-        return res.status(404).send("User not found");
+        return res.status(404).send('User not found');
       }
 
-      const videoId = event.data.metadata?.videoId;  // Assuming videoId is in metadata
+      const videoId = event.data.metadata?.videoId; // Assuming videoId is in metadata
       if (!videoId) {
         console.error('videoId not found in metadata');
-        return res.status(400).send("Video ID missing in webhook");
+        return res.status(400).send('Video ID missing in webhook');
       }
 
       const video = await Video.findById(videoId);
       if (!video) {
         console.error(`Video with ID ${videoId} not found.`);
-        return res.status(404).send("Video not found");
+        return res.status(404).send('Video not found');
       }
 
       // Log video info
@@ -96,7 +112,7 @@ export const handleZiinaWebhook = async (req, res) => {
 
       if (existingEnrollment) {
         console.log('User already enrolled for this video.');
-        return res.status(200).send("User already enrolled");
+        return res.status(200).send('User already enrolled');
       }
 
       // Create a new enrollment record
@@ -108,15 +124,14 @@ export const handleZiinaWebhook = async (req, res) => {
 
       // Successfully enrolled
       console.log('Enrollment successfully recorded for user:', userEmail);
-      res.status(200).send("Enrollment recorded");
-
+      res.status(200).send('Enrollment recorded');
     } else {
-      console.error("Payment not successful:", event);
-      return res.status(400).send("Payment not successful");
+      console.error('Payment not successful:', event);
+      return res.status(400).send('Payment not successful');
     }
   } catch (error) {
     // Catch any other unexpected errors
-    console.error("Error handling webhook:", error);
-    res.status(500).send("Internal Server Error");
+    console.error('Error handling webhook:', error);
+    res.status(500).send('Internal Server Error');
   }
 };

@@ -19,7 +19,8 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
       metadata: { videoId }
     });
 
-    const response = await axios.post(
+    // Create payment intent
+    const paymentIntentResponse = await axios.post(
       `${ZIINA_API_URL}/payment_intent`,
       {
         amount,
@@ -43,13 +44,32 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
     );
 
     // Log the successful response
-    console.log('Payment intent created successfully:', response.data);
+    console.log('Payment intent created successfully:', paymentIntentResponse.data);
 
-    return response.data;
+    // Set the webhook URL for event notifications (Optional: You can set this at the time of intent creation or separately)
+    const webhookResponse = await axios.post(
+      `${ZIINA_API_URL}/webhook`,
+      {
+        url: process.env.WEBHOOK_URL,  // The URL where Ziina will send payment updates
+        secret: process.env.ZIINA_SECRET_KEY,  // Optional secret for HMAC signature validation
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${ZIINA_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    // Log the successful webhook setup
+    console.log('Webhook URL set successfully:', webhookResponse.data);
+
+    return paymentIntentResponse.data;  // Return the payment intent details
+
   } catch (error) {
     // Log error details
-    console.error('Error creating payment intent:', error.message);
-    
+    console.error('Error creating payment intent or setting webhook:', error.message);
+
     // If error response data exists, log that as well
     if (error.response) {
       console.error('Error response from Ziina API:', error.response.data);
@@ -60,6 +80,6 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
       console.error('Error stack trace:', error.stack);
     }
 
-    throw new Error('Ziina payment intent creation failed');
+    throw new Error('Ziina payment intent creation or webhook setup failed');
   }
 }
