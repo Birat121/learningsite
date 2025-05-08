@@ -4,8 +4,8 @@ import User from '../models/userModel.js';
 import Enrollment from '../models/paymentModel.js';  // Assuming Enrollment model exists
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
+const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
 export const handleCoursePayment = async (req, res) => {
   try {
@@ -17,11 +17,14 @@ export const handleCoursePayment = async (req, res) => {
 
     console.log('Initiating payment for email:', customer_email);
 
+    // Fetch the video details
     const video = await Video.findById(videoId);
     if (!video) return res.status(404).json({ error: 'Video not found' });
 
+    // Convert video price to fils (1 AED = 100 fils)
     const amountInFils = Math.round(video.price * 100);
 
+    // Create a payment intent
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
       currency: 'AED',
@@ -30,6 +33,16 @@ export const handleCoursePayment = async (req, res) => {
     });
 
     console.log("Ziina payment response:", paymentData);
+
+    // Store payment intent information in Enrollment before redirecting to payment page
+    const enrollment = await Enrollment.create({
+      user: req.user._id,  // Assuming `req.user._id` is available from authentication
+      video: video._id,
+      paymentIntentId: paymentData.id,
+      status: 'pending', // Payment is pending until webhook confirms success
+    });
+
+    console.log('Temporary Enrollment created:', enrollment);
 
     const redirectUrl =
       paymentData.redirect_url ||
@@ -40,10 +53,12 @@ export const handleCoursePayment = async (req, res) => {
       return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
     }
 
+    // Return the payment URL to the frontend
     res.json({
       paymentUrl: redirectUrl,
       payment_intent_id: paymentData.id,
     });
+
   } catch (err) {
     console.error('Payment error:', err);
     res.status(500).json({
@@ -54,11 +69,12 @@ export const handleCoursePayment = async (req, res) => {
 };
 
 
+
 export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
   try {
-    // Step 1: Verify HMAC signature (optional but recommended)
+    // Verify HMAC signature (optional but recommended)
     const signature = req.headers['x-hmac-signature'];
     const computedSignature = crypto
       .createHmac('sha256', ZIINA_SECRET_KEY)
@@ -72,11 +88,11 @@ export const handleZiinaWebhook = async (req, res) => {
 
     console.log('Webhook event received:', event);
 
-    // Step 2: Check payment success
+    // Check if the payment succeeded
     if (['succeeded', 'completed'].includes(event?.data?.status)) {
       const paymentIntentId = event.data.id;
 
-      // ✅ Fetch email from metadata instead of event.data.customer_email
+      // Fetch metadata
       const userEmail = event.data.metadata?.userEmail;
       const videoId = event.data.metadata?.videoId;
 
@@ -87,6 +103,7 @@ export const handleZiinaWebhook = async (req, res) => {
 
       console.log('Received webhook for userEmail:', userEmail);
 
+      // Find the user and video
       const user = await User.findOne({ email: userEmail });
       if (!user) {
         console.error('User not found:', userEmail);
@@ -99,7 +116,7 @@ export const handleZiinaWebhook = async (req, res) => {
         return res.status(404).send('Video not found');
       }
 
-      // Check for existing enrollment
+      // Find the existing enrollment
       const existingEnrollment = await Enrollment.findOne({
         user: user._id,
         video: video._id,
@@ -111,11 +128,12 @@ export const handleZiinaWebhook = async (req, res) => {
         return res.status(200).send('Already enrolled');
       }
 
-      // Create new enrollment
+      // Create new enrollment and update status
       await Enrollment.create({
         user: user._id,
         video: video._id,
         paymentIntentId,
+        status: 'completed', // Payment was successful
       });
 
       console.log('Enrollment successful:', userEmail);
