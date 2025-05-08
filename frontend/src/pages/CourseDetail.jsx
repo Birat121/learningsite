@@ -3,6 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/authContext";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Import React Quill styles
+import sanitizeHtml from "sanitize-html";
 
 const CourseDetails = () => {
   const { slug } = useParams();
@@ -41,11 +44,19 @@ const CourseDetails = () => {
     navigate(`/watch/${slug}`);
   };
 
-   if (loading) return <div className="text-center py-10">Loading...</div>;
-if (!course) return <div className="text-center py-10">Course not found</div>;
+  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (!course) return <div className="text-center py-10">Course not found</div>;
 
-const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+  const sanitizedDescription = sanitizeHtml(course.description, {
+    allowedTags: ["p", "strong", "em", "ul", "ol", "li", "a", "br", "h1", "h2", "h3", "h4", "h5", "h6"],
+    allowedAttributes: {
+      a: ["href", "title"],
+    },
+  });
 
+  const sanitizedOutcome = sanitizeHtml(course.courseOutcome, {
+    allowedTags: ["ul", "ol", "li", "strong", "em"],
+  });
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24">
@@ -53,18 +64,19 @@ const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : []
         {/* Left Section: Text */}
         <div>
           <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-          <p className="text-gray-700 mb-6">{course.description}</p>
-          {outcomes.length > 0 && (
-  <div className="bg-gray-100 p-4 rounded">
-    <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
-    <ul className="list-disc list-inside text-gray-600">
-      {outcomes.map((o, idx) => (
-        <li key={idx}>{o}</li>
-      ))}
-    </ul>
-  </div>
-)}
-
+          <div
+            className="text-gray-700 mb-6"
+            dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+          />
+          {sanitizedOutcome && (
+            <div className="bg-gray-100 p-4 rounded">
+              <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
+              <div
+                className="list-disc list-inside text-gray-600"
+                dangerouslySetInnerHTML={{ __html: sanitizedOutcome }}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right Section: Thumbnail + Buttons */}
@@ -97,4 +109,5 @@ const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : []
 };
 
 export default CourseDetails;
+
 
