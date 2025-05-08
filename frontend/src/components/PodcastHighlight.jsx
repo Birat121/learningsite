@@ -32,7 +32,22 @@ const PodcastHighlight = () => {
           {videos.map((video, idx) => (
             <div
               key={idx}
-              className="relative w-[320px] bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition group"
+              className="
+                relative
+                bg-white
+                rounded-xl
+                overflow-hidden
+                shadow-lg
+                hover:shadow-xl
+                transition
+                group
+
+                /* responsive width & centering */
+                w-full          /* full width on xs */
+                max-w-xs        /* cap to 20rem (~320px) */
+                sm:w-[320px]    /* exact 320px on sm+ */
+                mx-auto         /* center on xs */
+              "
             >
               <img
                 src={comingSoon}

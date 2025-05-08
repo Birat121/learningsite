@@ -79,7 +79,7 @@ const AdminPage = () => {
               Manage Quizzes
             </Link>
             <Link
-              to="add-blog"
+              to="addblog"
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-2 rounded-md ${
                 isActive("add-blog") ? "bg-green-800" : "hover:bg-green-600"
@@ -89,7 +89,7 @@ const AdminPage = () => {
               Add Blog
             </Link>
             <Link
-              to="list-blog"
+              to="listblog"
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-2 rounded-md ${
                 isActive("list-blog") ? "bg-green-800" : "hover:bg-green-600"
