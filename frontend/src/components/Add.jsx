@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import toast from "react-hot-toast";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Import the React Quill styles
+import React, { useState } from 'react';
+import axiosInstance from '../api/axiosInstance';
+import toast from 'react-hot-toast';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Import React Quill styles
 
 const AddPage = () => {
   const [formData, setFormData] = useState({
-    title: "",
-    price: "",
-    description: "",
-    outcome: "",
+    title: '',
+    price: '',
+    description: '',
+    outcome: '',
     thumbnail: null,
     video: null,
   });
@@ -28,8 +28,8 @@ const AddPage = () => {
   };
 
   // Handle React Quill change
-  const handleEditorChange = (value) => {
-    setFormData((f) => ({ ...f, outcome: value }));
+  const handleEditorChange = (value, field) => {
+    setFormData((f) => ({ ...f, [field]: value }));
   };
 
   // Handle form submission and send data to the backend
@@ -37,27 +37,27 @@ const AddPage = () => {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
+    data.append('title', formData.title);
+    data.append('description', formData.description);
 
     // Split the outcome text (if needed) into array
     const outcomes = formData.outcome
-      .split("\n")
+      .split('\n')
       .map((point) => point.trim())
       .filter(Boolean);
-    outcomes.forEach((item) => data.append("courseOutcome[]", item));
+    outcomes.forEach((item) => data.append('courseOutcome[]', item));
 
-    data.append("price", formData.price);
-    data.append("thumbnail", formData.thumbnail);
-    data.append("video", formData.video);
+    data.append('price', formData.price);
+    data.append('thumbnail', formData.thumbnail);
+    data.append('video', formData.video);
 
-    const toastId = toast.loading("Uploading... 0%");
+    const toastId = toast.loading('Uploading... 0%');
 
     try {
       setLoading(true);
 
-      const res = await axiosInstance.post("/videos/videos", data, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const res = await axiosInstance.post('/videos/videos', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (progressEvent) => {
           const percent = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
@@ -66,21 +66,21 @@ const AddPage = () => {
         },
       });
 
-      toast.success("✅ Course added successfully!", { id: toastId });
+      toast.success('✅ Course added successfully!', { id: toastId });
 
       // Reset form
       setFormData({
-        title: "",
-        price: "",
-        description: "",
-        outcome: "",
+        title: '',
+        price: '',
+        description: '',
+        outcome: '',
         thumbnail: null,
         video: null,
       });
     } catch (err) {
       toast.dismiss(toastId); // ❗️Dismiss progress toast
-      toast.error(err.response?.data?.message || "❌ Upload failed.");
-      console.log("Upload Error:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || '❌ Upload failed.');
+      console.log('Upload Error:', err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
@@ -105,16 +105,16 @@ const AddPage = () => {
         className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4"
       >
         {[{
-            label: "Course Title",
-            name: "title",
-            type: "text",
-            placeholder: "Enter course title",
+            label: 'Course Title',
+            name: 'title',
+            type: 'text',
+            placeholder: 'Enter course title',
           },
           {
-            label: "Price (in AED)",
-            name: "price",
-            type: "number",
-            placeholder: "Enter course price in AED",
+            label: 'Price (in AED)',
+            name: 'price',
+            type: 'number',
+            placeholder: 'Enter course price in AED',
           },
         ].map(({ label, name, type, placeholder }) => (
           <div className="flex flex-col" key={name}>
@@ -136,13 +136,11 @@ const AddPage = () => {
           <label className="text-sm font-medium text-gray-700 mb-1">
             Description
           </label>
-          <textarea
-            name="description"
+          <ReactQuill
             value={formData.description}
-            onChange={handleChange}
-            rows="2"
-            placeholder="Enter course description"
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            onChange={(value) => handleEditorChange(value, 'description')}
+            placeholder="Enter course description here"
+            className="border p-4 rounded"
           />
         </div>
 
@@ -152,9 +150,9 @@ const AddPage = () => {
           </label>
           <ReactQuill
             value={formData.outcome}
-            onChange={handleEditorChange}
+            onChange={(value) => handleEditorChange(value, 'outcome')}
             placeholder="Enter course outcome here"
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="border p-4 rounded"
           />
         </div>
 
@@ -190,11 +188,11 @@ const AddPage = () => {
             disabled={!isFormValid || loading}
             className={`w-full py-3 rounded-md font-semibold text-white transition ${
               loading || !isFormValid
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-700 hover:bg-green-800"
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-green-700 hover:bg-green-800'
             }`}
           >
-            {loading ? "Adding Course..." : "Add Course"}
+            {loading ? 'Adding Course...' : 'Add Course'}
           </button>
         </div>
       </form>
