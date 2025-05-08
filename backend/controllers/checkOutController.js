@@ -66,7 +66,7 @@ export const handleZiinaWebhook = async (req, res) => {
       .digest('hex');
 
     if (signature !== computedSignature) {
-      console.error('Invalid signature');
+      console.error('Invalid signature', { receivedSignature: signature, computedSignature });
       return res.status(400).send('Invalid signature');
     }
 
@@ -74,7 +74,7 @@ export const handleZiinaWebhook = async (req, res) => {
     console.log('Webhook event received:', event);
 
     // Check if the payment was successful
-    if (event?.data?.status === 'succeeded') {
+    if (['succeeded', 'completed'].includes(event?.data?.status)) {
       const paymentIntentId = event.data.id;
       const userEmail = event.data.customer_email; // Assuming this is correct in the webhook
 
@@ -124,7 +124,7 @@ export const handleZiinaWebhook = async (req, res) => {
 
       // Successfully enrolled
       console.log('Enrollment successfully recorded for user:', userEmail);
-      res.status(200).send('Enrollment recorded');
+      res.status(201).send('Enrollment successfully recorded');
     } else {
       console.error('Payment not successful:', event);
       return res.status(400).send('Payment not successful');
