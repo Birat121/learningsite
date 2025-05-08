@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/authContext";
-import ReactQuill from "react-quill";
+
 import "react-quill/dist/quill.snow.css"; // Import React Quill styles
 import sanitizeHtml from "sanitize-html";
 
@@ -30,6 +30,19 @@ const CourseDetails = () => {
     fetchCourse();
   }, [slug]);
 
+  // Ensure course.description and course.courseOutcome are strings
+  useEffect(() => {
+    if (course) {
+      if (typeof course.description !== 'string') {
+        course.description = String(course.description);
+      }
+
+      if (typeof course.courseOutcome !== 'string') {
+        course.courseOutcome = String(course.courseOutcome);
+      }
+    }
+  }, [course]);
+
   const handleBuyNowClick = () => {
     if (!user || !authToken) {
       toast.error("Please log in to purchase this course.");
@@ -47,14 +60,14 @@ const CourseDetails = () => {
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (!course) return <div className="text-center py-10">Course not found</div>;
 
-  const sanitizedDescription = sanitizeHtml(course.description, {
+  const sanitizedDescription = sanitizeHtml(course.description || "", {
     allowedTags: ["p", "strong", "em", "ul", "ol", "li", "a", "br", "h1", "h2", "h3", "h4", "h5", "h6"],
     allowedAttributes: {
       a: ["href", "title"],
     },
   });
 
-  const sanitizedOutcome = sanitizeHtml(course.courseOutcome, {
+  const sanitizedOutcome = sanitizeHtml(course.courseOutcome || "", {
     allowedTags: ["ul", "ol", "li", "strong", "em"],
   });
 
@@ -109,5 +122,6 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
+
 
 
