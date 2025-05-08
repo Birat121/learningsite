@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import toast from "react-hot-toast";
-import TiptapEditor from './TiptapEditor'; // Assuming TiptapEditor is in the same directory
+import TiptapEditor from "./TiptapEditor"; // Assuming TiptapEditor is in the same directory
 
 const AddPage = () => {
   const [formData, setFormData] = useState({
