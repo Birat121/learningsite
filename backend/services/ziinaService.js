@@ -16,7 +16,7 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
       email,
       success_url: process.env.SUCCESS_URL,
       cancel_url: process.env.CANCEL_URL,
-      metadata: { videoId }
+      metadata: { videoId, userEmail: email } // ✅ add userEmail here too
     });
 
     // Create payment intent
@@ -32,7 +32,8 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
         cancel_url: process.env.CANCEL_URL,
         test: true,
         metadata: {
-          videoId: videoId,  // Add videoId to the metadata here
+          videoId: videoId,
+          userEmail: email, // ✅ this is what your webhook depends on
         },
       },
       {
@@ -46,12 +47,12 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
     // Log the successful response
     console.log('Payment intent created successfully:', paymentIntentResponse.data);
 
-    // Set the webhook URL for event notifications (Optional: You can set this at the time of intent creation or separately)
+    // Set the webhook URL (optional)
     const webhookResponse = await axios.post(
       `${ZIINA_API_URL}/webhook`,
       {
-        url: process.env.WEBHOOK_URL,  // The URL where Ziina will send payment updates
-        secret: process.env.ZIINA_SECRET_KEY,  // Optional secret for HMAC signature validation
+        url: process.env.WEBHOOK_URL,
+        secret: process.env.ZIINA_SECRET_KEY,
       },
       {
         headers: {
@@ -61,25 +62,18 @@ export async function createPaymentIntent({ amount, currency, email, videoId }) 
       }
     );
 
-    // Log the successful webhook setup
     console.log('Webhook URL set successfully:', webhookResponse.data);
 
-    return paymentIntentResponse.data;  // Return the payment intent details
+    return paymentIntentResponse.data;
 
   } catch (error) {
-    // Log error details
     console.error('Error creating payment intent or setting webhook:', error.message);
-
-    // If error response data exists, log that as well
     if (error.response) {
       console.error('Error response from Ziina API:', error.response.data);
     }
-
-    // Log the error stack trace if available
     if (error.stack) {
       console.error('Error stack trace:', error.stack);
     }
-
     throw new Error('Ziina payment intent creation or webhook setup failed');
   }
 }
