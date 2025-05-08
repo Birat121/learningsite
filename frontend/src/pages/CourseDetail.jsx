@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
-import { toast } from "react-hot-toast";
-import { useAuth } from "../context/authContext";
-
-import "react-quill/dist/quill.snow.css"; // Import React Quill styles
-import sanitizeHtml from "sanitize-html";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axiosInstance from '../api/axiosInstance';
+import { toast } from 'react-hot-toast';
+import { useAuth } from '../context/authContext';
+import DOMPurify from 'dompurify';
 
 const CourseDetails = () => {
   const { slug } = useParams();
@@ -20,8 +18,8 @@ const CourseDetails = () => {
         const response = await axiosInstance.get(`/videos/videos/slug/${slug}`);
         setCourse(response.data);
       } catch (error) {
-        console.error("Error fetching course:", error);
-        toast.error("Failed to load course");
+        console.error('Error fetching course:', error);
+        toast.error('Failed to load course');
       } finally {
         setLoading(false);
       }
@@ -30,23 +28,10 @@ const CourseDetails = () => {
     fetchCourse();
   }, [slug]);
 
-  // Ensure course.description and course.courseOutcome are strings
-  useEffect(() => {
-    if (course) {
-      if (typeof course.description !== 'string') {
-        course.description = String(course.description);
-      }
-
-      if (typeof course.courseOutcome !== 'string') {
-        course.courseOutcome = String(course.courseOutcome);
-      }
-    }
-  }, [course]);
-
   const handleBuyNowClick = () => {
     if (!user || !authToken) {
-      toast.error("Please log in to purchase this course.");
-      navigate("/login");
+      toast.error('Please log in to purchase this course.');
+      navigate('/login');
       return;
     }
 
@@ -60,16 +45,11 @@ const CourseDetails = () => {
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (!course) return <div className="text-center py-10">Course not found</div>;
 
-  const sanitizedDescription = sanitizeHtml(course.description || "", {
-    allowedTags: ["p", "strong", "em", "ul", "ol", "li", "a", "br", "h1", "h2", "h3", "h4", "h5", "h6"],
-    allowedAttributes: {
-      a: ["href", "title"],
-    },
-  });
-
-  const sanitizedOutcome = sanitizeHtml(course.courseOutcome || "", {
-    allowedTags: ["ul", "ol", "li", "strong", "em"],
-  });
+  // Sanitize HTML content
+  const sanitizedDescription = DOMPurify.sanitize(course.description);
+  const sanitizedOutcomes = Array.isArray(course.courseOutcome)
+    ? course.courseOutcome.map((o) => DOMPurify.sanitize(o))
+    : [];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24">
@@ -81,13 +61,14 @@ const CourseDetails = () => {
             className="text-gray-700 mb-6"
             dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
           />
-          {sanitizedOutcome && (
+          {sanitizedOutcomes.length > 0 && (
             <div className="bg-gray-100 p-4 rounded">
               <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
-              <div
-                className="list-disc list-inside text-gray-600"
-                dangerouslySetInnerHTML={{ __html: sanitizedOutcome }}
-              />
+              <ul className="list-disc list-inside text-gray-600">
+                {sanitizedOutcomes.map((o, idx) => (
+                  <li key={idx}>{o}</li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
@@ -95,7 +76,7 @@ const CourseDetails = () => {
         {/* Right Section: Thumbnail + Buttons */}
         <div className="bg-white shadow p-4 rounded-lg">
           <img
-            src={course.thumbnailUrl || "/default-course.jpg"}
+            src={course.thumbnailUrl || '/default-course.jpg'}
             alt={course.title}
             className="w-full h-64 object-cover rounded mb-4"
           />
@@ -122,6 +103,5 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
-
 
 
