@@ -171,7 +171,10 @@ export const deleteVideo = async (req, res) => {
     // Delete video record from MongoDB
     await Video.findByIdAndDelete(req.params.id);
 
-    return res.json({ message: 'Video deleted successfully' });
+    // Delete related enrollments from MongoDB
+    await Enrollment.deleteMany({ video: video._id });
+
+    return res.json({ message: 'Video and related enrollments deleted successfully' });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
@@ -181,15 +184,15 @@ export const deleteVideo = async (req, res) => {
 
 export const getEnrolledVideos = async (req, res) => {
   try {
-    const userId = req.user.id;  // User ID from JWT
+    const userId = req.user.id;
 
-    // Find enrollments for the user and populate the course (video) details
     const enrollments = await Enrollment.find({ user: userId })
-      .populate("video")  // Assuming you have a video reference in the Enrollment model
+      .populate("video")
       .exec();
 
-    // Extract course details (videos) from the enrollments
-    const courses = enrollments.map((enrollment) => enrollment.video);
+    const courses = enrollments
+      .map((enrollment) => enrollment.video)
+      .filter((video) => video !== null);  // Filter out deleted videos
 
     res.status(200).json({ courses });
   } catch (error) {
@@ -197,6 +200,7 @@ export const getEnrolledVideos = async (req, res) => {
     res.status(500).json({ message: "Server error while fetching courses" });
   }
 };
+
 
 
 import mongoose from 'mongoose';
