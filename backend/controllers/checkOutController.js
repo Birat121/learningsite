@@ -65,16 +65,33 @@ export const handleCoursePayment = async (req, res) => {
 
 export const handleZiinaWebhook = async (req, res) => {
   try {
+    // Allowed IP addresses
+    const allowedIps = ['3.29.184.186', '3.29.190.95', '20.233.47.127'];
+
+    // Get IP address
+    const ip =
+      req.headers['x-forwarded-for']?.split(',').shift() || req.socket?.remoteAddress;
+
+    console.log('Webhook received from IP:', ip);
+
+    // Check if the incoming IP is allowed
+    if (!allowedIps.includes(ip)) {
+      console.warn('❌ Webhook rejected — invalid IP:', ip);
+      return res.status(403).send('Forbidden');
+    }
+
     const rawBody = JSON.stringify(req.body);
     const signature = req.headers['x-hmac-signature'];
 
+    // Compute HMAC from the raw body and the secret key
     const computedHmac = crypto
-      .createHmac('sha256', ZIINA_SECRET_KEY)
+      .createHmac('sha256', process.env.ZIINA_SECRET_KEY)
       .update(rawBody)
       .digest();
 
     const incomingSig = Buffer.from(signature, 'hex');
 
+    // Compare the signatures securely
     if (
       incomingSig.length !== computedHmac.length ||
       !crypto.timingSafeEqual(incomingSig, computedHmac)
@@ -83,6 +100,7 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(400).send('Invalid signature');
     }
 
+    // Handle the webhook event
     const event = req.body;
     console.log('Webhook event received:', event);
 
