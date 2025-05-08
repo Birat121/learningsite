@@ -47,9 +47,7 @@ const CourseDetails = () => {
 
   // Sanitize HTML content
   const sanitizedDescription = DOMPurify.sanitize(course.description);
-  const sanitizedOutcomes = Array.isArray(course.courseOutcome)
-    ? course.courseOutcome.map((o) => DOMPurify.sanitize(o))
-    : [];
+  const sanitizedOutcome = DOMPurify.sanitize(course.courseOutcome);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24">
@@ -61,14 +59,13 @@ const CourseDetails = () => {
             className="text-gray-700 mb-6"
             dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
           />
-          {sanitizedOutcomes.length > 0 && (
+          {sanitizedOutcome && (
             <div className="bg-gray-100 p-4 rounded">
               <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
-              <ul className="list-disc list-inside text-gray-600">
-                {sanitizedOutcomes.map((o, idx) => (
-                  <li key={idx}>{o}</li>
-                ))}
-              </ul>
+              <div
+                className="text-gray-600"
+                dangerouslySetInnerHTML={{ __html: sanitizedOutcome }}
+              />
             </div>
           )}
         </div>
@@ -103,5 +100,3 @@ const CourseDetails = () => {
 };
 
 export default CourseDetails;
-
-
