@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TiptapEditor from './TiptapEditor'; // import the TipTap component
+import { Editor, EditorState, RichUtils } from 'draft-js';  // import Draft.js components
 import axiosInstance from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 
@@ -10,7 +10,9 @@ const BlogForm = () => {
     description: '',
   });
   const [image, setImage] = useState(null);
+  const [editorState, setEditorState] = useState(EditorState.createEmpty()); // initial empty editor state
 
+  // Handle input changes for title and author
   const handleInputChange = (e) => {
     setFormData(prev => ({
       ...prev,
@@ -18,10 +20,22 @@ const BlogForm = () => {
     }));
   };
 
+  // Handle file input change
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
   };
 
+  // Handle changes in the Draft.js editor
+  const handleEditorChange = (state) => {
+    setEditorState(state);
+    const description = state.getCurrentContent().getPlainText(); // convert content to plain text
+    setFormData(prev => ({
+      ...prev,
+      description: description, // store plain text description
+    }));
+  };
+
+  // Handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -39,6 +53,7 @@ const BlogForm = () => {
       toast.success('Blog created successfully');
       setFormData({ title: '', author: '', description: '' });
       setImage(null);
+      setEditorState(EditorState.createEmpty());  // Reset editor
     } catch (err) {
       toast.error('Failed to create blog');
     }
@@ -62,7 +77,13 @@ const BlogForm = () => {
 
       <div>
         <label className="block font-medium mb-1">Description</label>
-        <TiptapEditor onChange={(html) => setFormData(prev => ({ ...prev, description: html }))} />
+        <Editor
+          editorState={editorState}
+          onChange={handleEditorChange}
+          handleKeyCommand={(command) => RichUtils.handleKeyCommand(editorState, command)} // optional for command handling
+          placeholder="Write your blog description here..."
+          className="border p-4 rounded"
+        />
       </div>
 
       <div>
