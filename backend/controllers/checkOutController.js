@@ -58,7 +58,7 @@ export const handleZiinaWebhook = async (req, res) => {
   const event = req.body;
 
   try {
-    // Verify HMAC signature for security
+    // Step 1: Verify HMAC signature (optional but recommended)
     const signature = req.headers['x-hmac-signature'];
     const computedSignature = crypto
       .createHmac('sha256', ZIINA_SECRET_KEY)
@@ -70,40 +70,36 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(400).send('Invalid signature');
     }
 
-    // Log the incoming webhook event for debugging purposes
     console.log('Webhook event received:', event);
 
-    // Check if the payment was successful
+    // Step 2: Check payment success
     if (['succeeded', 'completed'].includes(event?.data?.status)) {
       const paymentIntentId = event.data.id;
-      const userEmail = event.data.customer_email; // Assuming this is correct in the webhook
 
-      // Log user email to verify
-      console.log('Received webhook for email:', userEmail);
+      // ✅ Fetch email from metadata instead of event.data.customer_email
+      const userEmail = event.data.metadata?.userEmail;
+      const videoId = event.data.metadata?.videoId;
 
-      // Find the user by email
-      const user = await User.findOne({ email: userEmail });
-      if (!user) {
-        console.error(`User with email ${userEmail} not found.`);
-        return res.status(404).send('User not found');
+      if (!userEmail || !videoId) {
+        console.error('Missing metadata fields:', { userEmail, videoId });
+        return res.status(400).send('Metadata incomplete');
       }
 
-      const videoId = event.data.metadata?.videoId; // Assuming videoId is in metadata
-      if (!videoId) {
-        console.error('videoId not found in metadata');
-        return res.status(400).send('Video ID missing in webhook');
+      console.log('Received webhook for userEmail:', userEmail);
+
+      const user = await User.findOne({ email: userEmail });
+      if (!user) {
+        console.error('User not found:', userEmail);
+        return res.status(404).send('User not found');
       }
 
       const video = await Video.findById(videoId);
       if (!video) {
-        console.error(`Video with ID ${videoId} not found.`);
+        console.error('Video not found:', videoId);
         return res.status(404).send('Video not found');
       }
 
-      // Log video info
-      console.log('Found video:', video);
-
-      // Check if the user is already enrolled for this course
+      // Check for existing enrollment
       const existingEnrollment = await Enrollment.findOne({
         user: user._id,
         video: video._id,
@@ -111,27 +107,26 @@ export const handleZiinaWebhook = async (req, res) => {
       });
 
       if (existingEnrollment) {
-        console.log('User already enrolled for this video.');
-        return res.status(200).send('User already enrolled');
+        console.log('User already enrolled:', userEmail);
+        return res.status(200).send('Already enrolled');
       }
 
-      // Create a new enrollment record
+      // Create new enrollment
       await Enrollment.create({
         user: user._id,
         video: video._id,
         paymentIntentId,
       });
 
-      // Successfully enrolled
-      console.log('Enrollment successfully recorded for user:', userEmail);
-      res.status(201).send('Enrollment successfully recorded');
+      console.log('Enrollment successful:', userEmail);
+      return res.status(201).send('Enrollment recorded');
     } else {
-      console.error('Payment not successful:', event);
+      console.warn('Ignoring non-successful payment status:', event?.data?.status);
       return res.status(400).send('Payment not successful');
     }
+
   } catch (error) {
-    // Catch any other unexpected errors
-    console.error('Error handling webhook:', error);
-    res.status(500).send('Internal Server Error');
+    console.error('Webhook processing error:', error);
+    return res.status(500).send('Internal Server Error');
   }
 };
