@@ -69,9 +69,9 @@ const Navbar = () => {
 
   const links = [
     { to: "/", label: "HOME" },
-    { to: "/about", label: "ABOUT ME" },
+    { to: "/about", label: "Why Choose Me" },
     { to: "/courses", label: "COURSES" },
-    { to: "/why-dubai", label: "WHY US?" },
+    { to: "/why-dubai", label: "Dubai Real State" },
     { to: "/contact", label: "CONTACT US" },
   ];
 

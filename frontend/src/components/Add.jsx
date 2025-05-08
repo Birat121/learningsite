@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import toast from "react-hot-toast";
+import TiptapEditor from './TiptapEditor'; // Assuming TiptapEditor is in the same directory
 
 const AddPage = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +24,11 @@ const AddPage = () => {
     } else {
       setFormData((f) => ({ ...f, [name]: value }));
     }
+  };
+
+  // Handle outcome change via TiptapEditor
+  const handleOutcomeChange = (newOutcome) => {
+    setFormData((f) => ({ ...f, outcome: newOutcome }));
   };
 
   // Handle form submission and send data to the backend
@@ -142,14 +148,7 @@ const AddPage = () => {
           <label className="text-sm font-medium text-gray-700 mb-1">
             Course Outcome
           </label>
-          <textarea
-            name="outcome"
-            value={formData.outcome}
-            onChange={handleChange}
-            rows="4"
-            placeholder="Enter course outcome (one per line)"
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+          <TiptapEditor onChange={handleOutcomeChange} />
         </div>
 
         <div className="flex flex-col">

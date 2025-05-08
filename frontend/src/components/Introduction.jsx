@@ -39,7 +39,7 @@ const Introduction = () => {
 
           {/* Why Choose Me link with Right Arrow */}
           <Link
-            to="/why-dubai"
+            to="/about"
             className="flex items-center space-x-2 text-[rgb(0,104,80)] font-semibold text-sm sm:text-base md:text-lg"
           >
             <span>Why Choose Me?</span>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TiptapEditor from './TipTapEditor'; // import the TipTap component
+import TiptapEditor from './TiptapEditor'; // import the TipTap component
 import axiosInstance from '../api/axiosInstance';
 import toast from 'react-hot-toast';
 

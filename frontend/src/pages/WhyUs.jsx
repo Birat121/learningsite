@@ -6,7 +6,7 @@ import {
   FaGlobe,
   FaCity,
 } from "react-icons/fa";
-import axiosInstance from "../api/axiosInstance"; // Import axiosInstance
+import axiosInstance from "../api/axiosInstance";
 import { Link } from "react-router-dom";
 
 const reasons = [
@@ -55,7 +55,7 @@ const ReasonsToChooseDubaiRealEstate = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await axiosInstance.get("/blogs/blogs"); // replace with your actual API endpoint
+        const res = await axiosInstance.get("/blogs/blogs");
         setBlogs(res.data);
       } catch (error) {
         console.error("Failed to fetch blogs:", error);
@@ -66,13 +66,6 @@ const ReasonsToChooseDubaiRealEstate = () => {
 
     fetchBlogs();
   }, []);
-
-  const truncateDescription = (description, maxLength = 150) => {
-    if (description.length > maxLength) {
-      return description.slice(0, maxLength) + "...";
-    }
-    return description;
-  };
 
   return (
     <section className="py-16 px-4 sm:px-6 md:px-20 mt-18">
@@ -88,7 +81,6 @@ const ReasonsToChooseDubaiRealEstate = () => {
           location for wealth creation.
         </p>
 
-        {/* Reasons Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
           {reasons.map((reason, index) => (
             <div
@@ -102,60 +94,42 @@ const ReasonsToChooseDubaiRealEstate = () => {
                 {reason.title}
               </h3>
               <p className="text-sm sm:text-base text-gray-600">
-                {truncateDescription(reason.description)}
+                {reason.description}
               </p>
             </div>
           ))}
         </div>
+
         {/* Investment Advantages Section */}
         <div className="mt-12 text-left space-y-6 sm:space-y-8">
           <h3 className="text-2xl sm:text-3xl font-semibold text-[rgb(0,104,80)]">
             Dubai's Investment Advantages:
           </h3>
-          <ul className="list-disc pl-6 text-sm sm:text-base text-gray-600 space-y-4">
-            <li>
-              <strong>Resilient Economic Foundation:</strong> Dubai's economy
-              thrives on a diversified base of tourism, real estate, and
-              international trade. Its strategic geographical position,
-              world-class infrastructure, and pro-business government policies
-              foster a stable environment conducive to long-term investment
-              success. Continuous development and economic diversification
-              further mitigate the impact of global economic shifts.
-            </li>
-            <li>
-              <strong>Potential for High Returns:</strong> Dubai's real estate
-              market consistently delivers competitive returns on investment
-              (ROI). Whether your focus is residential, commercial, or
-              hospitality properties, Dubai offers a range of options with
-              substantial potential for both capital appreciation and rental
-              income.
-            </li>
-            <li>
-              <strong>Secure and Stable Environment:</strong> Safety and
-              security are paramount in Dubai. The city boasts low crime rates,
-              a politically stable climate, and a strong legal framework,
-              providing investors with confidence and safeguarding their assets.
-            </li>
-            <li>
-              <strong>Supportive Regulatory Landscape:</strong> The Dubai
-              government actively courts foreign investment through various
-              incentives. These include tax advantages, streamlined business
-              setup processes, and minimal bureaucratic hurdles.
-            </li>
-          </ul>
+
+          <p>Several key factors distinguish Dubai as an exceptional investment destination</p>
+
+          <p className="text-sm sm:text-base text-gray-600">
+            <strong>Resilient Economic Foundation:</strong> Dubai's economy thrives on a diversified base of tourism, real estate, and international trade. Its strategic geographical position, world-class infrastructure, and pro-business government policies foster a stable environment conducive to long-term investment success. Continuous development and economic diversification further mitigate the impact of global economic shifts.
+          </p>
+
+          <p className="text-sm sm:text-base text-gray-600">
+            <strong>Potential for High Returns:</strong> Dubai's real estate market consistently delivers competitive returns on investment (ROI). Whether your focus is residential, commercial, or hospitality properties, Dubai offers a range of options with substantial potential for both capital appreciation and rental income.
+          </p>
+
+          <p className="text-sm sm:text-base text-gray-600">
+            <strong>Secure and Stable Environment:</strong> Safety and security are paramount in Dubai. The city boasts low crime rates, a politically stable climate, and a strong legal framework, providing investors with confidence and safeguarding their assets.
+          </p>
+
+          <p className="text-sm sm:text-base text-gray-600">
+            <strong>Supportive Regulatory Landscape:</strong> The Dubai government actively courts foreign investment through various incentives. These include tax advantages, streamlined business setup processes, and minimal bureaucratic hurdles.
+          </p>
 
           <p className="text-sm sm:text-base text-gray-600 mt-6">
-            Navigating international investment can raise legitimate concerns.
-            In Dubai, success hinges on informed decision-making and
-            collaboration with reputable partners. Transparency within the real
-            estate market is a key advantage.
+            Navigating international investment can raise legitimate concerns. In Dubai, success hinges on informed decision-making and collaboration with reputable partners. Transparency within the real estate market is a key advantage.
           </p>
 
           <p className="text-sm sm:text-base text-gray-600 mt-4">
-            Dubai unlocks a spectrum of possibilities for discerning investors.
-            Its robust economy, welcoming investment climate, and diverse
-            opportunities make it a compelling choice for building wealth and
-            securing long-term financial stability.
+            Dubai unlocks a spectrum of possibilities for discerning investors. Its robust economy, welcoming investment climate, and diverse opportunities make it a compelling choice for building wealth and securing long-term financial stability.
           </p>
         </div>
 
@@ -180,42 +154,41 @@ const ReasonsToChooseDubaiRealEstate = () => {
           </p>
 
           {loadingBlogs ? (
-  <p className="mt-6 text-gray-500">Loading blogs...</p>
-) : blogs.length > 0 ? (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mt-8">
-    {blogs.map((blog, index) => (
-      <div
-        key={index}
-        className="bg-white p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
-      >
-        {blog.image && (
-          <img
-            src={blog.image}
-            alt={blog.title}
-            className="w-full h-48 object-cover rounded-lg mb-4"
-          />
-        )}
-        <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
-          {blog.title}
-        </h3>
-        <p className="text-sm sm:text-base text-gray-600 mb-4">
-          {truncateDescription(blog.description)}
-        </p>
-        <Link
-          to={`/blogs/${blog.slug}`}  // changed from blog._id to blog.slug
-          className="text-[rgb(0,104,80)] font-semibold hover:text-[rgb(0,82,60)]"
-        >
-          Read More →
-        </Link>
-      </div>
-    ))}
-  </div>
-) : (
-  <p className="mt-6 text-gray-500">
-    No blog posts available at the moment. Please check back later.
-  </p>
-)}
-
+            <p className="mt-6 text-gray-500">Loading blogs...</p>
+          ) : blogs.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 mt-8">
+              {blogs.map((blog, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
+                  {blog.image && (
+                    <img
+                      src={blog.image}
+                      alt={blog.title}
+                      className="w-full h-48 object-cover rounded-lg mb-4"
+                    />
+                  )}
+                  <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
+                    {blog.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-4">
+                    {blog.description}
+                  </p>
+                  <Link
+                    to={`/blogs/${blog.slug}`}
+                    className="text-[rgb(0,104,80)] font-semibold hover:text-[rgb(0,82,60)]"
+                  >
+                    Read More →
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-6 text-gray-500">
+              No blog posts available at the moment. Please check back later.
+            </p>
+          )}
         </div>
       </div>
     </section>

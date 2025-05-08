@@ -20,9 +20,9 @@ const staticCourses = [
     title: "Introduction to Off Plan",
     description:
       "Discover Dubai's past, present, and future, and understand the off-plan process.",
-    price: 0,
+    price:888,
     thumbnailUrl: dubai1, // ✅ Correct: assign directly as string
-    comingSoon: false,
+    comingSoon: true,
   },
   {
     _id: "leasing",
