@@ -1,49 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
-import image1 from '../assets/photo4.webp';
+import fallbackImage from '../assets/photo4.webp';
 
 const Introduction = () => {
-  const [intro, setIntro] = useState({
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const content = {
     heading: 'HELLO THERE',
     subheading: 'My name is Kirren, your Dubai real estate mentor!',
     paragraph1:
       'If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the right place! With years of experience in the industry, I’ve helped countless individuals navigate the complexities of real estate investment, financing, and market trends.',
     paragraph2:
       'Through my expert courses, mentorship, and insightful content, you’ll gain the confidence to make informed real estate decisions.',
-    image: image1,
-  });
-
-  const [imageLoaded, setImageLoaded] = useState(false);
-
-  useEffect(() => {
-  axiosInstance
-    .get('/intro/intro')
-    .then((res) => {
-      if (res.data) {
-        const { image, ...rest } = res.data;
-        setIntro((prev) => ({
-          ...prev,
-          ...rest,
-          image: image ?? prev.image, // Use fallback if null or undefined
-        }));
-      }
-    })
-    .catch(() => {
-      // Fallback content remains
-    });
-}, []);
-
+    image: fallbackImage,
+  };
 
   return (
     <section className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden">
       {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10">
         <img
-          src={intro.image}
+          src={!imageError ? content.image : fallbackImage}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
-          onError={() => setIntro((prev) => ({ ...prev, image: fallbackImage }))}
+          onError={() => {
+            setImageError(true);
+            setImageLoaded(true); // Remove skeleton if fallback loads
+          }}
           className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
           style={{ display: imageLoaded ? 'block' : 'none' }}
           loading="lazy"
@@ -57,16 +41,16 @@ const Introduction = () => {
       {/* Right Side Text */}
       <div className="w-full md:w-1/2 relative z-10 flex flex-col justify-center md:pl-12 text-center md:text-left">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-[rgb(0,104,80)]">
-          {intro.heading}
+          {content.heading}
         </h2>
         <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-4 text-gray-700">
-          {intro.subheading}
+          {content.subheading}
         </h3>
         <p className="text-sm sm:text-base md:text-lg mb-3 sm:mb-4 leading-relaxed">
-          {intro.paragraph1}
+          {content.paragraph1}
         </p>
         <p className="text-sm sm:text-base md:text-lg mb-5 sm:mb-6 leading-relaxed">
-          {intro.paragraph2}
+          {content.paragraph2}
         </p>
         <div className="flex flex-col items-center md:items-start gap-2">
           <p className="text-base sm:text-lg md:text-xl text-gray-700 font-bold">
