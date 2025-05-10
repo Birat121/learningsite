@@ -98,6 +98,16 @@ const AdminPage = () => {
               <List size={20} />
               List Blogs
             </Link>
+            <Link
+              to="heroeditor"  
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              Hero Editor
+            </Link>
 
             <button
               onClick={() => {
@@ -178,6 +188,15 @@ const AdminPage = () => {
             >
               <List size={20} />
               List Blogs
+            </Link>
+            <Link
+              to="heroeditor"  
+              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
+                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              Hero Editor
             </Link>
           </nav>
         </div>

@@ -30,6 +30,7 @@ import AddBlog from "./components/AddBlog";
 import ListBlogs from "./components/ListBlog";
 import BlogDetail from "./components/BlogDetail";
 import WatchCourse from "./components/WatchCourse";
+import AdminHeroEditor from "./components/HeroEditor";
 
 function App() {
   const location = useLocation();
@@ -150,6 +151,14 @@ function App() {
             element={
               <AdminRoute>
                 <ListBlogs />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard/heroeditor"
+            element={
+              <AdminRoute>
+                <AdminHeroEditor />
               </AdminRoute>
             }
           />

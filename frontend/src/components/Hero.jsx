@@ -1,14 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'react-feather';
-
+import axios from 'axios';
+import dubai from '../assets/Dubai-Skyline.jpg';
 import axiosInstance from '../api/axiosInstance';
 
 const Hero = () => {
   const [hero, setHero] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Static fallback content
+  const staticHero = {
+    title: "KOFFEE WITH KIRREN",
+    subtitle: "Your Gateway to Smart Real Estate Investments & Education.",
+    image: dubai,
+  };
 
   useEffect(() => {
-    axiosInstance.get('/hero').then((res) => setHero(res.data));
+    axiosInstance
+      .get('/hero')
+      .then((res) => {
+        setHero(res.data);
+      })
+      .catch(() => {
+        setHero(staticHero); // Fallback to static content if the API call fails
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
   const scrollToCourses = () => {
@@ -18,13 +37,20 @@ const Hero = () => {
     }
   };
 
-  if (!hero) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        {/* Placeholder or loading spinner */}
+        <div className="animate-spin rounded-full border-4 border-t-4 border-gray-300 h-16 w-16"></div>
+      </div>
+    );
+  }
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden pt-16">
       <div
         className="absolute inset-0 w-full h-full bg-center bg-cover"
-        style={{ backgroundImage: `url(${hero.image})` }}
+        style={{ backgroundImage: `url(${hero.image || dubai})` }} // Fallback to static image if no hero.image
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
       </div>
