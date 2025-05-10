@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import fallbackImage from '../assets/photo4.webp';
+import kirren from '../assets/photo4.webp';
 
 const Introduction = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  
 
   const content = {
     heading: 'HELLO THERE',
@@ -13,7 +13,7 @@ const Introduction = () => {
       'If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the right place! With years of experience in the industry, I’ve helped countless individuals navigate the complexities of real estate investment, financing, and market trends.',
     paragraph2:
       'Through my expert courses, mentorship, and insightful content, you’ll gain the confidence to make informed real estate decisions.',
-    image: fallbackImage,
+    image: kirren,
   };
 
   return (
@@ -24,13 +24,10 @@ const Introduction = () => {
           src={content.image}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
-          onError={() => {
-            setImageError(true);
-            setImageLoaded(true); // Remove skeleton if fallback loads
-          }}
+          
           className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
           style={{ display: imageLoaded ? 'block' : 'none' }}
-          loading="lazy"
+          loading="eager"
           decoding="async"
         />
         {!imageLoaded && (
