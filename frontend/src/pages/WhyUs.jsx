@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   FaBuilding,
   FaDollarSign,
@@ -77,16 +78,21 @@ const ReasonsToChooseDubaiRealEstate = () => {
 
   return (
     <section className="py-16 px-4 sm:px-6 md:px-20 mt-18">
+      <Helmet>
+        <title>Why Invest in Dubai Real Estate? | Koffee With Kirren</title>
+        <meta
+          name="description"
+          content="Discover the top reasons to invest in Dubai's booming real estate market. Explore infrastructure, ROI, safety, Golden Visa, and more."
+        />
+        <link rel="canonical" href="https://yourdomain.com/why-dubai-real-estate" />
+      </Helmet>
+
       <div className="max-w-6xl mx-auto text-center space-y-12 sm:space-y-16">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[rgb(0,104,80)]">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[rgb(0,104,80)]">
           Why Choose Dubai Real Estate?
-        </h2>
+        </h1>
         <p className="text-base sm:text-lg text-black max-w-3xl mx-auto">
-          Dubai, often visualized as a city of dazzling skyscrapers and opulent
-          living, offers more than just glamour. It presents a robust and
-          lucrative investment landscape, particularly attractive to
-          international investors. Here are some reasons why Dubai is a prime
-          location for wealth creation.
+          Dubai, often visualized as a city of dazzling skyscrapers and opulent living, offers more than just glamour. It presents a robust and lucrative investment landscape, particularly attractive to international investors. Here are some reasons why Dubai is a prime location for wealth creation.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
@@ -95,7 +101,7 @@ const ReasonsToChooseDubaiRealEstate = () => {
               key={index}
               className="bg-white p-6 sm:p-8 rounded-xl shadow-md sm:shadow-xl hover:shadow-2xl transition-all duration-300"
             >
-              <div className="bg-gradient-to-r from-green-600 to-blue-500 p-3 sm:p-4 rounded-full mb-5 flex justify-center items-center w-16 h-16 sm:w-20 sm:h-20 mx-auto">
+              <div className="bg-gradient-to-r from-green-600 to-blue-500 p-4 rounded-full mb-5 flex justify-center items-center w-20 h-20 mx-auto">
                 {reason.icon}
               </div>
               <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">
@@ -110,36 +116,36 @@ const ReasonsToChooseDubaiRealEstate = () => {
 
         {/* Investment Advantages Section */}
         <div className="mt-12 text-left space-y-6 sm:space-y-8">
-          <h3 className="text-2xl sm:text-3xl font-semibold text-[rgb(0,104,80)]">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-[rgb(0,104,80)]">
             Dubai's Investment Advantages:
-          </h3>
+          </h2>
 
           <p>
-            Several key factors distinguish Dubai as an exceptional investment destination
+            Several key factors distinguish Dubai as an exceptional investment destination:
           </p>
 
           <p className="text-sm sm:text-base text-gray-600">
-            <strong>Resilient Economic Foundation:</strong> Dubai's economy thrives on a diversified base of tourism, real estate, and international trade. Its strategic geographical position, world-class infrastructure, and pro-business government policies foster a stable environment conducive to long-term investment success. Continuous development and economic diversification further mitigate the impact of global economic shifts.
+            <strong>Resilient Economic Foundation:</strong> Dubai's economy thrives on a diversified base of tourism, real estate, and international trade. Its strategic geographical position, world-class infrastructure, and pro-business government policies foster a stable environment conducive to long-term investment success.
           </p>
 
           <p className="text-sm sm:text-base text-gray-600">
-            <strong>Potential for High Returns:</strong> Dubai's real estate market consistently delivers competitive returns on investment (ROI). Whether your focus is residential, commercial, or hospitality properties, Dubai offers a range of options with substantial potential for both capital appreciation and rental income.
+            <strong>Potential for High Returns:</strong> Dubai's real estate market consistently delivers competitive ROI. Whether your focus is residential, commercial, or hospitality properties, Dubai offers options with substantial potential for both capital appreciation and rental income.
           </p>
 
           <p className="text-sm sm:text-base text-gray-600">
-            <strong>Secure and Stable Environment:</strong> Safety and security are paramount in Dubai. The city boasts low crime rates, a politically stable climate, and a strong legal framework, providing investors with confidence and safeguarding their assets.
+            <strong>Secure and Stable Environment:</strong> Safety and security are paramount in Dubai. The city boasts low crime rates, a politically stable climate, and a strong legal framework that protects investor interests.
           </p>
 
           <p className="text-sm sm:text-base text-gray-600">
-            <strong>Supportive Regulatory Landscape:</strong> The Dubai government actively courts foreign investment through various incentives. These include tax advantages, streamlined business setup processes, and minimal bureaucratic hurdles.
+            <strong>Supportive Regulatory Landscape:</strong> The Dubai government actively encourages foreign investment through tax benefits, simplified processes, and investor-friendly laws.
           </p>
 
           <p className="text-sm sm:text-base text-gray-600 mt-6">
-            Navigating international investment can raise legitimate concerns. In Dubai, success hinges on informed decision-making and collaboration with reputable partners. Transparency within the real estate market is a key advantage.
+            Success in Dubai’s real estate market comes from informed decisions and trustworthy partnerships. Transparency and strong governance make this market highly attractive.
           </p>
 
           <p className="text-sm sm:text-base text-gray-600 mt-4">
-            Dubai unlocks a spectrum of possibilities for discerning investors. Its robust economy, welcoming investment climate, and diverse opportunities make it a compelling choice for building wealth and securing long-term financial stability.
+            Whether you're an investor seeking long-term gains or exploring a luxurious lifestyle, Dubai offers unmatched real estate opportunities.
           </p>
         </div>
 
@@ -154,13 +160,11 @@ const ReasonsToChooseDubaiRealEstate = () => {
 
         {/* Blog Section */}
         <div className="mt-12 text-center">
-          <h3 className="text-2xl sm:text-3xl font-semibold text-[rgb(0,104,80)]">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-[rgb(0,104,80)]">
             Latest Blogs
-          </h3>
+          </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto mt-4">
-            Stay up-to-date with the latest trends and insights in Dubai’s real
-            estate market. Check out our recent blog posts for valuable
-            information.
+            Stay up-to-date with the latest trends and insights in Dubai’s real estate market.
           </p>
 
           {loadingBlogs ? (
@@ -206,4 +210,5 @@ const ReasonsToChooseDubaiRealEstate = () => {
 };
 
 export default ReasonsToChooseDubaiRealEstate;
+
 

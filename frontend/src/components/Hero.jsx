@@ -29,7 +29,7 @@ const Hero = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.2 }}
         >
-          <span className="text-white">KOFFEE WITH KIRREN</span>
+          <h1 className="text-white">KOFFEE WITH KIRREN</h1>
         </motion.h1>
 
         <motion.p
@@ -49,7 +49,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
         >
-          <span className="text-white text-sm sm:text-lg">Scroll</span>
+          <h2 className="text-white text-sm sm:text-lg">Scroll</h2>
           <ChevronDown className="text-white w-6 h-6 sm:w-8 sm:h-8" />
         </motion.div>
       </div>

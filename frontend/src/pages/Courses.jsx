@@ -171,6 +171,7 @@ const Courses = () => {
           name="keywords"
           content="real estate courses, property training, real estate licensing, real estate investment, online property course, AED"
         />
+        <link rel="canonical" href="https://realstatelearning3.netlify.app/courses" />
       </Helmet>
 
       <div className="max-w-7xl mx-auto">

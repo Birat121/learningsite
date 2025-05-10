@@ -24,6 +24,9 @@ const Home = () => {
           name="keywords"
           content="real estate courses, learn real estate online, real estate training, real estate career"
         />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://realstatelearning3.netlify.app/" />
       </Helmet>
     <Hero />
     <Introduction/>
