@@ -4,52 +4,56 @@ import { FaBook, FaTools, FaBuilding, FaChartLine } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 
+const getStaticCourses = () => ([
+  {
+    icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Introduction to Off Plan",
+    description: "Discover Dubai's past, present, and future, and understand the off-plan process.",
+  },
+  {
+    icon: <FaTools className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Introduction to Leasing",
+    description: "Coming soon",
+  },
+  {
+    icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Introduction to Secondary",
+    description: "Coming soon",
+  },
+  {
+    icon: <FaChartLine className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Sales Techniques",
+    description: "Coming soon",
+  },
+  {
+    icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Dubai Area Guides",
+    description: "Coming soon",
+  },
+  {
+    icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
+    title: "Dubai Property Developers",
+    description: "Coming soon",
+  }
+]);
+
 const Courses = () => {
-  const [courses, setCourses] = useState([]);  // State to hold course data
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    // Fetch courses from backend
     axiosInstance.get('/videos/videos')
       .then(response => {
-        setCourses(response.data);  // Update the state with fetched data
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setCourses(response.data);
+        } else {
+          setCourses(getStaticCourses());
+        }
       })
       .catch(err => {
         console.error("Failed to fetch courses:", err);
-        // If fetch fails, fall back to static courses array
-        setCourses([
-          {
-            icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-            title: "Introduction to Off Plan",
-            description: "Discover Dubai's past, present, and future, and understand the off-plan process.",
-          },
-          {
-            icon: <FaTools className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-            title: "Introduction to Leasing",
-            description: "Coming soon",
-          },
-          {
-            icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-            title: "Introduction to Secondary",
-            description: "Coming soon",
-          },
-          {
-            icon: <FaChartLine className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-            title: "Sales Techniques",
-            description: "Coming soon",
-          },
-          {
-            icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-            title: "Dubai Area Guides",
-            description: "Coming soon",
-          },
-          {
-            icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
-            title: "Dubai Property Developers",
-            description: "Coming soon",
-          }
-        ]);
+        setCourses(getStaticCourses());
       });
-  }, []);  // Empty dependency array ensures this runs only on mount
+  }, []);
 
   return (
     <motion.section
@@ -90,4 +94,3 @@ const Courses = () => {
 };
 
 export default Courses;
-

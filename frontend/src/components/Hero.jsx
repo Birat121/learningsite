@@ -18,7 +18,7 @@ const Hero = () => {
 
   useEffect(() => {
     axiosInstance
-      .get('/hero')
+      .get('/hero/get')
       .then((res) => {
         setHero(res.data);
       })

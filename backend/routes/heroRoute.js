@@ -4,7 +4,7 @@ import { upload } from '../middleware/upload.js';
 
 const heroRouter = express.Router();
 
-heroRouter.get('/', getHero);
-heroRouter.put('/', upload.single('image'), updateHero);
+heroRouter.get('/get', getHero);
+heroRouter.put('/update', upload.single('image'), updateHero);
 
 export default heroRouter;

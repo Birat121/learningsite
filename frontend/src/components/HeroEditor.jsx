@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import toast from 'react-hot-toast';
 import axiosInstance from '../api/axiosInstance';
 
 const AdminHeroEditor = () => {
@@ -11,7 +11,7 @@ const AdminHeroEditor = () => {
   });
 
   useEffect(() => {
-    axiosInstance.get('/hero').then((res) => {
+    axiosInstance.get('/hero/get').then((res) => {
       if (res.data) {
         setForm({
           title: res.data.title,
@@ -40,8 +40,8 @@ const AdminHeroEditor = () => {
     data.append('subtitle', form.subtitle);
     if (form.image) data.append('image', form.image);
 
-    await axiosInstance.put('/hero', data);
-    alert('Hero updated!');
+    await axiosInstance.put('/hero/update', data);
+    toast.success('Hero section updated successfully');
   };
 
   return (
