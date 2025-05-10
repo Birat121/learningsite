@@ -1,7 +1,7 @@
 // routes/introductionRoutes.js
 import express from 'express';
 import multer from 'multer';
-import { getIntroduction, updateIntroduction } from '../controllers/introductionController.js';
+import { getIntroduction, updateIntroduction } from '../controllers/introController.js';
 
 const introRouter = express.Router();
 
