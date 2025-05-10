@@ -1,24 +1,36 @@
-import hero from "../models/hero";
+import Hero from "../models/hero.js";
 
 export const getHero = async (req, res) => {
-  const hero = await hero.findOne();
-  res.json(hero);
+  try {
+    const hero = await Hero.findOne();
+    res.json(hero);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch hero', error: err.message });
+  }
 };
 
 export const updateHero = async (req, res) => {
-  const { title, subtitle } = req.body;
-  const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+  try {
+    const { title, subtitle } = req.body;
+    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
 
-  let hero1 = await hero.findOne();
+    let hero = await Hero.findOne();
 
-  if (hero1) {
-    hero.title = title;
-    hero.subtitle = subtitle;
-    if (image) hero.image = image;
-  } else {
-    hero = new hero({ title, subtitle, image });
+    if (hero) {
+      hero.title = title;
+      hero.subtitle = subtitle;
+      if (image) hero.image = image;
+    } else {
+      hero = new Hero({ title, subtitle, image });
+    }
+
+    await hero.save();
+    res.json({ message: 'Hero updated', hero });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update hero', error: err.message });
   }
-
-  await hero.save();
-  res.json({ message: 'Hero updated', hero });
 };
+
+
+

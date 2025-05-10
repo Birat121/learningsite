@@ -12,6 +12,7 @@ import quizRouter from "./routes/quizRoute.js";
 import blogRouter from "./routes/blogRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
 import heroRouter from "./routes/heroRoute.js";
+import introRouter from "./routes/introRoute.js";
 
 
 // Load Google Strategy
@@ -31,6 +32,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allow headers like Authorization
 }));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -52,6 +54,7 @@ app.use("/api/quiz", quizRouter);
 app.use("/api/blogs", blogRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/hero", heroRouter);
+app.use("/api/intro", introRouter);
 
 
 // Default test route
