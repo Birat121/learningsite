@@ -14,11 +14,8 @@ export const getIntroduction = async (req, res) => {
 export const updateIntroduction = async (req, res) => {
   try {
     const { heading, subheading, paragraph1, paragraph2 } = req.body;
-    let image;
-
-    if (req.file) {
-      image = `/uploads/${req.file.filename}`;
-    }
+   const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    
 
     let intro = await Introduction.findOne();
     if (!intro) {
