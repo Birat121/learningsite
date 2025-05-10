@@ -10,3 +10,4 @@ const introductionSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export default mongoose.model('Introduction', introductionSchema);
+

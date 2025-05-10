@@ -1,5 +1,5 @@
 // controllers/introductionController.js
-import Introduction from '../models/Introduction.js';
+import Introduction from "../models/intro.js";
 
 
 export const getIntroduction = async (req, res) => {

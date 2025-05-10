@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import defaultImage from '../assets/photo4.webp';
+
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import image from '../assets/photo4.webp';
