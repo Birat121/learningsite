@@ -37,7 +37,7 @@ const Introduction = () => {
     subheading: intro.subheading || defaultContent.subheading,
     paragraph1: intro.paragraph1 || defaultContent.paragraph1,
     paragraph2: intro.paragraph2 || defaultContent.paragraph2,
-    image: intro.image ? `/uploads/${intro.image}` : defaultContent.image, // Dynamically handle image path
+    image: defaultContent.image, // Dynamically handle image path
   } : defaultContent; // Use defaultContent if intro is null
 
   return (
