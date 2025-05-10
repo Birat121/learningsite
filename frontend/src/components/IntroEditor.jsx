@@ -39,30 +39,34 @@ const AdminIntroduction = () => {
     }
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Form validation
-    if (!form.heading || !form.subheading || !form.paragraph1 || !form.paragraph2) {
-      toast.error('All fields must be filled');
-      return;
-    }
+  // Form validation
+  if (!form.heading || !form.subheading || !form.paragraph1 || !form.paragraph2) {
+    toast.error('All fields must be filled');
+    return;
+  }
 
-    setLoading(true);
-    const formData = new FormData();
-    for (const key in form) {
-      formData.append(key, form[key]);
-    }
+  setLoading(true);
+  const formData = new FormData();
+  for (const key in form) {
+    formData.append(key, form[key]);
+  }
 
-    try {
-      await axiosInstance.put('/intro/intro', formData);
-      toast.success('Introduction updated successfully');
-    } catch (error) {
-      toast.error('Failed to update introduction');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    await axiosInstance.put('/intro/intro', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',  // Explicitly set content type
+      },
+    });
+    toast.success('Introduction updated successfully');
+  } catch (error) {
+    toast.error('Failed to update introduction');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10">

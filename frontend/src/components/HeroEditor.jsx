@@ -33,16 +33,26 @@ const AdminHeroEditor = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const data = new FormData();
-    data.append('title', form.title);
-    data.append('subtitle', form.subtitle);
-    if (form.image) data.append('image', form.image);
+  const data = new FormData();
+  data.append('title', form.title);
+  data.append('subtitle', form.subtitle);
+  if (form.image) data.append('image', form.image);
 
-    await axiosInstance.put('/hero/update', data);
+  try {
+    await axiosInstance.put('/hero/update', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     toast.success('Hero section updated successfully');
-  };
+  } catch (err) {
+    toast.error('Failed to update hero section');
+    console.error(err);
+  }
+};
+
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
