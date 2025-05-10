@@ -1,19 +1,19 @@
 import React from 'react';
-import comingSoon from '../assets/c2.jpg'; // Adjust path if needed
+import soon from '../assets/soon.webp';
 import { PlayCircle } from 'react-feather';
 
 const PodcastHighlight = () => {
   const videos = [
     {
-      title: "Dubai Real Estate Market 2024",
+      title: "Welcome to the Jungle!",
       comingSoon: true,
     },
     {
-      title: "How to Invest in Dubai Real Estate",
+      title: "Breaking into Dubai:An Expat's Story",
       comingSoon: true,
     },
     {
-      title: "Beginner’s Guide to Off-Plan Property",
+      title: "Dubai Real Estate Interviews: The Questions That Matter",
       comingSoon: true,
     },
   ];
@@ -50,7 +50,7 @@ const PodcastHighlight = () => {
               "
             >
               <img
-                src={comingSoon}
+                src={soon}
                 alt={video.title}
                 className="w-full h-[180px] object-cover"
               />

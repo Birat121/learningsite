@@ -21,7 +21,7 @@ const Introduction = () => {
       {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10">
         <img
-          src={!imageError ? content.image : fallbackImage}
+          src={content.image}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
           onError={() => {

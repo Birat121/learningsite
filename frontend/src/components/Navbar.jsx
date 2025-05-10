@@ -68,11 +68,12 @@ const Navbar = () => {
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   const links = [
-    { to: "/", label: "HOME" },
+    { to: "/", label: "Home" },
     { to: "/about", label: "Why Choose Me" },
-    { to: "/courses", label: "COURSES" },
+    
     { to: "/why-dubai", label: "Dubai Real State" },
-    { to: "/contact", label: "CONTACT US" },
+    { to: "/courses", label: "Courses" },
+    { to: "/contact", label: "Contact Me" },
   ];
 
   const handleLogout = () => {

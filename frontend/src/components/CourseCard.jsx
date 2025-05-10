@@ -26,7 +26,7 @@ const CourseCard = ({ course }) => {
         <div className="flex flex-col justify-between flex-grow p-4 space-y-3">
           <div>
             <p className="text-sm text-gray-500">
-              {course.author || course.uploader || "Kirren Real Estate"}
+              {course.author || course.uploader || "Koffee with Kirren"}
             </p>
             <h3 className="text-lg font-semibold text-gray-800 line-clamp-2">
               {course.title}
@@ -47,7 +47,7 @@ const CourseCard = ({ course }) => {
                   : "text-red-500 font-semibold"
               }
             >
-              {course.price === 0 ? "Free" : `AED ${course.price}`}
+              {course.price === 0 ? "POA" : `AED ${course.price}`}
             </span>
           </div>
         </div>
