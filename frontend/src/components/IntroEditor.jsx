@@ -11,6 +11,9 @@ const AdminIntroduction = () => {
     image: null,
   });
 
+  const [loading, setLoading] = useState(false);  // Loading state
+  const [imagePreview, setImagePreview] = useState(null); // Image preview state
+
   useEffect(() => {
     axiosInstance.get('/intro/intro').then(res => {
       setForm(prev => ({ ...prev, ...res.data }));
@@ -23,18 +26,42 @@ const AdminIntroduction = () => {
   };
 
   const handleFileChange = e => {
-    setForm(prev => ({ ...prev, image: e.target.files[0] }));
+    const file = e.target.files[0];
+    setForm(prev => ({ ...prev, image: file }));
+
+    // Preview the image
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    if (file) {
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
+
+    // Form validation
+    if (!form.heading || !form.subheading || !form.paragraph1 || !form.paragraph2) {
+      toast.error('All fields must be filled');
+      return;
+    }
+
+    setLoading(true);
     const formData = new FormData();
     for (const key in form) {
       formData.append(key, form[key]);
     }
 
-    await axiosInstance.put('/intro/intro', formData);
-    toast.success('Introduction updated successfully');
+    try {
+      await axiosInstance.put('/intro/intro', formData);
+      toast.success('Introduction updated successfully');
+    } catch (error) {
+      toast.error('Failed to update introduction');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -95,13 +122,16 @@ const AdminIntroduction = () => {
             onChange={handleFileChange}
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
           />
+          {/* Image Preview */}
+          {imagePreview && <img src={imagePreview} alt="Preview" className="mt-4 w-full h-auto rounded-md" />}
         </div>
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-4 rounded-md shadow focus:outline-none focus:ring-2 focus:ring-teal-500"
         >
-          Update
+          {loading ? 'Updating...' : 'Update'}
         </button>
       </form>
     </div>
@@ -109,4 +139,3 @@ const AdminIntroduction = () => {
 };
 
 export default AdminIntroduction;
-

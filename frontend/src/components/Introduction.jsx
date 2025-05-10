@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from 'react';
-
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
-import image from '../assets/photo4.webp';
+import defaultImage from '../assets/photo4.webp'; // Default image fallback
 
 const Introduction = () => {
   const [intro, setIntro] = useState(null);
 
   useEffect(() => {
+    // Fetch introduction data from the server
     axiosInstance.get('/intro/intro')
       .then(res => {
         if (res.data) {
-          setIntro(res.data);
+          setIntro(res.data); // If data exists, set it to state
         }
       })
       .catch(err => {
         console.error('Failed to fetch introduction:', err);
-        setIntro(null); // Ensure fallback if error
+        setIntro(null); // Fallback to null if error occurs
       });
   }, []);
 
-  // Fallback content
+  // Default content in case intro is not available
   const defaultContent = {
     heading: 'HELLO THERE',
     subheading: 'My name is Kirren, your Dubai real estate mentor!',
@@ -28,24 +28,24 @@ const Introduction = () => {
       'If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the right place! With years of experience in the industry, I’ve helped countless individuals navigate the complexities of real estate investment, financing, and market trends.',
     paragraph2:
       'Through my expert courses, mentorship, and insightful content, you’ll gain the confidence to make informed real estate decisions.',
-    image: image,
+    image: defaultImage,
   };
 
- const content = {
-  heading: intro?.heading || defaultContent.heading,
-  subheading: intro?.subheading || defaultContent.subheading,
-  paragraph1: intro?.paragraph1 || defaultContent.paragraph1,
-  paragraph2: intro?.paragraph2 || defaultContent.paragraph2,
-  image: intro?.image ? `/uploads/${intro.image}` : defaultContent.image, // <-- key fix
-};
-
+  // Fallback content (server content or default)
+  const content = {
+    heading: intro?.heading || defaultContent.heading,
+    subheading: intro?.subheading || defaultContent.subheading,
+    paragraph1: intro?.paragraph1 || defaultContent.paragraph1,
+    paragraph2: intro?.paragraph2 || defaultContent.paragraph2,
+    image: intro?.image ? `/uploads/${intro.image}` : defaultContent.image, // Dynamically handle image path
+  };
 
   return (
     <section className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden">
       {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10">
         <img
-          src={content.image}
+          src={content.image} // Dynamically set the image source
           alt="Introduction"
           className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
         />
