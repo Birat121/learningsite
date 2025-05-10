@@ -45,32 +45,76 @@ const AdminHeroEditor = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 space-y-4">
-      <input
-        name="title"
-        value={form.title}
-        onChange={handleChange}
-        placeholder="Hero Title"
-        className="w-full p-2 border"
-      />
-      <input
-        name="subtitle"
-        value={form.subtitle}
-        onChange={handleChange}
-        placeholder="Hero Subtitle"
-        className="w-full p-2 border"
-      />
-      <input type="file" name="image" accept="image/*" onChange={handleChange} />
+    <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+      <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+        Edit Hero Section
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            Hero Title
+          </label>
+          <input
+            id="title"
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            placeholder="Enter the hero section title"
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+          />
+        </div>
 
-      {form.preview && (
-        <img src={form.preview} alt="Preview" className="w-64 h-auto rounded shadow" />
-      )}
+        <div className="space-y-2">
+          <label htmlFor="subtitle" className="block text-sm font-medium text-gray-700">
+            Hero Subtitle
+          </label>
+          <input
+            id="subtitle"
+            name="subtitle"
+            value={form.subtitle}
+            onChange={handleChange}
+            placeholder="Enter the hero section subtitle"
+            className="w-full px-4 py-2 border rounded-md shadow-sm focus:ring-teal-500 focus:border-teal-500"
+          />
+        </div>
 
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2">
-        Save Hero Section
-      </button>
-    </form>
+        <div className="space-y-2">
+          <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+            Hero Image
+          </label>
+          <input
+            id="image"
+            type="file"
+            name="image"
+            accept="image/*"
+            onChange={handleChange}
+            className="w-full text-sm text-gray-500 file:border-0 file:rounded-md file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100"
+          />
+        </div>
+
+        {form.preview && (
+          <div className="space-y-2 text-center">
+            <h4 className="text-sm font-medium text-gray-700">Image Preview</h4>
+            <img
+              src={form.preview}
+              alt="Preview"
+              className="mx-auto w-64 h-auto object-cover rounded-md shadow-md"
+            />
+          </div>
+        )}
+
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
+          >
+            Save Hero Section
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 
 export default AdminHeroEditor;
+
