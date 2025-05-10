@@ -31,13 +31,14 @@ const Introduction = () => {
     image: image,
   };
 
-  const content = {
-    heading: intro?.heading || defaultContent.heading,
-    subheading: intro?.subheading || defaultContent.subheading,
-    paragraph1: intro?.paragraph1 || defaultContent.paragraph1,
-    paragraph2: intro?.paragraph2 || defaultContent.paragraph2,
-    image: intro?.image ? `${process.env.REACT_APP_BASE_URL}${intro.image}` : defaultContent.image,
-  };
+ const content = {
+  heading: intro?.heading || defaultContent.heading,
+  subheading: intro?.subheading || defaultContent.subheading,
+  paragraph1: intro?.paragraph1 || defaultContent.paragraph1,
+  paragraph2: intro?.paragraph2 || defaultContent.paragraph2,
+  image: intro?.image ? `/uploads/${intro.image}` : defaultContent.image, // <-- key fix
+};
+
 
   return (
     <section className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden">
