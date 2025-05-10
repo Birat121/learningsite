@@ -11,6 +11,7 @@ import router from "./routes/videoRoute.js";
 import quizRouter from "./routes/quizRoute.js";
 import blogRouter from "./routes/blogRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
+import heroRouter from "./routes/heroRoute.js";
 
 
 // Load Google Strategy
@@ -50,6 +51,7 @@ app.use("/api/videos", router);
 app.use("/api/quiz", quizRouter);
 app.use("/api/blogs", blogRouter);
 app.use("/api/payment", paymentRouter);
+app.use("/api/hero", heroRouter);
 
 
 // Default test route
