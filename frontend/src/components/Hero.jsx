@@ -1,33 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'react-feather';
 
 import dubai from '../assets/Dubai-Skyline.jpg';
-import axiosInstance from '../api/axiosInstance';
 
 const Hero = () => {
-  const [hero, setHero] = useState({
+  const [bgLoaded, setBgLoaded] = useState(false);
+
+  const hero = {
     title: 'KOFFEE WITH KIRREN',
     subtitle: 'Your Gateway to Smart Real Estate Investments & Education.',
     image: dubai,
-  });
-
-  const [bgLoaded, setBgLoaded] = useState(false);
-
-  useEffect(() => {
-    axiosInstance
-      .get('/hero/get')
-      .then((res) => {
-        setHero((prev) => ({
-          ...prev,
-          ...res.data,
-          image: res.data.image || prev.image,
-        }));
-      })
-      .catch(() => {
-        // Already using default fallback
-      });
-  }, []);
+  };
 
   const scrollToCourses = () => {
     const coursesSection = document.getElementById('courses');
