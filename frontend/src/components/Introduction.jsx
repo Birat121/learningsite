@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
-import defaultImage from '../assets/photo4.webp'; // Default image fallback
+import image from '../assets/photo4.webp';
 
 const Introduction = () => {
   const [intro, setIntro] = useState(null);
@@ -28,7 +28,7 @@ const Introduction = () => {
       'If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the right place! With years of experience in the industry, I’ve helped countless individuals navigate the complexities of real estate investment, financing, and market trends.',
     paragraph2:
       'Through my expert courses, mentorship, and insightful content, you’ll gain the confidence to make informed real estate decisions.',
-    image: defaultImage,
+    image: image,
   };
 
   // Fallback content (server content or default)
