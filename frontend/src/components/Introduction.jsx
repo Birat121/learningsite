@@ -17,21 +17,23 @@ const Introduction = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    axiosInstance
-      .get('/intro/intro')
-      .then((res) => {
-        if (res.data) {
-          setIntro((prev) => ({
-            ...prev,
-            ...res.data,
-            image: res.data.image || fallbackImage,
-          }));
-        }
-      })
-      .catch(() => {
-        // Fallback content remains
-      });
-  }, []);
+  axiosInstance
+    .get('/intro/intro')
+    .then((res) => {
+      if (res.data) {
+        const { image, ...rest } = res.data;
+        setIntro((prev) => ({
+          ...prev,
+          ...rest,
+          image: image ?? fallbackImage, // Use fallback if null or undefined
+        }));
+      }
+    })
+    .catch(() => {
+      // Fallback content remains
+    });
+}, []);
+
 
   return (
     <section className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden">
