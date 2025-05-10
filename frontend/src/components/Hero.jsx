@@ -1,33 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'react-feather';
-import axiosInstance from '../api/axiosInstance';  // Assuming axiosInstance is set up for API requests
+
+import dubai from '../assets/Dubai-Skyline.jpg';
 
 const Hero = () => {
-  const [heroData, setHeroData] = useState({
-    title: '',
-    subtitle: '',
-    image: '',
-  });
   const [bgLoaded, setBgLoaded] = useState(false);
 
-  // Fetch hero data from the backend
-  useEffect(() => {
-    const fetchHeroData = async () => {
-      try {
-        const response = await axiosInstance.get('/hero/get'); // Adjust endpoint as needed
-        setHeroData({
-          title: response.data.title,
-          subtitle: response.data.subtitle,
-          image: response.data.image,
-        });
-      } catch (error) {
-        console.error('Failed to fetch hero data:', error);
-      }
-    };
-
-    fetchHeroData();
-  }, []);  // Empty dependency array means this runs once when the component mounts
+  const hero = {
+    title: 'KOFFEE WITH KIRREN',
+    subtitle: 'Your Gateway to Smart Real Estate Investments & Education.',
+    image: dubai,
+  };
 
   const scrollToCourses = () => {
     const coursesSection = document.getElementById('courses');
@@ -40,7 +24,7 @@ const Hero = () => {
     <section className="relative min-h-screen w-full pt-16 overflow-hidden">
       {/* Lazy-loaded background image */}
       <img
-        src={heroData.image}
+        src={hero.image}
         alt="Hero"
         onLoad={() => setBgLoaded(true)}
         className="absolute inset-0 w-full h-full object-cover z-0"
@@ -60,7 +44,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {heroData.title || 'Loading...'}
+          {hero.title}
         </motion.h1>
 
         <motion.p
@@ -69,7 +53,7 @@ const Hero = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          {heroData.subtitle || 'Please wait, loading...'}
+          {hero.subtitle}
         </motion.p>
 
         {/* Scroll Indicator */}
