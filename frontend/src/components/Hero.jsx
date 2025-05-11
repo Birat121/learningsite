@@ -13,12 +13,13 @@ const Hero = () => {
     image: dubai,
   };
 
-  const scrollToCourses = () => {
-    const coursesSection = document.getElementById('courses');
-    if (coursesSection) {
-      coursesSection.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+ const scrollToNextSection = () => {
+  const nextSection = document.getElementById('next-section');
+  if (nextSection) {
+    nextSection.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
 
   return (
     <section className="relative min-h-screen w-full pt-16 overflow-hidden">
@@ -59,7 +60,7 @@ const Hero = () => {
         {/* Scroll Indicator */}
         <motion.div
           className="flex flex-col items-center absolute bottom-16 sm:bottom-20 cursor-pointer animate-bounce"
-          onClick={scrollToCourses}
+          onClick={scrollToNextSection}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 }}
