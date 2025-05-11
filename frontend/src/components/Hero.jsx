@@ -1,31 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'react-feather';
 
-import dubai from '../assets/Dubai-Skyline.jpg';
+import axiosInstance from '../api/axiosInstance';
 
 const Hero = () => {
   const [bgLoaded, setBgLoaded] = useState(false);
+  const [hero, setHero] = useState(null);
 
-  const hero = {
-    title: 'KOFFEE WITH KIRREN',
-    subtitle: 'Your Gateway to Smart Real Estate Investments & Education.',
-    image: dubai,
+  useEffect(() => {
+    const fetchHero = async () => {
+      try {
+        const res = await axiosInstance.get('/hero/get');
+        setHero(res.data);
+      } catch (error) {
+        console.error('Failed to fetch hero content:', error);
+      }
+    };
+
+    fetchHero();
+  }, []);
+
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('next-section');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
- const scrollToNextSection = () => {
-  const nextSection = document.getElementById('next-section');
-  if (nextSection) {
-    nextSection.scrollIntoView({ behavior: 'smooth' });
+  if (!hero) {
+    return (
+      <section className="relative min-h-screen w-full pt-16 overflow-hidden bg-black text-white flex items-center justify-center">
+        <p>Loading...</p>
+      </section>
+    );
   }
-};
-
 
   return (
     <section className="relative min-h-screen w-full pt-16 overflow-hidden">
       {/* Lazy-loaded background image */}
       <img
-        src={hero.image}
+        src={hero.imageUrl}
         alt="Hero"
         onLoad={() => setBgLoaded(true)}
         className="absolute inset-0 w-full h-full object-cover z-0"

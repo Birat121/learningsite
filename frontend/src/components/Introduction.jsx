@@ -1,34 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import kirren from '../assets/photo4.webp';
+
+import axiosInstance from '../api/axiosInstance';
 
 const Introduction = () => {
+  const [content, setContent] = useState(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  
 
-  const content = {
-    heading: 'HELLO THERE',
-    subheading: 'My name is Kirren, your Dubai real estate mentor!',
-    paragraph1:
-      'If you’re an aspiring investor, homeowner, or property enthusiast, you’re in the right place! With years of experience in the industry, I’ve helped countless individuals navigate the complexities of real estate investment, financing, and market trends.',
-    paragraph2:
-      'Through my expert courses, mentorship, and insightful content, you’ll gain the confidence to make informed real estate decisions.',
-    image: kirren,
-  };
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const res = await axiosInstance.get('intro/intro');
+        setContent(res.data);
+      } catch (error) {
+        console.error('Failed to fetch introduction content:', error);
+      }
+    };
+
+    fetchContent();
+  }, []);
+
+  if (!content) {
+    return (
+      <section className="py-16 bg-white text-center">
+        <p className="text-gray-500">Loading content...</p>
+      </section>
+    );
+  }
 
   return (
     <section
-  id="next-section"  // 👈 Add this line
-  className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden"
->
-
+      id="next-section"
+      className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden"
+    >
       {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10">
         <img
-          src={content.image}
+          src={content.imageUrl}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
-          
           className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
           style={{ display: imageLoaded ? 'block' : 'none' }}
           loading="eager"
