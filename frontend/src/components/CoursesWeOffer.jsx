@@ -9,41 +9,31 @@ const getStaticCourses = () => ([
     icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Introduction to Off Plan",
     description: "Discover Dubai's past, present, and future, and understand the off-plan process.",
-    highlights: [
-      "History of Dubai real estate",
-      "How off-plan buying works",
-      "Risks and rewards explained",
-    ],
   },
   {
     icon: <FaTools className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Introduction to Leasing",
     description: "Coming soon",
-    highlights: [],
   },
   {
     icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Introduction to Secondary",
     description: "Coming soon",
-    highlights: [],
   },
   {
     icon: <FaChartLine className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Sales Techniques",
     description: "Coming soon",
-    highlights: [],
   },
   {
     icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Dubai Area Guides",
     description: "Coming soon",
-    highlights: [],
   },
   {
     icon: <FaBuilding className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Dubai Property Developers",
     description: "Coming soon",
-    highlights: [],
   }
 ]);
 
@@ -54,11 +44,10 @@ const Courses = () => {
     axiosInstance.get('/videos/videos')
       .then(response => {
         if (Array.isArray(response.data) && response.data.length > 0) {
-          // If highlights are supported from backend, ensure fallback to []
           const enriched = response.data.map(course => ({
             ...course,
-            highlights: course.highlights || [],
-            icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" /> // fallback icon
+            description: course.description?.substring(0, 100) || "Learn more",
+            icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />
           }));
           setCourses(enriched);
         } else {
@@ -91,15 +80,7 @@ const Courses = () => {
             <div className="flex flex-col items-center text-center">
               {course.icon}
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">{course.title}</h3>
-              <p className="text-sm sm:text-base text-gray-600 mb-2">{course.description}</p>
-
-              {course.highlights && course.highlights.length > 0 && (
-                <ul className="list-disc list-inside text-sm text-gray-600 text-left">
-                  {course.highlights.map((point, idx) => (
-                    <li key={idx}>{point}</li>
-                  ))}
-                </ul>
-              )}
+              <p className="text-sm sm:text-base text-gray-600">{course.description}</p>
             </div>
           </div>
         ))}
@@ -118,4 +99,3 @@ const Courses = () => {
 };
 
 export default Courses;
-
