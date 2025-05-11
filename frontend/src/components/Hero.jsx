@@ -40,7 +40,7 @@ const Hero = () => {
     <section className="relative min-h-screen w-full pt-16 overflow-hidden">
       {/* Lazy-loaded background image */}
       <img
-        src={hero.imageUrl}
+        src={`https://learningsite-lsgy.onrender.com${hero.image}`}
         alt="Hero"
         onLoad={() => setBgLoaded(true)}
         className="absolute inset-0 w-full h-full object-cover z-0"
