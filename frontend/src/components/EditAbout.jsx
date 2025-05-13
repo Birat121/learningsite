@@ -1,33 +1,48 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance"; // Adjust if needed
 import { toast } from "react-hot-toast";
 
 const EditAboutPage = () => {
   const [aboutData, setAboutData] = useState({
     title: "",
     description: "",
-    sections: [],
+    sections: [], // Ensure this is initialized as an empty array
   });
 
+  // Fetch data when the component mounts
   useEffect(() => {
-    axios.get("/api/about")
-      .then((res) => setAboutData(res.data))
-      .catch((err) => console.error("Error fetching about data:", err));
+    axiosInstance
+      .get("/about/get")
+      .then((res) => {
+        // Make sure the response structure is correct
+        setAboutData({
+          title: res.data.title || "",
+          description: res.data.description || "",
+          sections: res.data.sections || [], // Ensure sections is always an array
+        });
+      })
+      .catch((err) => {
+        console.error("Error fetching about data:", err);
+        toast.error("Failed to fetch About page data");
+      });
   }, []);
 
+  // Handle input changes for sections
   const handleChange = (e, index, field) => {
     const newSections = [...aboutData.sections];
     newSections[index][field] = e.target.value;
     setAboutData({ ...aboutData, sections: newSections });
   };
 
+  // Handle paragraph changes within sections
   const handleParagraphChange = (e, sectionIndex, paraIndex) => {
     const newSections = [...aboutData.sections];
     newSections[sectionIndex].paragraphs[paraIndex] = e.target.value;
     setAboutData({ ...aboutData, sections: newSections });
   };
 
+  // Add a new section
   const addSection = () => {
     setAboutData({
       ...aboutData,
@@ -43,18 +58,21 @@ const EditAboutPage = () => {
     });
   };
 
+  // Add a new paragraph to a section
   const addParagraph = (sectionIndex) => {
     const newSections = [...aboutData.sections];
     newSections[sectionIndex].paragraphs.push("");
     setAboutData({ ...aboutData, sections: newSections });
   };
 
+  // Toggle reverse layout (image on left)
   const handleReverseToggle = (index) => {
     const newSections = [...aboutData.sections];
     newSections[index].reverseLayout = !newSections[index].reverseLayout;
     setAboutData({ ...aboutData, sections: newSections });
   };
 
+  // Handle image upload
   const handleImageUpload = async (e, index) => {
     const file = e.target.files[0];
     const formData = new FormData();
@@ -73,6 +91,7 @@ const EditAboutPage = () => {
     }
   };
 
+  // Save changes to the backend
   const handleSave = () => {
     axios
       .put("/about/update", aboutData)
@@ -108,64 +127,70 @@ const EditAboutPage = () => {
         />
       </div>
 
-      {aboutData.sections.map((section, index) => (
-        <div key={index} className="mb-10 border p-4 rounded bg-gray-100">
-          <h3 className="text-xl font-semibold mb-3">
-            Section {index + 1}
-          </h3>
+      {/* Render Sections */}
+      {aboutData.sections && aboutData.sections.length > 0 ? (
+        aboutData.sections.map((section, index) => (
+          <div key={index} className="mb-10 border p-4 rounded bg-gray-100">
+            <h3 className="text-xl font-semibold mb-3">Section {index + 1}</h3>
 
-          <input
-            type="text"
-            placeholder="Heading"
-            value={section.heading}
-            onChange={(e) => handleChange(e, index, "heading")}
-            className="w-full p-2 mb-3 border rounded"
-          />
-
-          {section.paragraphs.map((para, paraIndex) => (
-            <textarea
-              key={paraIndex}
-              value={para}
-              onChange={(e) =>
-                handleParagraphChange(e, index, paraIndex)
-              }
-              placeholder={`Paragraph ${paraIndex + 1}`}
-              rows={3}
-              className="w-full p-2 mb-2 border rounded"
-            />
-          ))}
-
-          <button
-            onClick={() => addParagraph(index)}
-            className="mb-3 px-3 py-1 text-sm bg-blue-200 rounded hover:bg-blue-300"
-          >
-            ➕ Add Paragraph
-          </button>
-
-          <div className="mb-3">
-            <label className="block font-semibold mb-1">Upload Image</label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageUpload(e, index)}
+              type="text"
+              placeholder="Heading"
+              value={section.heading}
+              onChange={(e) => handleChange(e, index, "heading")}
+              className="w-full p-2 mb-3 border rounded"
             />
-            {section.imageUrl && (
-              <p className="text-sm text-gray-600 mt-1">
-                Current: {section.imageUrl}
-              </p>
-            )}
+
+            {/* Render Paragraphs */}
+            {section.paragraphs.map((para, paraIndex) => (
+              <textarea
+                key={paraIndex}
+                value={para}
+                onChange={(e) =>
+                  handleParagraphChange(e, index, paraIndex)
+                }
+                placeholder={`Paragraph ${paraIndex + 1}`}
+                rows={3}
+                className="w-full p-2 mb-2 border rounded"
+              />
+            ))}
+
+            <button
+              onClick={() => addParagraph(index)}
+              className="mb-3 px-3 py-1 text-sm bg-blue-200 rounded hover:bg-blue-300"
+            >
+              ➕ Add Paragraph
+            </button>
+
+            {/* Image Upload */}
+            <div className="mb-3">
+              <label className="block font-semibold mb-1">Upload Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, index)}
+              />
+              {section.imageUrl && (
+                <p className="text-sm text-gray-600 mt-1">
+                  Current: {section.imageUrl}
+                </p>
+              )}
+            </div>
+
+            {/* Reverse Layout Checkbox */}
+            <label className="flex items-center gap-2 mb-2">
+              <input
+                type="checkbox"
+                checked={section.reverseLayout}
+                onChange={() => handleReverseToggle(index)}
+              />
+              Reverse Layout (image on left)
+            </label>
           </div>
-
-          <label className="flex items-center gap-2 mb-2">
-            <input
-              type="checkbox"
-              checked={section.reverseLayout}
-              onChange={() => handleReverseToggle(index)}
-            />
-            Reverse Layout (image on left)
-          </label>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p>No sections available</p>
+      )}
 
       <button
         onClick={addSection}
@@ -185,3 +210,4 @@ const EditAboutPage = () => {
 };
 
 export default EditAboutPage;
+
