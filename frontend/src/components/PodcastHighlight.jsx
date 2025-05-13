@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import soon from '../assets/soon.webp';
-import { PlayCircle } from 'react-feather';
 
 const staticVideos = [
   {
@@ -69,16 +68,11 @@ const PodcastHighlight = () => {
               "
             >
               {video.comingSoon ? (
-                <>
-                  <img
-                    src={soon}
-                    alt={video.title}
-                    className="w-full h-[180px] object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                    <PlayCircle className="text-white w-12 h-12" />
-                  </div>
-                </>
+                <img
+                  src={soon}
+                  alt={video.title}
+                  className="w-full h-[180px] object-cover"
+                />
               ) : (
                 <div className="relative w-full h-[180px]">
                   <iframe
@@ -89,9 +83,6 @@ const PodcastHighlight = () => {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   ></iframe>
-                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                    <PlayCircle className="text-white w-12 h-12" />
-                  </div>
                 </div>
               )}
 
