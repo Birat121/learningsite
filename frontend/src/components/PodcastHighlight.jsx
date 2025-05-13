@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import soon from '../assets/soon.webp';
 import { PlayCircle } from 'react-feather';
+import axiosInstance from '../api/axiosInstance'; // Adjust path if needed
 
 const PodcastHighlight = () => {
-  const videos = [
+  const [videos, setVideos] = useState([]);
+
+  const fallbackVideos = [
     {
       title: "Welcome to the Jungle!",
       comingSoon: true,
     },
     {
-      title: "Breaking into Dubai:An Expat's Story",
+      title: "Breaking into Dubai: An Expat's Story",
       comingSoon: true,
     },
     {
@@ -17,6 +20,24 @@ const PodcastHighlight = () => {
       comingSoon: true,
     },
   ];
+
+  const fetchVideos = async () => {
+    try {
+      const res = await axiosInstance.get('/youtube');
+      if (res.data.length > 0) {
+        setVideos(res.data);
+      } else {
+        setVideos(fallbackVideos);
+      }
+    } catch (err) {
+      console.error('Failed to load videos. Showing fallback.', err);
+      setVideos(fallbackVideos);
+    }
+  };
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
 
   return (
     <section className="py-12 px-4 bg-[rgb(0,104,80)] text-center">
@@ -41,19 +62,27 @@ const PodcastHighlight = () => {
                 hover:shadow-xl
                 transition
                 group
-
-                /* responsive width & centering */
-                w-full          /* full width on xs */
-                max-w-xs        /* cap to 20rem (~320px) */
-                sm:w-[320px]    /* exact 320px on sm+ */
-                mx-auto         /* center on xs */
+                w-full
+                max-w-xs
+                sm:w-[320px]
+                mx-auto
               "
             >
-              <img
-                src={soon}
-                alt={video.title}
-                className="w-full h-[180px] object-cover"
-              />
+              {video.comingSoon ? (
+                <img
+                  src={soon}
+                  alt={video.title}
+                  className="w-full h-[180px] object-cover"
+                />
+              ) : (
+                <iframe
+                  src={video.embeddedUrl}
+                  title={video.title}
+                  className="w-full h-[180px]"
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
+              )}
 
               {/* Overlay Icon */}
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
@@ -62,7 +91,9 @@ const PodcastHighlight = () => {
 
               <div className="px-4 py-3 text-[rgb(0,104,80)] font-semibold text-base">
                 {video.title}
-                <p className="text-xs text-gray-500 mt-1">Coming Soon</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {video.comingSoon ? 'Coming Soon' : 'Now Streaming'}
+                </p>
               </div>
             </div>
           ))}

@@ -13,7 +13,7 @@ import blogRouter from "./routes/blogRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
 import heroRouter from "./routes/heroRoute.js";
 import introRouter from "./routes/introRoute.js";
-import AboutRouter from "./routes/AboutRoute.js";
+import youtubeRouter from "./routes/youtubeRoute.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -64,7 +64,8 @@ app.use("/api/blogs", blogRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/hero", heroRouter);
 app.use("/api/intro", introRouter);
-app.use("/api/about", AboutRouter);
+app.use("/api/youtube", youtubeRouter);
+
 
 
 // Default test route
