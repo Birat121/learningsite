@@ -8,7 +8,7 @@ const VideoList = () => {
 
   const fetchVideos = async () => {
     try {
-      const res = await axiosInstance.get('/youtube');
+      const res = await axiosInstance.get('/youtube/get');
       setVideos(res.data);
     } catch (err) {
       console.error('Error fetching videos:', err);
@@ -22,7 +22,7 @@ const VideoList = () => {
   const handleSave = async (video) => {
     try {
       if (editingVideo) {
-        await axiosInstance.put(`/youtube/${editingVideo._id}`, video);
+        await axiosInstance.put(`/youtube/update/${editingVideo._id}`, video);
       } else {
         await API.post('/videos', video);
       }

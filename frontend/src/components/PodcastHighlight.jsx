@@ -23,7 +23,7 @@ const PodcastHighlight = () => {
 
   const fetchVideos = async () => {
     try {
-      const res = await axiosInstance.get('/youtube');
+      const res = await axiosInstance.get('/youtube/get');
       if (res.data.length > 0) {
         setVideos(res.data);
       } else {
