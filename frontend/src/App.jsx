@@ -32,6 +32,7 @@ import BlogDetail from "./components/BlogDetail";
 import WatchCourse from "./components/WatchCourse";
 import AdminHeroEditor from "./components/HeroEditor";
 import AdminIntroduction from "./components/IntroEditor";
+import EditAboutPage from "./components/EditAbout";
 
 function App() {
   const location = useLocation();
@@ -168,6 +169,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminIntroduction />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard/abouteditor"
+            element={
+              <AdminRoute>
+                < EditAboutPage/>
               </AdminRoute>
             }
           />

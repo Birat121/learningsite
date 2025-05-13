@@ -48,12 +48,16 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>{aboutData.title}</title>
-        <meta name="description" content={aboutData.description} />
-        <link
-          rel="canonical"
-          href="https://realstatelearning3.netlify.app/about"
+        <title>About Kirren - Real Estate Mentor & Educator</title>
+        <meta
+          name="description"
+          content="Learn about Kirren, a passionate real estate mentor, educator, and investor. Discover the values and offerings that make this platform stand out in real estate education."
         />
+        <meta
+          name="keywords"
+          content="real estate mentor, real estate education, property buying and selling, real estate strategies"
+        />
+        <link rel="canonical" href="https://realstatelearning3.netlify.app/about" />
       </Helmet>
 
       <section className="bg-gray-100 py-20 px-6 md:px-24 mt-20">
@@ -96,6 +100,5 @@ const About = () => {
 };
 
 export default About;
-
 
 

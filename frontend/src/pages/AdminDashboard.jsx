@@ -111,11 +111,20 @@ const AdminPage = () => {
             <Link
               to="introeditor"  
               className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
+                isActive("intro-editor") ? "bg-green-800" : "hover:bg-green-600"
               }`}
             >
               <List size={20} />
               Intro Editor
+            </Link>
+            <Link
+              to="abouteditor"  
+              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
+                isActive("about-editor") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              About editor
             </Link>
 
             <button
@@ -215,6 +224,15 @@ const AdminPage = () => {
             >
               <List size={20} />
               Intro Editor
+            </Link>
+             <Link
+              to="abouteditor"  
+              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
+                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              About editor
             </Link>
           </nav>
         </div>

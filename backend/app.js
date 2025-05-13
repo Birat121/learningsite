@@ -14,7 +14,9 @@ import paymentRouter from "./routes/paymentRoute.js";
 import heroRouter from "./routes/heroRoute.js";
 import introRouter from "./routes/introRoute.js";
 import AboutRouter from "./routes/AboutRoute.js";
-import path from "path";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 
 
 // Load Google Strategy
@@ -25,6 +27,9 @@ connectDB();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Middleware
 app.use(cors({
@@ -34,7 +39,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allow headers like Authorization
 }));
 app.use(express.json());
-app.use(express.static(path.join(process.cwd(), "uploads")));
+app.use(express.static(path.join(__dirname, "uploads")));
 
 
 app.use(express.urlencoded({ extended: true }));
