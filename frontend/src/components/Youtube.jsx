@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import { toast } from 'react-hot-toast';
 
+// Helper function to convert YouTube URL to embed URL
+const convertToEmbedUrl = (url) => {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const match = url.match(regex);
+  if (match) {
+    return `https://www.youtube.com/embed/${match[1]}`;
+  }
+  return '';
+};
+
 const PodcastVideoManager = () => {
   const [videos, setVideos] = useState([]);
   const [editingVideo, setEditingVideo] = useState(null);
@@ -12,6 +22,7 @@ const PodcastVideoManager = () => {
     try {
       const res = await axiosInstance.get('/youtube/get');
       setVideos(res.data);
+      toast.success('Podcast videos fetched successfully!');
     } catch (err) {
       console.error('Error fetching podcast videos:', err);
     }
@@ -25,18 +36,23 @@ const PodcastVideoManager = () => {
     e.preventDefault();
     if (!title || !embeddedUrl) return toast.error('Please fill in all fields.');
 
+    // Convert the regular URL to an embed URL before saving
+    const embedUrl = convertToEmbedUrl(embeddedUrl);
+    if (!embedUrl) return toast.error('Invalid YouTube URL.');
+
     try {
       if (editingVideo) {
-        await axiosInstance.put(`/youtube/update/${editingVideo._id}`, { title, embeddedUrl });
+        await axiosInstance.put(`/youtube/update/${editingVideo._id}`, { title, embeddedUrl: embedUrl });
       } else {
-        await axiosInstance.post('/youtube/add', { title, embeddedUrl });
+        await axiosInstance.post('/youtube/add', { title, embeddedUrl: embedUrl });
       }
       setTitle('');
       setEmbeddedUrl('');
       setEditingVideo(null);
       fetchVideos();
+      toast.success('Podcast video saved successfully!');
     } catch (err) {
-      console.error('Error saving video:', err);
+      toast.error('Error saving podcast video.');
     }
   };
 
@@ -44,6 +60,7 @@ const PodcastVideoManager = () => {
     setEditingVideo(video);
     setTitle(video.title);
     setEmbeddedUrl(video.embeddedUrl);
+    toast.success('Editing podcast video...');
   };
 
   return (
@@ -62,7 +79,7 @@ const PodcastVideoManager = () => {
         />
         <input
           type="text"
-          placeholder="YouTube Embed URL"
+          placeholder="YouTube URL"
           value={embeddedUrl}
           onChange={(e) => setEmbeddedUrl(e.target.value)}
           className="w-full p-2 border rounded"
@@ -115,3 +132,4 @@ const PodcastVideoManager = () => {
 };
 
 export default PodcastVideoManager;
+
