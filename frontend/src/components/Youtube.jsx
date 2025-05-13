@@ -1,71 +1,117 @@
 import React, { useState, useEffect } from 'react';
+import axiosInstance from '../api/axiosInstance';
+import { toast } from 'react-hot-toast';
 
-const VideoForm = ({ selectedVideo, onSave, onCancel }) => {
+const PodcastVideoManager = () => {
+  const [videos, setVideos] = useState([]);
+  const [editingVideo, setEditingVideo] = useState(null);
   const [title, setTitle] = useState('');
   const [embeddedUrl, setEmbeddedUrl] = useState('');
 
-  useEffect(() => {
-    if (selectedVideo) {
-      setTitle(selectedVideo.title);
-      setEmbeddedUrl(selectedVideo.embeddedUrl);
-    } else {
-      setTitle('');
-      setEmbeddedUrl('');
+  const fetchVideos = async () => {
+    try {
+      const res = await axiosInstance.get('/youtube/get');
+      setVideos(res.data);
+    } catch (err) {
+      console.error('Error fetching podcast videos:', err);
     }
-  }, [selectedVideo]);
+  };
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!title || !embeddedUrl) return;
+    e.preventDefault();
+    if (!title || !embeddedUrl) return toast.error('Please fill in all fields.');
 
-  if (typeof onSave === 'function') {
     try {
-      await onSave({ title, embeddedUrl });
+      if (editingVideo) {
+        await axiosInstance.put(`/youtube/update/${editingVideo._id}`, { title, embeddedUrl });
+      } else {
+        await axiosInstance.post('/youtube/add', { title, embeddedUrl });
+      }
       setTitle('');
       setEmbeddedUrl('');
-    } catch (error) {
-      console.error("Save failed:", error);
+      setEditingVideo(null);
+      fetchVideos();
+    } catch (err) {
+      console.error('Error saving video:', err);
     }
-  } else {
-    console.error('onSave is not a function:', onSave);
-  }
-};
+  };
 
+  const handleEdit = (video) => {
+    setEditingVideo(video);
+    setTitle(video.title);
+    setEmbeddedUrl(video.embeddedUrl);
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded max-w-md mx-auto">
-      <h2 className="text-xl font-bold mb-4">{selectedVideo ? 'Edit' : 'Add'} Video</h2>
+    <div className="p-6 max-w-3xl mx-auto bg-white shadow rounded">
+      <h2 className="text-xl font-bold mb-4">
+        {editingVideo ? 'Edit Podcast Video' : 'Add Podcast Video'}
+      </h2>
 
-      <input
-        className="w-full p-2 mb-3 border rounded"
-        placeholder="Video Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      <input
-        className="w-full p-2 mb-3 border rounded"
-        placeholder="YouTube Embed URL"
-        value={embeddedUrl}
-        onChange={(e) => setEmbeddedUrl(e.target.value)}
-      />
-
-      <div className="flex justify-between">
-        <button className="bg-green-600 text-white px-4 py-2 rounded" type="submit">
-          {selectedVideo ? 'Update' : 'Add'}
-        </button>
-        {selectedVideo && (
-          <button
-            type="button"
-            className="bg-gray-400 text-white px-4 py-2 rounded"
-            onClick={onCancel}
-          >
-            Cancel
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Video Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="text"
+          placeholder="YouTube Embed URL"
+          value={embeddedUrl}
+          onChange={(e) => setEmbeddedUrl(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <div className="flex gap-3">
+          <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
+            {editingVideo ? 'Update' : 'Add'}
           </button>
-        )}
+          {editingVideo && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingVideo(null);
+                setTitle('');
+                setEmbeddedUrl('');
+              }}
+              className="bg-gray-500 text-white px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold mb-4">Podcast Videos</h3>
+        <div className="grid md:grid-cols-2 gap-6">
+          {videos.map((video) => (
+            <div key={video._id} className="bg-gray-100 p-3 rounded shadow">
+              <iframe
+                src={video.embeddedUrl}
+                title={video.title}
+                className="w-full h-48 mb-2"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+              <h4 className="font-medium">{video.title}</h4>
+              <button
+                className="text-blue-600 text-sm underline mt-2"
+                onClick={() => handleEdit(video)}
+              >
+                Edit
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
-    </form>
+    </div>
   );
 };
 
-export default VideoForm;
+export default PodcastVideoManager;

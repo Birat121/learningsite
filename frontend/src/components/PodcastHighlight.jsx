@@ -1,43 +1,43 @@
 import React, { useEffect, useState } from 'react';
+import axiosInstance from '../api/axiosInstance';
 import soon from '../assets/soon.webp';
 import { PlayCircle } from 'react-feather';
-import axiosInstance from '../api/axiosInstance'; // Adjust path if needed
+
+const staticVideos = [
+  {
+    title: "Welcome to the Jungle!",
+    comingSoon: true,
+  },
+  {
+    title: "Breaking into Dubai: An Expat's Story",
+    comingSoon: true,
+  },
+  {
+    title: "Dubai Real Estate Interviews: The Questions That Matter",
+    comingSoon: true,
+  },
+];
 
 const PodcastHighlight = () => {
   const [videos, setVideos] = useState([]);
-
-  const fallbackVideos = [
-    {
-      title: "Welcome to the Jungle!",
-      comingSoon: true,
-    },
-    {
-      title: "Breaking into Dubai: An Expat's Story",
-      comingSoon: true,
-    },
-    {
-      title: "Dubai Real Estate Interviews: The Questions That Matter",
-      comingSoon: true,
-    },
-  ];
-
-  const fetchVideos = async () => {
-    try {
-      const res = await axiosInstance.get('/youtube/get');
-      if (res.data.length > 0) {
-        setVideos(res.data);
-      } else {
-        setVideos(fallbackVideos);
-      }
-    } catch (err) {
-      console.error('Failed to load videos. Showing fallback.', err);
-      setVideos(fallbackVideos);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const res = await axiosInstance.get('/youtube/get');
+        setVideos(res.data || []);
+      } catch (err) {
+        console.error('Error fetching videos:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchVideos();
   }, []);
+
+  const displayedVideos = videos.length > 0 ? videos : staticVideos;
 
   return (
     <section className="py-12 px-4 bg-[rgb(0,104,80)] text-center">
@@ -50,7 +50,7 @@ const PodcastHighlight = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-6 flex-wrap">
-          {videos.map((video, idx) => (
+          {displayedVideos.map((video, idx) => (
             <div
               key={idx}
               className="
@@ -69,31 +69,37 @@ const PodcastHighlight = () => {
               "
             >
               {video.comingSoon ? (
-                <img
-                  src={soon}
-                  alt={video.title}
-                  className="w-full h-[180px] object-cover"
-                />
+                <>
+                  <img
+                    src={soon}
+                    alt={video.title}
+                    className="w-full h-[180px] object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <PlayCircle className="text-white w-12 h-12" />
+                  </div>
+                </>
               ) : (
-                <iframe
-                  src={video.embeddedUrl}
-                  title={video.title}
-                  className="w-full h-[180px]"
-                  frameBorder="0"
-                  allowFullScreen
-                ></iframe>
+                <div className="relative w-full h-[180px]">
+                  <iframe
+                    src={video.embeddedUrl}
+                    title={video.title}
+                    className="absolute top-0 left-0 w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                    <PlayCircle className="text-white w-12 h-12" />
+                  </div>
+                </div>
               )}
-
-              {/* Overlay Icon */}
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                <PlayCircle className="text-white w-12 h-12" />
-              </div>
 
               <div className="px-4 py-3 text-[rgb(0,104,80)] font-semibold text-base">
                 {video.title}
-                <p className="text-xs text-gray-500 mt-1">
-                  {video.comingSoon ? 'Coming Soon' : 'Now Streaming'}
-                </p>
+                {video.comingSoon && (
+                  <p className="text-xs text-gray-500 mt-1">Coming Soon</p>
+                )}
               </div>
             </div>
           ))}

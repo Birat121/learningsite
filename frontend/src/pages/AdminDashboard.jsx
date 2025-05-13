@@ -126,15 +126,7 @@ const AdminPage = () => {
               <List size={20} />
               Youtube Add
             </Link>
-            <Link
-              to="edityoutube"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("edit-youtube") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-             Edit Youtube
-            </Link>
+            
          
 
             <button
@@ -244,16 +236,7 @@ const AdminPage = () => {
               <List size={20} />
               Youtube Add
             </Link>
-            <Link
-              to="edityoutube"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("edit-youtube") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-             Edit Youtube
-            </Link>
-         
+            
           </nav>
         </div>
         <button

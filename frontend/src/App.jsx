@@ -32,8 +32,8 @@ import BlogDetail from "./components/BlogDetail";
 import WatchCourse from "./components/WatchCourse";
 import AdminHeroEditor from "./components/HeroEditor";
 import AdminIntroduction from "./components/IntroEditor";
-import VideoForm from "./components/Youtube";
-import VideoList from "./components/ListYoutube";
+import PodcastVideoManager from "./components/Youtube";
+
 
 function App() {
   const location = useLocation();
@@ -177,18 +177,11 @@ function App() {
             path="/admin/dashboard/youtubeadd"
             element={
               <AdminRoute>
-                <VideoForm />
+                <PodcastVideoManager />
               </AdminRoute>
             }
           />
-          <Route
-            path="/admin/dashboard/edityoutube"
-            element={
-              <AdminRoute>
-                <VideoList />
-              </AdminRoute>
-            }
-          />
+          
           
         </Route>
       </Routes>
