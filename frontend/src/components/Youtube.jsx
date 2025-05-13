@@ -15,13 +15,22 @@ const VideoForm = ({ selectedVideo, onSave, onCancel }) => {
   }, [selectedVideo]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title || !embeddedUrl) return;
+  e.preventDefault();
+  if (!title || !embeddedUrl) return;
 
-    await onSave({ title, embeddedUrl });
-    setTitle('');
-    setEmbeddedUrl('');
-  };
+  if (typeof onSave === 'function') {
+    try {
+      await onSave({ title, embeddedUrl });
+      setTitle('');
+      setEmbeddedUrl('');
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
+  } else {
+    console.error('onSave is not a function:', onSave);
+  }
+};
+
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded max-w-md mx-auto">

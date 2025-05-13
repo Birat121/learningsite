@@ -24,7 +24,7 @@ const VideoList = () => {
       if (editingVideo) {
         await axiosInstance.put(`/youtube/update/${editingVideo._id}`, video);
       } else {
-        await API.post('/videos', video);
+        await axiosInstance.post('/youtube/add', video);
       }
       fetchVideos();
       setEditingVideo(null);
