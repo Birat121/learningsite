@@ -71,7 +71,7 @@ const Navbar = () => {
     { to: "/", label: "Home" },
     { to: "/about", label: "Why Choose Me" },
     
-    { to: "/why-dubai", label: "Dubai Real State" },
+    { to: "/why-dubai", label: "Dubai Real Estate" },
     { to: "/courses", label: "Courses" },
     { to: "/contact", label: "Contact Me" },
   ];

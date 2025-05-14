@@ -22,7 +22,7 @@ const PodcastVideoManager = () => {
     try {
       const res = await axiosInstance.get('/youtube/get');
       setVideos(res.data);
-      toast.success('Podcast videos fetched successfully!');
+      
     } catch (err) {
       console.error('Error fetching podcast videos:', err);
     }
