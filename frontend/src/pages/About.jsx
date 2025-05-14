@@ -1,10 +1,10 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
-import kirren1 from "../assets/kirren1.jpg";
-import kirren2 from "../assets/photo4.webp";
-import kirren3 from "../assets/photo2.jpg";
-import kirren4 from "../assets/photo1.jpg";
+import kirren1 from "../assets/koffe2.jpeg";
+import kirren2 from "../assets/koffe1.jpeg";
+import kirren3 from "../assets/koffe3.jpeg";
+import kirren4 from "../assets/koffe8.jpeg";
 
 // Animation variants
 const fadeInUp = {
