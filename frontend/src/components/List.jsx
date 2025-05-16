@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const CourseManagementPage = () => {
   const [courses, setCourses] = useState([]);
@@ -90,8 +91,6 @@ const CourseManagementPage = () => {
     }
   };
 
-  
-
   return (
     <div className="max-w-7xl mx-auto p-6 min-h-screen">
       {courses.length === 0 && (
@@ -116,19 +115,27 @@ const CourseManagementPage = () => {
               Price: AED {course.price?.toFixed(2)}
             </p>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between space-x-2">
               <button
                 onClick={() => openEditModal(course)}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
               >
                 Edit
               </button>
+
               <button
                 onClick={() => deleteCourse(course._id)}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold"
               >
                 Delete
               </button>
+
+              <Link
+                to={`/admin/dashboard/listModules/${course._id}`}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold"
+              >
+                List Modules
+              </Link>
             </div>
           </div>
         ))}
