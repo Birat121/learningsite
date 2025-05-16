@@ -14,6 +14,11 @@ const ModuleVideoManagementPage = ({ courseId }) => {
       const { data } = await axiosInstance.get(`/courses/${courseId}/modules`);
       setModules(data);
     } catch (err) {
+      console.error("Error fetching modules:", err);
+      if (err.response) {
+        console.error("Response data:", err.response.data);
+        console.error("Response status:", err.response.status);
+      }
       toast.error("Failed to load modules");
     } finally {
       setLoading(false);
@@ -58,7 +63,12 @@ const ModuleVideoManagementPage = ({ courseId }) => {
       }
       closeEditModal();
       fetchModules();
-    } catch {
+    } catch (err) {
+      console.error(`Error updating ${type}:`, err);
+      if (err.response) {
+        console.error("Response data:", err.response.data);
+        console.error("Response status:", err.response.status);
+      }
       toast.error("Update failed");
     }
   };
@@ -75,7 +85,11 @@ const ModuleVideoManagementPage = ({ courseId }) => {
       toast.success(`${type} deleted`);
       fetchModules();
     } catch (error) {
-      console.error(error);
+      console.error(`Error deleting ${type} with id ${id}:`, error);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+      }
       toast.error("Delete failed");
     }
   };
@@ -84,70 +98,74 @@ const ModuleVideoManagementPage = ({ courseId }) => {
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-4">Manage Modules & Videos</h1>
 
-      {modules.map((module) => (
-        <div key={module._id} className="bg-white rounded-lg shadow p-4 mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-semibold text-gray-800">
-              {module.title}
-            </h2>
-            <div>
-              <button
-                onClick={() => openEditModal("module", module)}
-                className="mr-2 text-blue-600 hover:underline"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => deleteItem("module", module._id)}
-                className="text-red-600 hover:underline"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-
-          {module.videos.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">
-              No videos in this module.
-            </p>
-          ) : (
-            <ul className="space-y-3">
-              {module.videos.map((video) => (
-                <li
-                  key={video._id}
-                  className="flex justify-between items-center border-b pb-2"
+      {loading ? (
+        <p className="text-center text-gray-500">Loading...</p>
+      ) : (
+        modules.map((module) => (
+          <div key={module._id} className="bg-white rounded-lg shadow p-4 mb-6">
+            <div className="flex justify-between items-center mb-2">
+              <h2 className="text-xl font-semibold text-gray-800">
+                {module.title}
+              </h2>
+              <div>
+                <button
+                  onClick={() => openEditModal("module", module)}
+                  className="mr-2 text-blue-600 hover:underline"
                 >
-                  <div>
-                    <p className="font-medium">{video.title}</p>
-                    <a
-                      href={video.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-500 text-sm"
-                    >
-                      Watch
-                    </a>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => openEditModal("video", video)}
-                      className="mr-2 text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => deleteItem("video", video._id)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      ))}
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteItem("module", module._id)}
+                  className="text-red-600 hover:underline"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            {module.videos.length === 0 ? (
+              <p className="text-sm text-gray-500 italic">
+                No videos in this module.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {module.videos.map((video) => (
+                  <li
+                    key={video._id}
+                    className="flex justify-between items-center border-b pb-2"
+                  >
+                    <div>
+                      <p className="font-medium">{video.title}</p>
+                      <a
+                        href={video.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-500 text-sm"
+                      >
+                        Watch
+                      </a>
+                    </div>
+                    <div>
+                      <button
+                        onClick={() => openEditModal("video", video)}
+                        className="mr-2 text-blue-600 hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteItem("video", video._id)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        ))
+      )}
 
       {/* Edit Modal */}
       {editItem && (

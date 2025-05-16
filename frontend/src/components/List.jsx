@@ -113,7 +113,7 @@ const CourseManagementPage = () => {
               {course.title}
             </h2>
             <p className="mb-4 font-semibold">
-              Price: ₹ {course.price?.toFixed(2)}
+              Price: AED {course.price?.toFixed(2)}
             </p>
 
             <div className="flex justify-between">

@@ -9,16 +9,15 @@ const AddPage = () => {
     title: "",
     price: "",
     description: "",
-
     thumbnail: null,
     modules: [
       {
         title: "",
-        description: "",
+        
         videos: [
           {
             title: "",
-            description: "",
+           
             videoFile: null,
           },
         ],
@@ -59,11 +58,11 @@ const AddPage = () => {
         ...prev.modules,
         {
           title: "",
-          description: "",
+          
           videos: [
             {
               title: "",
-
+              
               videoFile: null,
             },
           ],
@@ -76,14 +75,39 @@ const AddPage = () => {
     const updatedModules = [...courseData.modules];
     updatedModules[moduleIndex].videos.push({
       title: "",
-
+      description: "",
       videoFile: null,
     });
     setCourseData((prev) => ({ ...prev, modules: updatedModules }));
   };
 
+  // Validation helper for modules and videos
+  const areModulesValid = () => {
+    if (!courseData.modules.length) return false;
+    return courseData.modules.every((module) => {
+      if (!module.title.trim()) return false;
+      if (!module.videos.length) return false;
+      return module.videos.every(
+        (video) => video.title.trim() && video.videoFile
+      );
+    });
+  };
+
+  // Overall form validation including course fields and modules/videos
+  const isFormValid =
+    courseData.title.trim() &&
+    courseData.price &&
+    courseData.description.trim() &&
+    courseData.thumbnail &&
+    areModulesValid();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) {
+      toast.error("Please fill in all required fields before submitting.");
+      return;
+    }
+
     setLoading(true);
     const toastId = toast.loading("Uploading course...");
 
@@ -93,7 +117,7 @@ const AddPage = () => {
       courseForm.append("title", courseData.title);
       courseForm.append("description", courseData.description);
       courseForm.append("price", courseData.price);
-      courseForm.append("thumbnail", courseData.thumbnail); // Send image file directly
+      courseForm.append("thumbnail", courseData.thumbnail);
 
       // Save course first
       const { data: courseRes } = await axiosInstance.post(
@@ -112,7 +136,7 @@ const AddPage = () => {
           "/modules/module",
           {
             title: module.title,
-            description: module.description,
+            
             course: courseId,
           }
         );
@@ -126,7 +150,7 @@ const AddPage = () => {
 
           const videoForm = new FormData();
           videoForm.append("title", video.title);
-          videoForm.append("module", moduleRes._id); // associate with saved module
+          videoForm.append("module", moduleRes._id);
           videoForm.append("videoFile", video.videoFile);
 
           await axiosInstance.post("/videos/videos", videoForm, {
@@ -146,11 +170,11 @@ const AddPage = () => {
         modules: [
           {
             title: "",
-            description: "",
+          
             videos: [
               {
                 title: "",
-                description: "",
+               
                 videoFile: null,
               },
             ],
@@ -178,11 +202,6 @@ const AddPage = () => {
     }
   };
 
-  const isFormValid =
-    courseData.title &&
-    courseData.price &&
-    courseData.description &&
-    courseData.thumbnail;
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-12 p-8 border rounded-lg shadow-lg bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
       <h2 className="text-4xl font-extrabold text-center text-green-700 mb-10">
@@ -274,7 +293,7 @@ const AddPage = () => {
 
               <div className="flex flex-col mb-4">
                 <label className="mb-2 font-medium text-gray-700">
-                  Module Title
+                  Module Title <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -284,6 +303,7 @@ const AddPage = () => {
                     handleModuleChange(mIdx, "title", e.target.value)
                   }
                   className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  required
                 />
               </div>
 
@@ -299,8 +319,8 @@ const AddPage = () => {
                     </h4>
 
                     <div className="flex flex-col mb-3">
-                      <label className="mb-1 font-medium text-gray-700">
-                        Video Title
+                      <label className="mb-2 font-medium text-gray-700">
+                        Video Title <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -309,13 +329,14 @@ const AddPage = () => {
                         onChange={(e) =>
                           handleVideoChange(mIdx, vIdx, "title", e.target.value)
                         }
-                        className="input border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
+                        className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                        required
                       />
                     </div>
 
                     <div className="flex flex-col">
-                      <label className="mb-1 font-medium text-gray-700">
-                        Upload Video File
+                      <label className="mb-2 font-medium text-gray-700">
+                        Video File <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="file"
@@ -325,45 +346,47 @@ const AddPage = () => {
                             mIdx,
                             vIdx,
                             "videoFile",
-                            e.target.files[0]
+                            e.target.files ? e.target.files[0] : null
                           )
                         }
-                        className="input border border-gray-300 rounded-md p-1 cursor-pointer"
+                        className="input border border-gray-300 rounded-md p-2 cursor-pointer"
+                        required
                       />
                     </div>
                   </div>
                 ))}
-              </div>
 
-              <button
-                type="button"
-                onClick={() => addVideoToModule(mIdx)}
-                className="mt-4 inline-block px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition"
-              >
-                ➕ Add Video
-              </button>
+                <button
+                  type="button"
+                  onClick={() => addVideoToModule(mIdx)}
+                  className="text-green-600 font-semibold hover:underline mt-2"
+                >
+                  + Add Video
+                </button>
+              </div>
             </div>
           ))}
 
           <button
             type="button"
             onClick={addModule}
-            className="w-full py-3 rounded-md font-semibold text-white bg-green-700 hover:bg-green-800 transition"
+            className="px-6 py-3 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700"
           >
-            ➕ Add Module
+            + Add Module
           </button>
         </section>
 
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={!isFormValid || loading}
-          className={`w-full py-4 rounded-md font-semibold text-white transition ${
-            loading || !isFormValid
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-700 hover:bg-green-800"
+          className={`w-full py-4 rounded-md text-white font-semibold ${
+            isFormValid && !loading
+              ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+              : "bg-gray-400 cursor-not-allowed"
           }`}
         >
-          {loading ? "Adding Course..." : "Add Course"}
+          {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
     </div>
@@ -371,3 +394,4 @@ const AddPage = () => {
 };
 
 export default AddPage;
+
