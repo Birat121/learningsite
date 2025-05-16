@@ -4,7 +4,7 @@ import { FaBook, FaTools, FaBuilding, FaChartLine } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 
-const getStaticCourses = () => ([
+const staticCourses = [
   {
     icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Introduction to Off Plan",
@@ -35,28 +35,31 @@ const getStaticCourses = () => ([
     title: "Dubai Property Developers",
     description: "Coming soon",
   }
-]);
+];
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState(staticCourses);
 
   useEffect(() => {
-    axiosInstance.get('/videos/videos')
+    axiosInstance.get('/api/course-cards')
       .then(response => {
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          const enriched = response.data.map(course => ({
-            ...course,
-            description: course.description?.substring(0, 100) || "Learn more",
-            icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />
-          }));
-          setCourses(enriched);
-        } else {
-          setCourses(getStaticCourses());
-        }
+        const dynamic = Array.isArray(response.data) ? response.data : [];
+
+        // Merge dynamic content with static placeholders
+        const merged = staticCourses.map((staticItem, index) => {
+          const dynamicItem = dynamic[index];
+          return {
+            icon: staticItem.icon,
+            title: dynamicItem?.title || staticItem.title,
+            description: dynamicItem?.description || staticItem.description,
+          };
+        });
+
+        setCourses(merged);
       })
       .catch(err => {
         console.error("Failed to fetch courses:", err);
-        setCourses(getStaticCourses());
+        setCourses(staticCourses); // fallback
       });
   }, []);
 
@@ -99,3 +102,4 @@ const Courses = () => {
 };
 
 export default Courses;
+
