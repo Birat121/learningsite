@@ -10,31 +10,29 @@ import {
 
 const videoRouter = express.Router();
 
-// Multer memory storage for buffer upload (required for Cloudinary stream upload)
 const storage = multer.memoryStorage();
+
 const upload = multer({
   storage: storage,
 }).fields([
-  { name: "video", maxCount: 1 },
-  
+  { name: "videoFile", maxCount: 1 }, // Changed from "video" to "videoFile" to match frontend
 ]);
-
-// Routes
 
 // Create video with video upload
 videoRouter.post("/videos", upload, createVideo);
 
-// Get all videos, optionally filtered by module
+// Get all videos
 videoRouter.get("/videos", getAllVideos);
 
-// Get single video by ID or slug
+// Get single video
 videoRouter.get("/videos/:idOrSlug", getVideoByIdOrSlug);
 
-// Update video details, optionally replace video file
+// Update video with optional file
 videoRouter.put("/videos/:id", upload, updateVideo);
 
-// Delete video
-videoRouter.delete("/videos:id", deleteVideo);
+// Delete video (fixed route)
+videoRouter.delete("/videos/:id", deleteVideo);
 
 export default videoRouter;
+
 

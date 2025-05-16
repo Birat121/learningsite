@@ -13,11 +13,11 @@ const AddPage = () => {
     modules: [
       {
         title: "",
-        
+
         videos: [
           {
             title: "",
-           
+
             videoFile: null,
           },
         ],
@@ -58,11 +58,11 @@ const AddPage = () => {
         ...prev.modules,
         {
           title: "",
-          
+
           videos: [
             {
               title: "",
-              
+
               videoFile: null,
             },
           ],
@@ -75,7 +75,7 @@ const AddPage = () => {
     const updatedModules = [...courseData.modules];
     updatedModules[moduleIndex].videos.push({
       title: "",
-      description: "",
+
       videoFile: null,
     });
     setCourseData((prev) => ({ ...prev, modules: updatedModules }));
@@ -136,7 +136,7 @@ const AddPage = () => {
           "/modules/module",
           {
             title: module.title,
-            
+
             course: courseId,
           }
         );
@@ -170,11 +170,11 @@ const AddPage = () => {
         modules: [
           {
             title: "",
-          
+
             videos: [
               {
                 title: "",
-               
+
                 videoFile: null,
               },
             ],
@@ -394,4 +394,3 @@ const AddPage = () => {
 };
 
 export default AddPage;
-

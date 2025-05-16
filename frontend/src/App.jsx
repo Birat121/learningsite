@@ -35,8 +35,6 @@ import AdminIntroduction from "./components/IntroEditor";
 import PodcastVideoManager from "./components/Youtube";
 import ModuleVideoManagementPage from "./components/ModuleManagement";
 
-
-
 function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
@@ -59,10 +57,9 @@ function App() {
         <Route path="/checkout/:slug" element={<CheckoutPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/oauth-success" element={<OAuthHandler />} />
-       <Route path ='/success' element={<PaymentSuccess />} />
-       <Route path ='/cancel' element={<PaymentCancel />} />
-        <Route path ="/blogs/:slug" element={<BlogDetail />} />
-
+        <Route path="/success" element={<PaymentSuccess />} />
+        <Route path="/cancel" element={<PaymentCancel />} />
+        <Route path="/blogs/:slug" element={<BlogDetail />} />
 
         {/* Auth Routes */}
         <Route
@@ -93,7 +90,7 @@ function App() {
           }
         />
 
-<Route
+        <Route
           path="/watch/:slug"
           element={
             <PrivateRoute>
@@ -183,17 +180,14 @@ function App() {
               </AdminRoute>
             }
           />
-           <Route
-            path="/admin/dashboard/listModules"
+          <Route
+            path="/admin/dashboard/listModules/:courseId"
             element={
               <AdminRoute>
                 <ModuleVideoManagementPage />
               </AdminRoute>
             }
           />
-          
-          
-          
         </Route>
       </Routes>
 
