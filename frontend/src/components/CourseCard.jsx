@@ -1,9 +1,11 @@
 // src/components/CourseCard.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import DOMPurify from 'dompurify';
 
 const CourseCard = ({ course }) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const sanitizedDescription = DOMPurify.sanitize(course.description);
 
   return (
     <Link to={`/courses/${course.slug || course._id}`}>
@@ -33,7 +35,7 @@ const CourseCard = ({ course }) => {
             </h3>
             {course.description && (
               <p className="text-sm text-gray-600 line-clamp-2 mt-1">
-                {course.description}
+                 dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
               </p>
             )}
           </div>

@@ -105,7 +105,7 @@ const CourseManagementPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 min-h-screen">
-      <h1 className="text-4xl font-extrabold mb-8 text-blue-900 drop-shadow-md">Courses Management</h1>
+     
 
       {courses.length === 0 && (
         <p className="text-center text-gray-600 italic">No courses found.</p>

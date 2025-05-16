@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/authContext";
+import DOMPurify from "dompurify";
 
 const WatchCourse = () => {
   const { slug } = useParams();
@@ -22,7 +23,7 @@ const WatchCourse = () => {
     const fetchCourse = async () => {
       try {
         // Assuming this returns course with modules and their videos
-        const res = await axiosInstance.get(`/courses/course/slug/${slug}`); 
+        const res = await axiosInstance.get(`/courses/course/slug/${slug}`);
         setCourse(res.data);
         // Set first video of first module as default selected
         if (res.data.modules && res.data.modules.length > 0) {
@@ -50,25 +51,17 @@ const WatchCourse = () => {
     }
   };
 
-  if (!course) return <div className="text-center py-10">Loading course...</div>;
+  if (!course)
+    return <div className="text-center py-10">Loading course...</div>;
 
-  const outcomes = Array.isArray(course.courseOutcome) ? course.courseOutcome : [];
+  const sanitizedDescription = DOMPurify.sanitize(course.description);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-20 mt-20 mb-26">
       <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-      <p className="text-gray-700 mb-6">{course.description}</p>
-
-      {outcomes.length > 0 && (
-        <div className="bg-gray-100 p-4 rounded mb-8">
-          <h2 className="text-xl font-semibold mb-2">What You'll Learn</h2>
-          <ul className="list-disc list-inside text-gray-600">
-            {outcomes.map((o, idx) => (
-              <li key={idx}>{o}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <p className="text-gray-700 mb-6">
+        dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left: Modules list */}
