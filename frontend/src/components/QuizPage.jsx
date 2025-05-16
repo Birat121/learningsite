@@ -12,7 +12,7 @@ const AddQuizPage = () => {
 
   useEffect(() => {
     const fetchCourses = async () => {
-      const res = await axiosInstance.get("/videos/videos");
+      const res = await axiosInstance.get("/courses/course");
       setCourses(res.data);
     };
     fetchCourses();

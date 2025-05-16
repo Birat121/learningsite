@@ -45,10 +45,12 @@ const ModuleVideoManagementPage = ({ courseId }) => {
     const { type, data } = editItem;
     try {
       if (type === "module") {
-        await axiosInstance.put(`/modules/${data._id}`, { title: formData.title });
+        await axiosInstance.put(`/modules/module/${data._id}`, {
+          title: formData.title,
+        });
         toast.success("Module updated");
       } else {
-        await axiosInstance.put(`/videos/${data._id}`, {
+        await axiosInstance.put(`/videos/videos/${data._id}`, {
           title: formData.title,
           url: formData.url,
         });
@@ -62,14 +64,18 @@ const ModuleVideoManagementPage = ({ courseId }) => {
   };
 
   const deleteItem = async (type, id) => {
-    const confirmed = window.confirm(`Delete this ${type}? This cannot be undone.`);
+    const confirmed = window.confirm(
+      `Delete this ${type}? This cannot be undone.`
+    );
     if (!confirmed) return;
 
     try {
-      await axiosInstance.delete(`/${type === "module" ? "modules" : "videos"}/${id}`);
+      const route = type === "module" ? "modules/module" : "videos/video";
+      await axiosInstance.delete(`/${route}/${id}`);
       toast.success(`${type} deleted`);
       fetchModules();
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast.error("Delete failed");
     }
   };
@@ -81,7 +87,9 @@ const ModuleVideoManagementPage = ({ courseId }) => {
       {modules.map((module) => (
         <div key={module._id} className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-semibold text-gray-800">{module.title}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {module.title}
+            </h2>
             <div>
               <button
                 onClick={() => openEditModal("module", module)}
@@ -99,11 +107,16 @@ const ModuleVideoManagementPage = ({ courseId }) => {
           </div>
 
           {module.videos.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No videos in this module.</p>
+            <p className="text-sm text-gray-500 italic">
+              No videos in this module.
+            </p>
           ) : (
             <ul className="space-y-3">
               {module.videos.map((video) => (
-                <li key={video._id} className="flex justify-between items-center border-b pb-2">
+                <li
+                  key={video._id}
+                  className="flex justify-between items-center border-b pb-2"
+                >
                   <div>
                     <p className="font-medium">{video.title}</p>
                     <a
@@ -173,10 +186,16 @@ const ModuleVideoManagementPage = ({ courseId }) => {
                 </label>
               )}
               <div className="flex justify-end space-x-3">
-                <button onClick={closeEditModal} className="bg-gray-300 px-4 py-2 rounded">
+                <button
+                  onClick={closeEditModal}
+                  className="bg-gray-300 px-4 py-2 rounded"
+                >
                   Cancel
                 </button>
-                <button onClick={saveEdit} className="bg-blue-600 text-white px-4 py-2 rounded">
+                <button
+                  onClick={saveEdit}
+                  className="bg-blue-600 text-white px-4 py-2 rounded"
+                >
                   Save
                 </button>
               </div>

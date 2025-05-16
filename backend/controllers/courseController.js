@@ -5,6 +5,7 @@ import cloudinary from "../utils/cloudinary.js";
 import Enrollment from "../models/paymentModel.js";
 import mongoose from "mongoose";
 import slugify from "slugify";
+import User from "../models/userModel.js";
 
 const { Types } = mongoose;
 
@@ -138,6 +139,12 @@ export const deleteCourse = async (req, res) => {
       }
     }
 
+    // Remove course from users' enrolledCourses (or any other user field)
+    await User.updateMany(
+      { enrolledCourses: course._id },
+      { $pull: { enrolledCourses: course._id } }
+    );
+
     await course.deleteOne();
 
     res.json({ message: "Course deleted successfully" });
@@ -145,6 +152,26 @@ export const deleteCourse = async (req, res) => {
     res.status(500).json({ error: "Error deleting course: " + error.message });
   }
 };
+
+export const getModulesByCourseId = async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.courseId).populate({
+      path: "modules",
+      populate: {
+        path: "videos",
+      },
+    });
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    res.json(course.modules);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch modules: " + error.message });
+  }
+};
+
 
 // Get enrolled courses for a user
 export const getEnrolledCourses = async (req, res) => {

@@ -9,7 +9,7 @@ const AddPage = () => {
     title: "",
     price: "",
     description: "",
-    
+
     thumbnail: null,
     modules: [
       {
@@ -92,10 +92,10 @@ const AddPage = () => {
       const courseForm = new FormData();
       courseForm.append("title", courseData.title);
       courseForm.append("description", courseData.description);
-      
       courseForm.append("price", courseData.price);
       courseForm.append("thumbnail", courseData.thumbnail); // Send image file directly
 
+      // Save course first
       const { data: courseRes } = await axiosInstance.post(
         "/courses/course",
         courseForm,
@@ -106,41 +106,32 @@ const AddPage = () => {
 
       const courseId = courseRes._id;
 
-      // Upload modules and videos
+      // Loop through each module and save
       for (const module of courseData.modules) {
         const { data: moduleRes } = await axiosInstance.post(
           "/modules/module",
           {
             title: module.title,
-
+            description: module.description,
             course: courseId,
           }
         );
 
-        for (const module of courseData.modules) {
-          const { data: moduleRes } = await axiosInstance.post(
-            "/modules/module",
-            {
-              title: module.title,
-              description: module.description,
-              course: courseId,
-            }
-          );
-
-          for (const video of module.videos) {
-            if (!video.videoFile) {
-              console.warn("Missing video file for video:", video.title);
-              continue;
-            }
-            const videoForm = new FormData();
-            videoForm.append("title", video.title);
-            videoForm.append("module", moduleRes._id); // <-- use module ID here
-            videoForm.append("videoFile", video.videoFile);
-
-            await axiosInstance.post("/videos/videos", videoForm, {
-              headers: { "Content-Type": "multipart/form-data" },
-            });
+        // Loop through each video in the module and save
+        for (const video of module.videos) {
+          if (!video.videoFile) {
+            console.warn("Missing video file for video:", video.title);
+            continue;
           }
+
+          const videoForm = new FormData();
+          videoForm.append("title", video.title);
+          videoForm.append("module", moduleRes._id); // associate with saved module
+          videoForm.append("videoFile", video.videoFile);
+
+          await axiosInstance.post("/videos/videos", videoForm, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         }
       }
 
@@ -151,12 +142,11 @@ const AddPage = () => {
         title: "",
         price: "",
         description: "",
-       
         thumbnail: null,
         modules: [
           {
             title: "",
-
+            description: "",
             videos: [
               {
                 title: "",
@@ -171,21 +161,20 @@ const AddPage = () => {
       console.error("❌ Course upload failed:", err);
 
       if (err.response) {
-        // The request was made and the server responded with a status code
         console.error("🛑 Server responded with an error:");
         console.log("Status:", err.response.status);
         console.log("Data:", err.response.data);
         console.log("Headers:", err.response.headers);
       } else if (err.request) {
-        // The request was made but no response was received
         console.error("⚠️ No response received from server:");
         console.log(err.request);
       } else {
-        // Something happened in setting up the request
         console.error("🚨 Error setting up request:", err.message);
       }
 
       toast.error("❌ Upload failed.", { id: toastId });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -193,7 +182,6 @@ const AddPage = () => {
     courseData.title &&
     courseData.price &&
     courseData.description &&
-    
     courseData.thumbnail;
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-12 p-8 border rounded-lg shadow-lg bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
@@ -253,8 +241,6 @@ const AddPage = () => {
               className="bg-white rounded-md border border-gray-300"
             />
           </div>
-
-          
 
           <div className="flex flex-col">
             <label

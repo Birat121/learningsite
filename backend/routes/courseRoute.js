@@ -7,7 +7,8 @@ import {
   updateCourse,
   deleteCourse,
   getEnrolledCourses,
-  checkEnrollmentStatus
+  checkEnrollmentStatus,
+  getModulesByCourseId
 } from "../controllers/courseController.js";
 
 import  authMiddleware  from '../middleware/authMiddleware.js';
@@ -26,6 +27,10 @@ courseRouter.get('/course', getAllCourses);
 courseRouter.get('/course/slug/:slug', getCourseBySlug); // Prevents slug/id conflict
 courseRouter.put('/course/:id', upload, updateCourse);
 courseRouter.delete('/course/:id',  deleteCourse);
+
+courseRouter.get('/course/:courseId/modules', getModulesByCourseId);
+
+
 
 // Enrollment
 courseRouter.get('/enrolled', authMiddleware, getEnrolledCourses);

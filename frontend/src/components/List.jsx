@@ -90,15 +90,7 @@ const CourseManagementPage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-        <div className="bg-white px-6 py-4 rounded shadow-md text-lg font-semibold text-gray-700">
-          Loading courses...
-        </div>
-      </div>
-    );
-  }
+  
 
   return (
     <div className="max-w-7xl mx-auto p-6 min-h-screen">
