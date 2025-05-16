@@ -241,7 +241,7 @@ const AdminPage = () => {
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-2 rounded-md text-lg bg-red-600 hover:bg-red-700 transition duration-200 mt-10"
+          className="flex items-center gap-3 px-4 py-2 rounded-md text-lg bg-red-600 hover:bg-red-700 transition duration-200 mt-4"
         >
           <LogOut size={20} />
           Logout

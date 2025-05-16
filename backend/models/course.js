@@ -1,15 +1,21 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
 
-const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  slug: { type: String, unique: true },
-  description: String,
-  price: { type: Number, required: true },
-  thumbnailUrl: { type: String, required: true },
-  thumbnailPublicId: { type: String, required: true },
-  modules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }],  // <-- add this
-}, { timestamps: true });
+const courseSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    slug: { type: String, unique: true },
+    description: String,
+    price: { type: Number, required: true },
+    thumbnailUrl: { type: String, required: true },
+    thumbnailPublicId: { type: String, required: true },
+    modules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Module" }],
+    slug: { type: String, unique: true },
+    published: { type: Boolean, default: false },
+    // <-- add this
+  },
+  { timestamps: true }
+);
 
 courseSchema.pre("save", async function (next) {
   if (!this.isModified("title")) return next();
@@ -28,4 +34,3 @@ courseSchema.pre("save", async function (next) {
 
 const Course = mongoose.model("Course", courseSchema);
 export default Course;
-
