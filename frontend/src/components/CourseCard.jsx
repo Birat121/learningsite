@@ -1,7 +1,7 @@
 // src/components/CourseCard.jsx
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 const CourseCard = ({ course }) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -34,14 +34,17 @@ const CourseCard = ({ course }) => {
               {course.title}
             </h3>
             {course.description && (
-              <p className="text-sm text-gray-600 line-clamp-2 mt-1">
-                 dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-              </p>
+              <p
+                className="text-sm text-gray-600 line-clamp-2 mt-1"
+                dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+              />
             )}
           </div>
 
           <div className="flex items-center justify-between text-sm text-gray-600">
-            {course.students !== undefined && <span>{course.students} students</span>}
+            {course.students !== undefined && (
+              <span>{course.students} students</span>
+            )}
             <span
               className={
                 course.price === 0
