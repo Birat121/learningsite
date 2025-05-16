@@ -68,16 +68,7 @@ const AdminPage = () => {
               <List size={20} />
               List Courses
             </Link>
-            <Link
-              to="listModules"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("listModules") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              List Modules
-            </Link>
+            
             <Link
               to="quiz"
               onClick={() => setSidebarOpen(false)}
@@ -179,16 +170,7 @@ const AdminPage = () => {
               <List size={20} />
               List Courses
             </Link>
-            <Link
-              to="listModules"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("listModules") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              List Modules
-            </Link>
+           
             <Link
               to="quiz"
               onClick={() => setSidebarOpen(false)}

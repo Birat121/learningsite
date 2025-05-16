@@ -181,7 +181,7 @@ function App() {
             }
           />
           <Route
-            path="/admin/dashboard/listModules"
+            path="/admin/dashboard/listModules/:courseId"
             element={
               <AdminRoute>
                 <ModuleVideoManagementPage />
