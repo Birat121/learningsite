@@ -5,10 +5,10 @@ const courseSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true },
   description: String,
-  courseOutcome: { type: String },
   price: { type: Number, required: true },
   thumbnailUrl: { type: String, required: true },
   thumbnailPublicId: { type: String, required: true },
+  modules: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Module' }],  // <-- add this
 }, { timestamps: true });
 
 courseSchema.pre("save", async function (next) {

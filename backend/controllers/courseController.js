@@ -4,7 +4,7 @@ import Enrollment from "../models/paymentModel.js";
 
 export const createCourse = async (req, res) => {
   try {
-    const { title, description, courseOutcome, price } = req.body;
+    const { title, description,price } = req.body;
 
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream({ resource_type: "image" }, (err, image) => {
@@ -16,7 +16,7 @@ export const createCourse = async (req, res) => {
     const course = new Course({
       title,
       description,
-      courseOutcome,
+      
       price,
       thumbnailUrl: result.secure_url,
       thumbnailPublicId: result.public_id,
@@ -31,12 +31,20 @@ export const createCourse = async (req, res) => {
 
 export const getAllCourses = async (req, res) => {
   try {
-    const courses = await Course.find().sort({ createdAt: -1 });
+    const courses = await Course.find()
+      .populate({
+        path: 'modules',
+        populate: {
+          path: 'videos'
+        }
+      })
+      .sort({ createdAt: -1 });
     res.json(courses);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 export const getCourseBySlug = async (req, res) => {
   try {
@@ -60,7 +68,7 @@ export const updateCourse = async (req, res) => {
     // Update fields
     course.title = title || course.title;
     course.description = description || course.description;
-    course.courseOutcome = courseOutcome ? JSON.parse(courseOutcome) : course.courseOutcome;
+  
     course.price = price || course.price;
 
     // Replace thumbnail if a new one is provided

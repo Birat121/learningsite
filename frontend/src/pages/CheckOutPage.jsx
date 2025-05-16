@@ -49,7 +49,7 @@ const CheckoutPage = () => {
 
     try {
       const payload = {
-        videoId: course._id,
+        courseId: course._id,
         email: user?.email,
       };
 

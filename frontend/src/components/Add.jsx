@@ -9,7 +9,7 @@ const AddPage = () => {
     title: "",
     price: "",
     description: "",
-    outcome: "",
+    
     thumbnail: null,
     modules: [
       {
@@ -92,7 +92,7 @@ const AddPage = () => {
       const courseForm = new FormData();
       courseForm.append("title", courseData.title);
       courseForm.append("description", courseData.description);
-      courseForm.append("outcome", courseData.outcome);
+      
       courseForm.append("price", courseData.price);
       courseForm.append("thumbnail", courseData.thumbnail); // Send image file directly
 
@@ -151,7 +151,7 @@ const AddPage = () => {
         title: "",
         price: "",
         description: "",
-        outcome: "",
+       
         thumbnail: null,
         modules: [
           {
@@ -193,7 +193,7 @@ const AddPage = () => {
     courseData.title &&
     courseData.price &&
     courseData.description &&
-    courseData.outcome &&
+    
     courseData.thumbnail;
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-12 p-8 border rounded-lg shadow-lg bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
@@ -254,16 +254,7 @@ const AddPage = () => {
             />
           </div>
 
-          <div className="flex flex-col">
-            <label className="mb-2 font-semibold text-gray-700">
-              Outcome <span className="text-red-500">*</span>
-            </label>
-            <ReactQuill
-              value={courseData.outcome}
-              onChange={(val) => handleEditorChange(val, "outcome")}
-              className="bg-white rounded-md border border-gray-300"
-            />
-          </div>
+          
 
           <div className="flex flex-col">
             <label

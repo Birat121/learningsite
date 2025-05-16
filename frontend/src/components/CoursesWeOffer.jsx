@@ -41,7 +41,7 @@ const Courses = () => {
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get('/videos/videos')
+    axiosInstance.get('/courses/course')
       .then(response => {
         let fetchedCourses = [];
         if (Array.isArray(response.data) && response.data.length > 0) {
