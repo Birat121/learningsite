@@ -1,22 +1,14 @@
 import mongoose from "mongoose";
 import slugify from "slugify";
 
-const videoSchema = new mongoose.Schema(
-  {
-    title: { type: String, required: true },
-    slug: { type: String, unique: true }, // Add slug field
-    description: String,
-    courseOutcome: [String],
-    price: { type: Number, required: true },
-    videoUrl: { type: String, required: true },
-    videoPublicId: { type: String, required: true },
-    thumbnailUrl: { type: String, required: true },
-    thumbnailPublicId: { type: String, required: true },
-  },
-  { timestamps: true }
-);
+const videoSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  slug: { type: String, unique: true },
+  videoUrl: { type: String, required: true },
+  videoPublicId: { type: String, required: true },
+  module: { type: mongoose.Schema.Types.ObjectId, ref: "Module", required: true },
+}, { timestamps: true });
 
-// Middleware to generate slug before save
 videoSchema.pre("save", async function (next) {
   if (!this.isModified("title")) return next();
 
@@ -24,7 +16,6 @@ videoSchema.pre("save", async function (next) {
   let slug = baseSlug;
   let count = 1;
 
-  // Ensure uniqueness
   while (await mongoose.models.Video.findOne({ slug })) {
     slug = `${baseSlug}-${count++}`;
   }

@@ -7,13 +7,15 @@ import authRouter from "./routes/authRoute.js";
 import session from "express-session";
 import passport from "passport";
 import cookieParser from "cookie-parser";
-import router from "./routes/videoRoute.js";
+import videoRouter from "./routes/videoRoute.js";
 import quizRouter from "./routes/quizRoute.js";
 import blogRouter from "./routes/blogRoute.js";
 import paymentRouter from "./routes/paymentRoute.js";
 import heroRouter from "./routes/heroRoute.js";
 import introRouter from "./routes/introRoute.js";
 import youtubeRouter from "./routes/youtubeRoute.js";
+import courseRouter from "./routes/courseRoute.js";
+import moduleRouter from "./routes/moduleRoute.js";
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -58,13 +60,15 @@ app.use(passport.session());
 app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRouter);
-app.use("/api/videos", router);
+app.use("/api/videos", videoRouter);
 app.use("/api/quiz", quizRouter);
 app.use("/api/blogs", blogRouter);
 app.use("/api/payment", paymentRouter);
 app.use("/api/hero", heroRouter);
 app.use("/api/intro", introRouter);
 app.use("/api/youtube", youtubeRouter);
+app.use("/api/courses", courseRouter);
+app.use("/api/modules", moduleRouter);
 
 
 

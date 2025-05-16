@@ -4,7 +4,7 @@ import { FaBook, FaTools, FaBuilding, FaChartLine } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 
-const staticCourses = [
+const getStaticCourses = () => ([
   {
     icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />,
     title: "Introduction to Off Plan",
@@ -35,31 +35,36 @@ const staticCourses = [
     title: "Dubai Property Developers",
     description: "Coming soon",
   }
-];
+]);
 
 const Courses = () => {
-  const [courses, setCourses] = useState(staticCourses);
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    axiosInstance.get('/api/course-cards')
+    axiosInstance.get('/videos/videos')
       .then(response => {
-        const dynamic = Array.isArray(response.data) ? response.data : [];
+        let fetchedCourses = [];
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          fetchedCourses = response.data.map(course => ({
+            ...course,
+            description: course.description?.substring(0, 100) || "Learn more",
+            icon: <FaBook className="text-[rgb(0,104,80)] text-4xl mb-4" />
+          }));
+        }
 
-        // Merge dynamic content with static placeholders
-        const merged = staticCourses.map((staticItem, index) => {
-          const dynamicItem = dynamic[index];
-          return {
-            icon: staticItem.icon,
-            title: dynamicItem?.title || staticItem.title,
-            description: dynamicItem?.description || staticItem.description,
-          };
-        });
+        const staticCourses = getStaticCourses();
 
-        setCourses(merged);
+        if (fetchedCourses.length < 6) {
+          const fetchedTitles = new Set(fetchedCourses.map(c => c.title));
+          const remainingStatic = staticCourses.filter(sc => !fetchedTitles.has(sc.title));
+          fetchedCourses = [...fetchedCourses, ...remainingStatic.slice(0, 6 - fetchedCourses.length)];
+        }
+
+        setCourses(fetchedCourses);
       })
       .catch(err => {
         console.error("Failed to fetch courses:", err);
-        setCourses(staticCourses); // fallback
+        setCourses(getStaticCourses());
       });
   }, []);
 
@@ -102,4 +107,3 @@ const Courses = () => {
 };
 
 export default Courses;
-

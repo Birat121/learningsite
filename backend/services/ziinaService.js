@@ -11,10 +11,10 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 let webhookInitialized = false; // ensures webhook is not created repeatedly
 
-export async function createPaymentIntent({ amount, currency, email, videoId }) {
+export async function createPaymentIntent({ amount, currency, email, courseId }) {
   try {
     const metadata = {
-      videoId,
+      courseId,
       userEmail: email,
     };
 

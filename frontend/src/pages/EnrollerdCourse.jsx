@@ -11,7 +11,7 @@ const EnrolledCoursesPage = () => {
     const fetchCourses = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axiosInstance.get("/videos/enrolled", {
+        const response = await axiosInstance.get("/courses/enrolled", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

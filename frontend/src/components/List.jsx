@@ -1,307 +1,203 @@
-import React, { useState, useEffect } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { toast } from "react-hot-toast";
-import ConfirmationModal from "./confirmationModel"; // Import ConfirmationModal
+import React, { useEffect, useState } from 'react';
+import axiosInstance from '../api/axiosInstance';
+import toast from 'react-hot-toast';
 
-const ListPage = () => {
+const CourseManagementPage = () => {
   const [courses, setCourses] = useState([]);
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
-  const [selectedCourse, setSelectedCourse] = useState(null); // Store the selected course for editing
-  const [courseData, setCourseData] = useState({
-    title: "",
-    price: "",
-    description: "",
-    courseOutcome: "",
-    thumbnailFile: null,
-    videoFile: null,
-  }); // Form data for the modal
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal for delete confirmation
-  const [courseToDelete, setCourseToDelete] = useState(null); // Course ID for deletion
+  const [editing, setEditing] = useState({}); // { type: 'course'|'module'|'video', id, field, value }
+  const [loading, setLoading] = useState(false);
+
+  // Fetch all courses with modules and videos
+  const fetchCourses = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axiosInstance.get('/courses/course?populate=modules,videos');
+      setCourses(data);
+    } catch (err) {
+      toast.error('Failed to load courses');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const res = await axiosInstance.get("/videos/Videos"); // Adjust path
-        setCourses(res.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
     fetchCourses();
   }, []);
 
-  // Handle changes to input fields in the modal
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCourseData({ ...courseData, [name]: value });
+  // Start editing a field
+  const startEdit = (type, id, field, currentValue) => {
+    setEditing({ type, id, field, value: currentValue });
   };
 
-  // Handle file input change
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    setCourseData({ ...courseData, [name]: files[0] });
-  };
+  // Cancel editing
+  const cancelEdit = () => setEditing({});
 
-  const handleEdit = (course) => {
-    setSelectedCourse(course);
-    setCourseData({
-      title: course.title,
-      price: course.price,
-      description: course.description,
-      courseOutcome: course.courseOutcome,
-      thumbnailFile: null, // Reset the file input
-      videoFile: null, // Reset the file input
-    });
-    setShowModal(true);
-  };
+  // Change value on input
+  const onEditChange = (e) => setEditing((ed) => ({ ...ed, value: e.target.value }));
 
-  const handleDelete = async (courseId) => {
-    setCourseToDelete(courseId);
-    setIsModalOpen(true); // Open the confirmation modal
-  };
+  // Save edited field
+  const saveEdit = async () => {
+    if (!editing.value.trim()) {
+      toast.error('Value cannot be empty');
+      return;
+    }
 
-  const confirmDelete = async () => {
-    const deleteToast = toast.loading("Please wait...", {
-      position: "top-center",
-    });
+    const { type, id, field, value } = editing;
 
     try {
-      await axiosInstance.delete(`/videos/videos/${courseToDelete}`);
-      setCourses((prev) => prev.filter((c) => c._id !== courseToDelete));
+      let url = '';
+      let body = { [field]: value };
 
-      toast.success("Course deleted successfully!", {
-        id: deleteToast,
-        position: "top-center",
-      });
+      switch (type) {
+        case 'course':
+          url = `/courses/course/${id}`;
+          break;
+        case 'module':
+          url = `/modules/module/${id}`;
+          break;
+        case 'video':
+          url = `/videos/videos/${id}`;
+          break;
+        default:
+          return;
+      }
 
-      setIsModalOpen(false); // Close the modal after deletion
+      await axiosInstance.put(url, body);
+
+      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} updated!`);
+      setEditing({});
+      fetchCourses(); // refresh list
     } catch (err) {
-      console.error("Delete failed:", err);
-
-      toast.error("Something went wrong while deleting.", {
-        id: deleteToast,
-        position: "top-center",
-      });
-
-      setIsModalOpen(false); // Close the modal if error occurs
+      toast.error('Update failed');
+      console.error(err);
     }
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleUpdateCourse = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-    formData.append("title", courseData.title);
-    formData.append("price", courseData.price);
-    formData.append("description", courseData.description);
-    formData.append("courseOutcome", courseData.courseOutcome);
-
-    if (courseData.thumbnailFile) {
-      formData.append("thumbnail", courseData.thumbnailFile);
-    }
-    if (courseData.videoFile) {
-      formData.append("video", courseData.videoFile);
-    }
+  // Delete item (course/module/video)
+  const deleteItem = async (type, id) => {
+    if (!window.confirm(`Are you sure to delete this ${type}? This cannot be undone.`)) return;
 
     try {
-      const updatedCourse = await axiosInstance.put(
-        `/videos/videos/${selectedCourse._id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      setCourses((prevCourses) =>
-        prevCourses.map((course) =>
-          course._id === selectedCourse._id ? updatedCourse.data : course
-        )
-      );
-      setShowModal(false);
+      let url = '';
+      switch (type) {
+        case 'course':
+          url = `/courses/course/${id}`;
+          break;
+        case 'module':
+          url = `/modules/module/${id}`;
+          break;
+        case 'video':
+          url = `/videos/videos/${id}`;
+          break;
+        default:
+          return;
+      }
 
-      toast.success("Course updated successfully!");
+      await axiosInstance.delete(url);
+      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted!`);
+      fetchCourses();
     } catch (err) {
-      console.error("Update failed:", err);
-      toast.error("Something went wrong while updating.");
+      toast.error('Delete failed');
+      console.error(err);
     }
   };
+
+  // Render editable field or text
+  const renderField = (type, item, field) => {
+    if (editing.type === type && editing.id === item._id && editing.field === field) {
+      return (
+        <>
+          <input
+            type="text"
+            value={editing.value}
+            onChange={onEditChange}
+            className="border p-1 rounded mr-2"
+          />
+          <button onClick={saveEdit} className="text-green-600 mr-2">Save</button>
+          <button onClick={cancelEdit} className="text-red-600">Cancel</button>
+        </>
+      );
+    }
+    return (
+      <span
+        className="cursor-pointer underline"
+        onClick={() => startEdit(type, item._id, field, item[field])}
+        title="Click to edit"
+      >
+        {item[field] || '—'}
+      </span>
+    );
+  };
+
+  if (loading) return <div className="p-10 text-center">Loading...</div>;
 
   return (
-    <div className="bg-white shadow-lg rounded-xl p-6">
-      <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
-        Course List
-      </h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-gray-100 text-gray-700 text-left text-sm uppercase tracking-wider">
-              <th className="px-6 py-3">Thumbnail</th>
-              <th className="px-6 py-3">Title</th>
-              <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(courses) &&
-              courses.map((course, index) => (
-                <tr
-                  key={course._id || course.id}
-                  className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
-                >
-                  <td className="px-6 py-4">
-                    <img
-                      src={course.thumbnailUrl}
-                      alt={course.title}
-                      className="w-20 h-auto rounded-md"
-                    />
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-800">
-                    {course.title}
-                  </td>
-                  <td className="px-6 py-4 text-green-600 font-semibold">
-                    AED {course.price}
-                  </td>
+    <div className="max-w-7xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Courses Management</h1>
 
-                  <td className="px-6 py-4 text-center space-x-2">
+      {courses.length === 0 && <p>No courses found.</p>}
+
+      {courses.map((course) => (
+        <div key={course._id} className="mb-8 border rounded p-4 shadow-sm">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-xl font-semibold">
+              {renderField('course', course, 'title')}
+            </h2>
+            <button
+              onClick={() => deleteItem('course', course._id)}
+              className="text-red-600 hover:underline"
+            >
+              Delete Course
+            </button>
+          </div>
+          <p>Description: {renderField('course', course, 'description')}</p>
+          <p>Price: {renderField('course', course, 'price')}</p>
+
+          <div className="ml-4 mt-4">
+            <h3 className="font-semibold mb-2">Modules:</h3>
+            {course.modules?.length > 0 ? (
+              course.modules.map((mod) => (
+                <div key={mod._id} className="mb-4 border rounded p-3 bg-gray-50">
+                  <div className="flex justify-between items-center mb-1">
+                    <strong>{renderField('module', mod, 'title')}</strong>
                     <button
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm"
-                      onClick={() => handleEdit(course)}
+                      onClick={() => deleteItem('module', mod._id)}
+                      className="text-red-500 hover:underline"
                     >
-                      Edit
+                      Delete Module
                     </button>
-                    <button
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
-                      onClick={() => handleDelete(course._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                  <p>Description: {renderField('module', mod, 'description')}</p>
 
-      {/* Modal for editing course */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-xl shadow-lg w-96">
-            <h3 className="text-2xl font-bold mb-4">Edit Course</h3>
-            <form onSubmit={handleUpdateCourse} encType="multipart/form-data">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Course Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={courseData.title}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Price
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={courseData.price}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={courseData.description}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  required
-                ></textarea>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Course Outcome
-                </label>
-                <textarea
-                  name="courseOutcome"
-                  value={courseData.courseOutcome}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                  required
-                ></textarea>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Thumbnail
-                </label>
-                <input
-                  type="file"
-                  name="thumbnailFile"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Video
-                </label>
-                <input
-                  type="file"
-                  name="videoFile"
-                  onChange={handleFileChange}
-                  accept="video/*"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
+                  <div className="ml-4 mt-2">
+                    <h4 className="font-medium mb-1">Videos:</h4>
+                    {mod.videos?.length > 0 ? (
+                      mod.videos.map((vid) => (
+                        <div key={vid._id} className="mb-2 flex justify-between items-center">
+                          <span>{renderField('video', vid, 'title')}</span>
+                          <button
+                            onClick={() => deleteItem('video', vid._id)}
+                            className="text-red-400 hover:underline"
+                          >
+                            Delete Video
+                          </button>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="italic">No videos.</p>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="italic">No modules.</p>
+            )}
           </div>
         </div>
-      )}
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onConfirm={confirmDelete}
-        onCancel={closeModal}
-      />
+      ))}
     </div>
   );
 };
 
-export default ListPage;
+export default CourseManagementPage;

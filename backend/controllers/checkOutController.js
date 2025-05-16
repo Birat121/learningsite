@@ -1,5 +1,5 @@
 import { createPaymentIntent } from '../services/ziinaService.js';
-import Video from '../models/videoModel.js';
+import Course from '../models/course.js';
 import User from '../models/userModel.js';
 import Enrollment from '../models/paymentModel.js'; // Your enrollment/payment schema
 import crypto from 'crypto';
@@ -10,18 +10,18 @@ const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
 export const handleCoursePayment = async (req, res) => {
   try {
-    const { videoId } = req.body;
+    const { courseId } = req.body;
     const customer_email = req.user?.email;
 
-    if (!videoId) return res.status(400).json({ error: 'Missing videoId' });
+    if (!courseId) return res.status(400).json({ error: 'Missing courseId' });
     if (!customer_email) return res.status(400).json({ error: 'Missing customer email' });
 
     console.log('Initiating payment for email:', customer_email);
 
-    const video = await Video.findById(videoId);
-    if (!video) return res.status(404).json({ error: 'Video not found' });
+    const course = await Course.findById(courseId);
+    if (!course) return res.status(404).json({ error: 'Course not found' });
 
-    const amountInFils = Math.round(video.price * 100);
+    const amountInFils = Math.round(course.price * 100);
 
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
@@ -29,7 +29,7 @@ export const handleCoursePayment = async (req, res) => {
       email: customer_email,
       metadata: {
         userEmail: customer_email,
-        videoId: videoId,
+        courseId: courseId,
       },
     });
 
@@ -37,7 +37,7 @@ export const handleCoursePayment = async (req, res) => {
 
     await Enrollment.create({
       user: req.user._id,
-      video: video._id,
+      course: course._id,
       paymentIntentId: paymentData.id,
       status: 'pending',
     });
@@ -85,7 +85,7 @@ export const handleZiinaWebhook = async (req, res) => {
 
     // Compute HMAC from the raw body and the secret key
     const computedHmac = crypto
-      .createHmac('sha256', process.env.ZIINA_SECRET_KEY)
+      .createHmac('sha256', ZIINA_SECRET_KEY)
       .update(rawBody)
       .digest();
 
@@ -107,9 +107,9 @@ export const handleZiinaWebhook = async (req, res) => {
     const status = event?.data?.status;
     const paymentIntentId = event?.data?.id;
     const userEmail = event?.data?.metadata?.userEmail;
-    const videoId = event?.data?.metadata?.videoId;
+    const courseId = event?.data?.metadata?.courseId;
 
-    if (!userEmail || !videoId || !paymentIntentId) {
+    if (!userEmail || !courseId || !paymentIntentId) {
       console.error('Missing metadata or payment ID');
       return res.status(400).send('Invalid webhook payload');
     }
@@ -125,15 +125,15 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(404).send('User not found');
     }
 
-    const video = await Video.findById(videoId);
-    if (!video) {
-      console.error('Video not found:', videoId);
-      return res.status(404).send('Video not found');
+    const course = await Course.findById(courseId);
+    if (!course) {
+      console.error('Course not found:', courseId);
+      return res.status(404).send('Course not found');
     }
 
     const existingEnrollment = await Enrollment.findOne({
       user: user._id,
-      video: video._id,
+      course: course._id,
       paymentIntentId,
     });
 
@@ -151,7 +151,7 @@ export const handleZiinaWebhook = async (req, res) => {
     // Fallback if enrollment wasn't created at intent stage (rare case)
     await Enrollment.create({
       user: user._id,
-      video: video._id,
+      course: course._id,
       paymentIntentId,
       status: 'completed',
     });

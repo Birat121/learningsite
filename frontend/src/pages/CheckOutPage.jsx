@@ -21,7 +21,7 @@ const CheckoutPage = () => {
     const fetchCourse = async () => {
       console.log(`${DEBUG_TAG} Fetching course details for slug: "${slug}"`);
       try {
-        const res = await axiosInstance.get(`/videos/videos/slug/${slug}`);
+        const res = await axiosInstance.get(`/courses/course/slug/${slug}`);
         console.log(`${DEBUG_TAG} Course fetch success:`, res.data);
         setCourse(res.data);
       } catch (error) {

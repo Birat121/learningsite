@@ -1,200 +1,311 @@
-import React, { useState } from 'react';
-import axiosInstance from '../api/axiosInstance';
-import toast from 'react-hot-toast';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Import React Quill styles
+import React, { useState } from "react";
+import axiosInstance from "../api/axiosInstance";
+import toast from "react-hot-toast";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const AddPage = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    price: '',
-    description: '',
-    outcome: '',
+  const [courseData, setCourseData] = useState({
+    title: "",
+    price: "",
+    description: "",
+    outcome: "",
     thumbnail: null,
-    video: null,
+    modules: [
+      {
+        title: "",
+        description: "",
+        videos: [
+          {
+            title: "",
+            description: "",
+            videoFile: null,
+          },
+        ],
+      },
+    ],
   });
 
   const [loading, setLoading] = useState(false);
 
-  // Handle input changes for form data
-  const handleChange = (e) => {
+  const handleCourseChange = (e) => {
     const { name, value, files } = e.target;
-    if (files && files.length > 0) {
-      const file = files[0];
-      setFormData((f) => ({ ...f, [name]: file }));
-    } else {
-      setFormData((f) => ({ ...f, [name]: value }));
-    }
+    setCourseData((prev) => ({
+      ...prev,
+      [name]: files ? files[0] : value,
+    }));
   };
 
-  // Handle React Quill change
   const handleEditorChange = (value, field) => {
-    setFormData((f) => ({ ...f, [field]: value }));
+    setCourseData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Handle form submission and send data to the backend
+  const handleModuleChange = (index, field, value) => {
+    const updatedModules = [...courseData.modules];
+    updatedModules[index][field] = value;
+    setCourseData((prev) => ({ ...prev, modules: updatedModules }));
+  };
+
+  const handleVideoChange = (moduleIndex, videoIndex, field, value) => {
+    const updatedModules = [...courseData.modules];
+    updatedModules[moduleIndex].videos[videoIndex][field] = value;
+    setCourseData((prev) => ({ ...prev, modules: updatedModules }));
+  };
+
+  const addModule = () => {
+    setCourseData((prev) => ({
+      ...prev,
+      modules: [
+        ...prev.modules,
+        {
+          title: "",
+          description: "",
+          videos: [
+            {
+              title: "",
+              description: "",
+              videoFile: null,
+            },
+          ],
+        },
+      ],
+    }));
+  };
+
+  const addVideoToModule = (moduleIndex) => {
+    const updatedModules = [...courseData.modules];
+    updatedModules[moduleIndex].videos.push({
+      title: "",
+      description: "",
+      videoFile: null,
+    });
+    setCourseData((prev) => ({ ...prev, modules: updatedModules }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const data = new FormData();
-    data.append('title', formData.title);
-    data.append('description', formData.description);
-
-    // Split the outcome text (if needed) into array
-    const outcomes = formData.outcome
-      .split('\n')
-      .map((point) => point.trim())
-      .filter(Boolean);
-    outcomes.forEach((item) => data.append('courseOutcome[]', item));
-
-    data.append('price', formData.price);
-    data.append('thumbnail', formData.thumbnail);
-    data.append('video', formData.video);
-
-    const toastId = toast.loading('Uploading... 0%');
+    setLoading(true);
+    const toastId = toast.loading("Uploading course...");
 
     try {
-      setLoading(true);
+      // Prepare form data for course
+      const courseForm = new FormData();
+      courseForm.append("title", courseData.title);
+      courseForm.append("description", courseData.description);
+      courseForm.append("outcome", courseData.outcome);
+      courseForm.append("price", courseData.price);
+      courseForm.append("thumbnail", courseData.thumbnail); // Send image file directly
 
-      const res = await axiosInstance.post('/videos/videos', data, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent) => {
-          const percent = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          toast.loading(`Uploading... ${percent}%`, { id: toastId });
-        },
-      });
+      const { data: courseRes } = await axiosInstance.post(
+        "/courses/course",
+        courseForm,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
-      toast.success('✅ Course added successfully!', { id: toastId });
+      const courseId = courseRes._id;
+
+      // Upload modules and videos
+      for (const module of courseData.modules) {
+        const { data: moduleRes } = await axiosInstance.post("/modules", {
+          title: module.title,
+          description: module.description,
+          course: courseId,
+        });
+
+        const moduleId = moduleRes._id;
+
+        for (const video of module.videos) {
+          const videoForm = new FormData();
+          videoForm.append("title", video.title);
+          videoForm.append("description", video.description);
+          videoForm.append("module", moduleId);
+          videoForm.append("videoFile", video.videoFile); // Send video file directly
+
+          await axiosInstance.post("/videos/videos", videoForm, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      }
+
+      toast.success("✅ Course created successfully!", { id: toastId });
 
       // Reset form
-      setFormData({
-        title: '',
-        price: '',
-        description: '',
-        outcome: '',
+      setCourseData({
+        title: "",
+        price: "",
+        description: "",
+        outcome: "",
         thumbnail: null,
-        video: null,
+        modules: [
+          {
+            title: "",
+            description: "",
+            videos: [
+              {
+                title: "",
+                description: "",
+                videoFile: null,
+              },
+            ],
+          },
+        ],
       });
     } catch (err) {
-      toast.dismiss(toastId); // ❗️Dismiss progress toast
-      toast.error(err.response?.data?.message || '❌ Upload failed.');
-      console.log('Upload Error:', err.response?.data || err.message);
+      console.error(err);
+      toast.error("❌ Upload failed.", { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
-  // Validate form before enabling submit button
   const isFormValid =
-    formData.title &&
-    formData.price &&
-    formData.description &&
-    formData.outcome &&
-    formData.thumbnail &&
-    formData.video;
+    courseData.title &&
+    courseData.price &&
+    courseData.description &&
+    courseData.outcome &&
+    courseData.thumbnail;
 
   return (
     <div className="max-w-6xl mx-auto mt-6 mb-6 p-6 border shadow-md rounded-lg h-[calc(100vh-100px)] overflow-y-auto">
       <h2 className="text-3xl font-bold text-center text-green-700 mb-6">
         Add New Course
       </h2>
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4"
-      >
-        {[{
-            label: 'Course Title',
-            name: 'title',
-            type: 'text',
-            placeholder: 'Enter course title',
-          },
-          {
-            label: 'Price (in AED)',
-            name: 'price',
-            type: 'number',
-            placeholder: 'Enter course price in AED',
-          },
-        ].map(({ label, name, type, placeholder }) => (
-          <div className="flex flex-col" key={name}>
-            <label className="text-sm font-medium text-gray-700 mb-1">
-              {label}
-            </label>
-            <input
-              type={type}
-              name={name}
-              value={formData[name]}
-              onChange={handleChange}
-              placeholder={placeholder}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            />
-          </div>
-        ))}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Course Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input
+            type="text"
+            name="title"
+            value={courseData.title}
+            onChange={handleCourseChange}
+            placeholder="Course Title"
+            className="input"
+          />
+          <input
+            type="number"
+            name="price"
+            value={courseData.price}
+            onChange={handleCourseChange}
+            placeholder="Price (AED)"
+            className="input"
+          />
+        </div>
 
-        <div className="flex flex-col md:col-span-2">
-          <label className="text-sm font-medium text-gray-700 mb-1">
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
             Description
           </label>
           <ReactQuill
-            value={formData.description}
-            onChange={(value) => handleEditorChange(value, 'description')}
-            placeholder="Enter course description here"
-            className="border p-4 rounded"
+            value={courseData.description}
+            onChange={(val) => handleEditorChange(val, "description")}
+            className="bg-white rounded"
           />
         </div>
 
-        <div className="flex flex-col md:col-span-2">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            Course Outcome
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Outcome
           </label>
           <ReactQuill
-            value={formData.outcome}
-            onChange={(value) => handleEditorChange(value, 'outcome')}
-            placeholder="Enter course outcome here"
-            className="border p-4 rounded"
+            value={courseData.outcome}
+            onChange={(val) => handleEditorChange(val, "outcome")}
+            className="bg-white rounded"
           />
         </div>
 
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            Thumbnail Image
-          </label>
-          <input
-            type="file"
-            name="thumbnail"
-            accept="image/*"
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
+        <input
+          type="file"
+          name="thumbnail"
+          accept="image/*"
+          onChange={handleCourseChange}
+          className="input"
+        />
 
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-700 mb-1">
-            Course Video
-          </label>
-          <input
-            type="file"
-            name="video"
-            accept="video/*"
-            onChange={handleChange}
-            className="p-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-        </div>
+        {/* Modules & Videos */}
+        {courseData.modules.map((module, mIdx) => (
+          <div key={mIdx} className="border p-4 rounded mb-4 bg-gray-50">
+            <h3 className="text-lg font-semibold mb-2">Module {mIdx + 1}</h3>
+            <input
+              type="text"
+              placeholder="Module Title"
+              value={module.title}
+              onChange={(e) =>
+                handleModuleChange(mIdx, "title", e.target.value)
+              }
+              className="input"
+            />
+            <textarea
+              placeholder="Module Description"
+              value={module.description}
+              onChange={(e) =>
+                handleModuleChange(mIdx, "description", e.target.value)
+              }
+              className="input"
+            />
 
-        <div className="md:col-span-2 mt-4">
-          <button
-            type="submit"
-            disabled={!isFormValid || loading}
-            className={`w-full py-3 rounded-md font-semibold text-white transition ${
-              loading || !isFormValid
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-green-700 hover:bg-green-800'
-            }`}
-          >
-            {loading ? 'Adding Course...' : 'Add Course'}
-          </button>
-        </div>
+            {module.videos.map((video, vIdx) => (
+              <div key={vIdx} className="border p-3 rounded mb-3 bg-white">
+                <h4 className="font-medium mb-2">Video {vIdx + 1}</h4>
+                <input
+                  type="text"
+                  placeholder="Video Title"
+                  value={video.title}
+                  onChange={(e) =>
+                    handleVideoChange(mIdx, vIdx, "title", e.target.value)
+                  }
+                  className="input"
+                />
+                <textarea
+                  placeholder="Video Description"
+                  value={video.description}
+                  onChange={(e) =>
+                    handleVideoChange(mIdx, vIdx, "description", e.target.value)
+                  }
+                  className="input"
+                />
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) =>
+                    handleVideoChange(
+                      mIdx,
+                      vIdx,
+                      "videoFile",
+                      e.target.files[0]
+                    )
+                  }
+                  className="input"
+                />
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => addVideoToModule(mIdx)}
+              className="btn mt-2"
+            >
+              ➕ Add Video
+            </button>
+          </div>
+        ))}
+
+        <button type="button" onClick={addModule} className="btn">
+          ➕ Add Module
+        </button>
+
+        <button
+          type="submit"
+          disabled={!isFormValid || loading}
+          className={`w-full py-3 rounded-md font-semibold text-white transition ${
+            loading || !isFormValid
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-700 hover:bg-green-800"
+          }`}
+        >
+          {loading ? "Adding Course..." : "Add Course"}
+        </button>
       </form>
     </div>
   );

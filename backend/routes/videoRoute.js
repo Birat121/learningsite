@@ -1,29 +1,41 @@
-import express from 'express';
-import multer from 'multer';
-import { createVideo, getVideoBySlug, updateVideo, deleteVideo, getAllVideos,getEnrolledVideos,checkEnrollmentStatus} from '../controllers/trainingVideoController.js';
+import express from "express";
+import multer from "multer";
+import {
+  createVideo,
+  getAllVideos,
+  getVideoByIdOrSlug,
+  updateVideo,
+  deleteVideo,
+} from '../controllers/trainingVideoController.js';
 
-import  authMiddleware  from '../middleware/authMiddleware.js';
+const videoRouter = express.Router();
 
-const router = express.Router();
-
-// Multer setup for file uploads
-const storage = multer.memoryStorage(); // Files are stored in memory
-const upload = multer({ storage: storage }).fields([
-  { name: 'video', maxCount: 1 },
-  { name: 'thumbnail', maxCount: 1 },
+// Multer memory storage for buffer upload (required for Cloudinary stream upload)
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+}).fields([
+  { name: "video", maxCount: 1 },
+  // Add other fields like thumbnail if needed:
+  // { name: "thumbnail", maxCount: 1 },
 ]);
 
-router.post('/videos', upload, createVideo);
-router.get('/videos', getAllVideos);
-router.get('/videos/slug/:slug', getVideoBySlug); // Prevents slug/id conflict
-router.put('/videos/:id', upload, updateVideo);
-router.delete('/videos/:id',  deleteVideo);
+// Routes
 
-// Enrollment
-router.get('/enrolled', authMiddleware, getEnrolledVideos);
-router.get('/enrolled/:slug', authMiddleware, checkEnrollmentStatus);
+// Create video with video upload
+videoRouter.post("/", upload, createVideo);
 
+// Get all videos, optionally filtered by module
+videoRouter.get("/", getAllVideos);
 
+// Get single video by ID or slug
+videoRouter.get("/:idOrSlug", getVideoByIdOrSlug);
 
+// Update video details, optionally replace video file
+videoRouter.put("/:id", upload, updateVideo);
 
-export default router;
+// Delete video
+videoRouter.delete("/:id", deleteVideo);
+
+export default videoRouter;
+

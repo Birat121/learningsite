@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     type: String
   },
   enrolledCourses: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "video" } // Array of course IDs
+    { type: mongoose.Schema.Types.ObjectId, ref: "Course" } // Array of course IDs
   ]
 });
 

@@ -1,242 +1,137 @@
-import cloudinary from '../utils/cloudinary.js';
-import Video from '../models/videoModel.js';
-import Enrollment from '../models/paymentModel.js';
-import slugify from 'slugify';
+import Video from "../models/videoModel.js";
+import cloudinary from "../utils/cloudinary.js"; // your cloudinary config import
+import mongoose from "mongoose";
+import streamifier from "streamifier";
 
-// POST /videos - Create a video
-// POST /videos - Create a video
+// Create video with Cloudinary upload (using buffer stream)
 export const createVideo = async (req, res) => {
   try {
-    // Automatically generate a slug from the title
-    const slug = slugify(req.body.title, { lower: true, strict: true });
+    const { title, module } = req.body;
+    const videoFile = req.files?.video?.[0];
 
-    // Upload video to Cloudinary
-    const videoResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { resource_type: 'video' },
-        (error, video) => {
-          if (error) reject(error);
-          resolve(video);
-        }
-      ).end(req.files.video[0].buffer); // Assuming video is uploaded via req.files.video
+    if (!videoFile) {
+      return res.status(400).json({ error: "Video file is required" });
+    }
+
+    // Upload video buffer stream to Cloudinary
+    const streamUpload = () => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: "video", folder: "course_videos" },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        streamifier.createReadStream(videoFile.buffer).pipe(stream);
+      });
+    };
+
+    const result = await streamUpload();
+
+    const video = new Video({
+      title,
+      videoUrl: result.secure_url,
+      videoPublicId: result.public_id,
+      module: mongoose.Types.ObjectId(module),
     });
 
-    // Upload thumbnail to Cloudinary
-    const thumbnailResult = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        { resource_type: 'image' },
-        (error, thumbnail) => {
-          if (error) reject(error);
-          resolve(thumbnail);
-        }
-      ).end(req.files.thumbnail[0].buffer); // Assuming thumbnail is uploaded via req.files.thumbnail
-    });
-
-    // Create a new video record
-    const newVideo = new Video({
-      title: req.body.title,
-      description: req.body.description,
-      courseOutcome: req.body.courseOutcome,
-      price: req.body.price,
-       videoPublicId: videoResult.public_id,
-      videoUrl: videoResult.secure_url,
-thumbnailUrl: thumbnailResult.secure_url,
-
-      thumbnailPublicId: thumbnailResult.public_id,
-      slug: slug,  // Add the generated slug to the video
-    });
-
-    await newVideo.save();
-    return res.status(201).json(newVideo);
+    await video.save();
+    res.status(201).json(video);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error("Create video error:", error);
+    res.status(500).json({ error: error.message });
   }
 };
 
+// Get all videos (optionally filtered by module)
 export const getAllVideos = async (req, res) => {
   try {
-    const videos = await Video.find().sort({ createdAt: -1 }); // newest first
-    return res.json(videos);
+    const filter = {};
+    if (req.query.module) {
+      filter.module = req.query.module;
+    }
+    const videos = await Video.find(filter).populate("module").sort({ createdAt: -1 });
+    res.json(videos);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// GET /videos/:id - Fetch a video by ID
-export const getVideoBySlug = async (req, res) => {
+// Get single video by ID or slug
+export const getVideoByIdOrSlug = async (req, res) => {
   try {
-    const video = await Video.findOne({ slug: req.params.slug });
-    if (!video) return res.status(404).json({ error: 'Video not found' });
+    const { idOrSlug } = req.params;
 
-    // Add structured data for SEO if needed
-    const jsonLd = {
-      "@context": "http://schema.org",
-      "@type": "VideoObject",
-      "name": video.title,
-      "description": video.description,
-      "thumbnailUrl": video.thumbnailUrl,
-      "uploadDate": video.createdAt,
-      "contentUrl": video.videoUrl,
-      "publisher": {
-        "@type": "Organization",
-        "name": "Your Platform Name",
-        "logo": "https://yourdomain.com/logo.png"
-      }
-    };
-    return res.json(video, jsonLd);
+    let video;
+    if (mongoose.Types.ObjectId.isValid(idOrSlug)) {
+      video = await Video.findById(idOrSlug).populate("module");
+    } else {
+      video = await Video.findOne({ slug: idOrSlug }).populate("module");
+    }
+
+    if (!video) return res.status(404).json({ error: "Video not found" });
+    res.json(video);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-
-// PUT /videos/:id - Update a video
+// Update video details and optionally replace video file
 export const updateVideo = async (req, res) => {
   try {
-    const video = await Video.findById(req.params.id);
-    if (!video) return res.status(404).json({ error: 'Video not found' });
+    const { id } = req.params;
+    const { title, module } = req.body;
+    const videoFile = req.files?.video?.[0];
 
-    const updatedData = {};
+    const video = await Video.findById(id);
+    if (!video) return res.status(404).json({ error: "Video not found" });
 
-    // Update title if provided and generate a new slug
-    if (req.body.title) {
-      updatedData.title = req.body.title;
-      updatedData.slug = slugify(req.body.title, { lower: true, strict: true }); // Generate new slug
+    // If new video file provided, delete old one and upload new one
+    if (videoFile) {
+      await cloudinary.uploader.destroy(video.videoPublicId, { resource_type: "video" });
+
+      const streamUpload = () => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { resource_type: "video", folder: "course_videos" },
+            (error, result) => {
+              if (result) resolve(result);
+              else reject(error);
+            }
+          );
+          streamifier.createReadStream(videoFile.buffer).pipe(stream);
+        });
+      };
+
+      const result = await streamUpload();
+
+      video.videoUrl = result.secure_url;
+      video.videoPublicId = result.public_id;
     }
 
-    // Update price if provided
-    if (req.body.price) {
-      updatedData.price = req.body.price;
-    }
+    if (title) video.title = title;
+    if (module) video.module = mongoose.Types.ObjectId(module);
 
-    // Update description if provided
-    if (req.body.description) {
-      updatedData.description = req.body.description;
-    }
-
-    // Update courseOutcome if provided
-    if (req.body.courseOutcome) {
-      updatedData.courseOutcome = req.body.courseOutcome;
-    }
-
-    // Upload new video if present
-    // Upload new video if present
-if (req.files && req.files.video) {
-  const videoResult = await new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      { resource_type: 'video' },
-      (error, video) => {
-        if (error) reject(error);
-        resolve(video);
-      }
-    ).end(req.files.video[0].buffer);
-  });
-  updatedData.videoUrl = videoResult.secure_url;
-}
-
-// Upload new thumbnail if present
-if (req.files && req.files.thumbnail) {
-  const thumbnailResult = await new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(
-      { resource_type: 'image' },
-      (error, thumbnail) => {
-        if (error) reject(error);
-        resolve(thumbnail);
-      }
-    ).end(req.files.thumbnail[0].buffer);
-  });
-  updatedData.thumbnailUrl = thumbnailResult.secure_url;
-}
-
-
-    // Update the video in the database with the new data
-    const updatedVideo = await Video.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-    return res.json(updatedVideo);
+    await video.save();
+    res.json(video);
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-
-// DELETE /videos/:id - Delete a video
+// Delete video from DB and Cloudinary
 export const deleteVideo = async (req, res) => {
   try {
-    const video = await Video.findById(req.params.id);
-    if (!video) return res.status(404).json({ error: 'Video not found' });
+    const { id } = req.params;
+    const video = await Video.findById(id);
+    if (!video) return res.status(404).json({ error: "Video not found" });
 
-    // Delete video and thumbnail from Cloudinary
-    await cloudinary.uploader.destroy(video.videoPublicId, { resource_type: 'video' });
-    await cloudinary.uploader.destroy(video.thumbnailPublicId, { resource_type: 'image' });
+    await cloudinary.uploader.destroy(video.videoPublicId, { resource_type: "video" });
+    await Video.findByIdAndDelete(id);
 
-    // Delete video record from MongoDB
-    await Video.findByIdAndDelete(req.params.id);
-
-    // Delete related enrollments from MongoDB
-    await Enrollment.deleteMany({ video: video._id });
-
-    return res.json({ message: 'Video and related enrollments deleted successfully' });
+    res.json({ message: "Video deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
-
-
-
-export const getEnrolledVideos = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const enrollments = await Enrollment.find({ user: userId })
-      .populate("video")
-      .exec();
-
-    const courses = enrollments
-      .map((enrollment) => enrollment.video)
-      .filter((video) => video !== null);  // Filter out deleted videos
-
-    res.status(200).json({ courses });
-  } catch (error) {
-    console.error("Fetching enrolled courses failed:", error);
-    res.status(500).json({ message: "Server error while fetching courses" });
-  }
-};
-
-
-
-import mongoose from 'mongoose';
-const { Types } = mongoose;
-
-
-
-export const checkEnrollmentStatus = async (req, res) => {
-  try {
-    const { slug } = req.params;
-    const userId = req.user?.id;
-
-    if (!slug || !userId) {
-      console.warn("Missing slug or user ID", {
-        slug,
-        userId,
-        cookies: req.cookies,
-        headers: req.headers,
-      });
-      return res.status(400).json({ enrolled: false, error: "Missing slug or user ID" });
-    }
-
-    const course = Types.ObjectId.isValid(slug)
-      ? await Video.findById(slug)
-      : await Video.findOne({ slug });
-
-    if (!course) {
-      console.warn("Course not found for slug:", slug);
-      return res.status(404).json({ enrolled: false, error: "Course not found" });
-    }
-
-    const isEnrolled = await Enrollment.exists({ user: userId, course: course._id });
-
-    return res.status(200).json({ enrolled: Boolean(isEnrolled) });
-  } catch (error) {
-    console.error("Error checking enrollment status:", error);
-    return res.status(500).json({ enrolled: false, error: "Internal server error" });
+    res.status(500).json({ error: error.message });
   }
 };

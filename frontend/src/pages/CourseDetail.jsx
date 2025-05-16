@@ -15,7 +15,7 @@ const CourseDetails = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axiosInstance.get(`/videos/videos/slug/${slug}`);
+        const response = await axiosInstance.get(`/courses/course/slug/${slug}`);
         setCourse(response.data);
       } catch (error) {
         console.error('Error fetching course:', error);

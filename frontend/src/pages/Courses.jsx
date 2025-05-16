@@ -85,7 +85,7 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get("/videos/videos");
+        const response = await axiosInstance.get("/courses/course");
         const data = response.data;
         const list = Array.isArray(data)
           ? data
