@@ -33,6 +33,7 @@ import WatchCourse from "./components/WatchCourse";
 import AdminHeroEditor from "./components/HeroEditor";
 import AdminIntroduction from "./components/IntroEditor";
 import PodcastVideoManager from "./components/Youtube";
+import ModuleVideoManagementPage from "./components/ModuleManagement";
 
 
 
@@ -182,7 +183,15 @@ function App() {
               </AdminRoute>
             }
           />
-         
+           <Route
+            path="/admin/dashboard/listModules"
+            element={
+              <AdminRoute>
+                <ModuleVideoManagementPage />
+              </AdminRoute>
+            }
+          />
+          
           
           
         </Route>

@@ -69,6 +69,16 @@ const AdminPage = () => {
               List Courses
             </Link>
             <Link
+              to="listModules"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("listModules") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              List Modules
+            </Link>
+            <Link
               to="quiz"
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-2 rounded-md ${
@@ -170,6 +180,16 @@ const AdminPage = () => {
               List Courses
             </Link>
             <Link
+              to="listModules"
+              onClick={() => setSidebarOpen(false)}
+              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
+                isActive("listModules") ? "bg-green-800" : "hover:bg-green-600"
+              }`}
+            >
+              <List size={20} />
+              List Modules
+            </Link>
+            <Link
               to="quiz"
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-4 py-2 rounded-md ${
@@ -221,7 +241,7 @@ const AdminPage = () => {
             <Link
               to="introeditor"  
               className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
+                isActive("intro-editor") ? "bg-green-800" : "hover:bg-green-600"
               }`}
             >
               <List size={20} />
