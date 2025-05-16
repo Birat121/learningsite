@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   // Fetch enrolled courses
   const fetchEnrolledCourses = async () => {
     try {
-      const res = await axiosInstance.get("/videos/enrolled", {
+      const res = await axiosInstance.get("/courses/enrolled", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
