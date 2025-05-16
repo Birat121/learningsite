@@ -108,7 +108,7 @@ const AddPage = () => {
 
       // Upload modules and videos
       for (const module of courseData.modules) {
-        const { data: moduleRes } = await axiosInstance.post("/modules", {
+        const { data: moduleRes } = await axiosInstance.post("/modules/module", {
           title: module.title,
           description: module.description,
           course: courseId,
@@ -166,149 +166,203 @@ const AddPage = () => {
     courseData.description &&
     courseData.outcome &&
     courseData.thumbnail;
-
-  return (
-    <div className="max-w-6xl mx-auto mt-6 mb-6 p-6 border shadow-md rounded-lg h-[calc(100vh-100px)] overflow-y-auto">
-      <h2 className="text-3xl font-bold text-center text-green-700 mb-6">
-        Add New Course
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Course Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="title"
-            value={courseData.title}
-            onChange={handleCourseChange}
-            placeholder="Course Title"
-            className="input"
-          />
-          <input
-            type="number"
-            name="price"
-            value={courseData.price}
-            onChange={handleCourseChange}
-            placeholder="Price (AED)"
-            className="input"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Description
-          </label>
-          <ReactQuill
-            value={courseData.description}
-            onChange={(val) => handleEditorChange(val, "description")}
-            className="bg-white rounded"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Outcome
-          </label>
-          <ReactQuill
-            value={courseData.outcome}
-            onChange={(val) => handleEditorChange(val, "outcome")}
-            className="bg-white rounded"
-          />
-        </div>
-
-        <input
-          type="file"
-          name="thumbnail"
-          accept="image/*"
-          onChange={handleCourseChange}
-          className="input"
-        />
-
-        {/* Modules & Videos */}
-        {courseData.modules.map((module, mIdx) => (
-          <div key={mIdx} className="border p-4 rounded mb-4 bg-gray-50">
-            <h3 className="text-lg font-semibold mb-2">Module {mIdx + 1}</h3>
-            <input
-              type="text"
-              placeholder="Module Title"
-              value={module.title}
-              onChange={(e) =>
-                handleModuleChange(mIdx, "title", e.target.value)
-              }
-              className="input"
-            />
-            <textarea
-              placeholder="Module Description"
-              value={module.description}
-              onChange={(e) =>
-                handleModuleChange(mIdx, "description", e.target.value)
-              }
-              className="input"
-            />
-
-            {module.videos.map((video, vIdx) => (
-              <div key={vIdx} className="border p-3 rounded mb-3 bg-white">
-                <h4 className="font-medium mb-2">Video {vIdx + 1}</h4>
+    return (
+      <div className="max-w-6xl mx-auto mt-8 mb-12 p-8 border rounded-lg shadow-lg bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
+        <h2 className="text-4xl font-extrabold text-center text-green-700 mb-10">
+          Add New Course
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Course Info */}
+          <section className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col">
+                <label htmlFor="title" className="mb-2 font-semibold text-gray-700">
+                  Course Title <span className="text-red-500">*</span>
+                </label>
                 <input
+                  id="title"
                   type="text"
-                  placeholder="Video Title"
-                  value={video.title}
-                  onChange={(e) =>
-                    handleVideoChange(mIdx, vIdx, "title", e.target.value)
-                  }
-                  className="input"
-                />
-                <textarea
-                  placeholder="Video Description"
-                  value={video.description}
-                  onChange={(e) =>
-                    handleVideoChange(mIdx, vIdx, "description", e.target.value)
-                  }
-                  className="input"
-                />
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={(e) =>
-                    handleVideoChange(
-                      mIdx,
-                      vIdx,
-                      "videoFile",
-                      e.target.files[0]
-                    )
-                  }
-                  className="input"
+                  name="title"
+                  value={courseData.title}
+                  onChange={handleCourseChange}
+                  placeholder="Enter course title"
+                  className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
                 />
               </div>
+  
+              <div className="flex flex-col">
+                <label htmlFor="price" className="mb-2 font-semibold text-gray-700">
+                  Price (AED) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="price"
+                  type="number"
+                  name="price"
+                  value={courseData.price}
+                  onChange={handleCourseChange}
+                  placeholder="Enter price"
+                  className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  required
+                />
+              </div>
+            </div>
+  
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold text-gray-700">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <ReactQuill
+                value={courseData.description}
+                onChange={(val) => handleEditorChange(val, "description")}
+                className="bg-white rounded-md border border-gray-300"
+              />
+            </div>
+  
+            <div className="flex flex-col">
+              <label className="mb-2 font-semibold text-gray-700">
+                Outcome <span className="text-red-500">*</span>
+              </label>
+              <ReactQuill
+                value={courseData.outcome}
+                onChange={(val) => handleEditorChange(val, "outcome")}
+                className="bg-white rounded-md border border-gray-300"
+              />
+            </div>
+  
+            <div className="flex flex-col">
+              <label htmlFor="thumbnail" className="mb-2 font-semibold text-gray-700">
+                Thumbnail <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="thumbnail"
+                type="file"
+                name="thumbnail"
+                accept="image/*"
+                onChange={handleCourseChange}
+                className="input border border-gray-300 rounded-md p-2 cursor-pointer"
+                required
+              />
+            </div>
+          </section>
+  
+          {/* Modules & Videos */}
+          <section className="space-y-8">
+            {courseData.modules.map((module, mIdx) => (
+              <div
+                key={mIdx}
+                className="border border-gray-300 rounded-md p-6 bg-gray-50 shadow-sm"
+              >
+                <h3 className="text-xl font-semibold mb-4 text-green-800">
+                  Module {mIdx + 1}
+                </h3>
+  
+                <div className="flex flex-col mb-4">
+                  <label className="mb-2 font-medium text-gray-700">Module Title</label>
+                  <input
+                    type="text"
+                    placeholder="Module Title"
+                    value={module.title}
+                    onChange={(e) => handleModuleChange(mIdx, "title", e.target.value)}
+                    className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  />
+                </div>
+  
+                <div className="flex flex-col mb-6">
+                  <label className="mb-2 font-medium text-gray-700">Module Description</label>
+                  <textarea
+                    placeholder="Module Description"
+                    value={module.description}
+                    onChange={(e) => handleModuleChange(mIdx, "description", e.target.value)}
+                    className="input border border-gray-300 rounded-md p-3 min-h-[60px] resize-none focus:outline-none focus:ring-2 focus:ring-green-400"
+                  />
+                </div>
+  
+                {/* Videos List */}
+                <div className="space-y-6">
+                  {module.videos.map((video, vIdx) => (
+                    <div
+                      key={vIdx}
+                      className="border border-gray-300 rounded-md p-4 bg-white shadow-sm"
+                    >
+                      <h4 className="font-semibold mb-3 text-green-600">
+                        Video {vIdx + 1}
+                      </h4>
+  
+                      <div className="flex flex-col mb-3">
+                        <label className="mb-1 font-medium text-gray-700">Video Title</label>
+                        <input
+                          type="text"
+                          placeholder="Video Title"
+                          value={video.title}
+                          onChange={(e) =>
+                            handleVideoChange(mIdx, vIdx, "title", e.target.value)
+                          }
+                          className="input border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
+                        />
+                      </div>
+  
+                      <div className="flex flex-col mb-3">
+                        <label className="mb-1 font-medium text-gray-700">Video Description</label>
+                        <textarea
+                          placeholder="Video Description"
+                          value={video.description}
+                          onChange={(e) =>
+                            handleVideoChange(mIdx, vIdx, "description", e.target.value)
+                          }
+                          className="input border border-gray-300 rounded-md p-2 min-h-[50px] resize-none focus:outline-none focus:ring-2 focus:ring-green-300"
+                        />
+                      </div>
+  
+                      <div className="flex flex-col">
+                        <label className="mb-1 font-medium text-gray-700">Upload Video File</label>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          onChange={(e) =>
+                            handleVideoChange(mIdx, vIdx, "videoFile", e.target.files[0])
+                          }
+                          className="input border border-gray-300 rounded-md p-1 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+  
+                <button
+                  type="button"
+                  onClick={() => addVideoToModule(mIdx)}
+                  className="mt-4 inline-block px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+                >
+                  ➕ Add Video
+                </button>
+              </div>
             ))}
-
+  
             <button
               type="button"
-              onClick={() => addVideoToModule(mIdx)}
-              className="btn mt-2"
+              onClick={addModule}
+              className="w-full py-3 rounded-md font-semibold text-white bg-green-700 hover:bg-green-800 transition"
             >
-              ➕ Add Video
+              ➕ Add Module
             </button>
-          </div>
-        ))}
-
-        <button type="button" onClick={addModule} className="btn">
-          ➕ Add Module
-        </button>
-
-        <button
-          type="submit"
-          disabled={!isFormValid || loading}
-          className={`w-full py-3 rounded-md font-semibold text-white transition ${
-            loading || !isFormValid
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-green-700 hover:bg-green-800"
-          }`}
-        >
-          {loading ? "Adding Course..." : "Add Course"}
-        </button>
-      </form>
-    </div>
-  );
-};
+          </section>
+  
+          <button
+            type="submit"
+            disabled={!isFormValid || loading}
+            className={`w-full py-4 rounded-md font-semibold text-white transition ${
+              loading || !isFormValid
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-700 hover:bg-green-800"
+            }`}
+          >
+            {loading ? "Adding Course..." : "Add Course"}
+          </button>
+        </form>
+      </div>
+    );
+  };
+  
 
 export default AddPage;

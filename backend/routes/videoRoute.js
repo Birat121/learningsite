@@ -23,19 +23,19 @@ const upload = multer({
 // Routes
 
 // Create video with video upload
-videoRouter.post("/", upload, createVideo);
+videoRouter.post("/videos", upload, createVideo);
 
 // Get all videos, optionally filtered by module
-videoRouter.get("/", getAllVideos);
+videoRouter.get("/videos", getAllVideos);
 
 // Get single video by ID or slug
-videoRouter.get("/:idOrSlug", getVideoByIdOrSlug);
+videoRouter.get("/videos/:idOrSlug", getVideoByIdOrSlug);
 
 // Update video details, optionally replace video file
-videoRouter.put("/:id", upload, updateVideo);
+videoRouter.put("/videos/:id", upload, updateVideo);
 
 // Delete video
-videoRouter.delete("/:id", deleteVideo);
+videoRouter.delete("/videos:id", deleteVideo);
 
 export default videoRouter;
 
