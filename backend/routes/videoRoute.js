@@ -16,8 +16,7 @@ const upload = multer({
   storage: storage,
 }).fields([
   { name: "video", maxCount: 1 },
-  // Add other fields like thumbnail if needed:
-  // { name: "thumbnail", maxCount: 1 },
+  
 ]);
 
 // Routes

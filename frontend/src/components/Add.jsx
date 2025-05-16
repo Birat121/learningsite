@@ -63,7 +63,7 @@ const AddPage = () => {
           videos: [
             {
               title: "",
-              description: "",
+
               videoFile: null,
             },
           ],
@@ -76,7 +76,7 @@ const AddPage = () => {
     const updatedModules = [...courseData.modules];
     updatedModules[moduleIndex].videos.push({
       title: "",
-      description: "",
+
       videoFile: null,
     });
     setCourseData((prev) => ({ ...prev, modules: updatedModules }));
@@ -112,23 +112,35 @@ const AddPage = () => {
           "/modules/module",
           {
             title: module.title,
-            description: module.description,
+
             course: courseId,
           }
         );
 
-        const moduleId = moduleRes._id;
+        for (const module of courseData.modules) {
+          const { data: moduleRes } = await axiosInstance.post(
+            "/modules/module",
+            {
+              title: module.title,
+              description: module.description,
+              course: courseId,
+            }
+          );
 
-        for (const video of module.videos) {
-          const videoForm = new FormData();
-          videoForm.append("title", video.title);
+          for (const video of module.videos) {
+            if (!video.videoFile) {
+              console.warn("Missing video file for video:", video.title);
+              continue;
+            }
+            const videoForm = new FormData();
+            videoForm.append("title", video.title);
+            videoForm.append("module", moduleRes._id); // <-- use module ID here
+            videoForm.append("videoFile", video.videoFile);
 
-          videoForm.append("module", moduleId);
-          videoForm.append("videoFile", video.videoFile); // Send video file directly
-
-          await axiosInstance.post("/videos/videos", videoForm, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+            await axiosInstance.post("/videos/videos", videoForm, {
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          }
         }
       }
 
@@ -144,7 +156,7 @@ const AddPage = () => {
         modules: [
           {
             title: "",
-            description: "",
+
             videos: [
               {
                 title: "",
@@ -295,20 +307,6 @@ const AddPage = () => {
                     handleModuleChange(mIdx, "title", e.target.value)
                   }
                   className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
-                />
-              </div>
-
-              <div className="flex flex-col mb-6">
-                <label className="mb-2 font-medium text-gray-700">
-                  Module Description
-                </label>
-                <textarea
-                  placeholder="Module Description"
-                  value={module.description}
-                  onChange={(e) =>
-                    handleModuleChange(mIdx, "description", e.target.value)
-                  }
-                  className="input border border-gray-300 rounded-md p-3 min-h-[60px] resize-none focus:outline-none focus:ring-2 focus:ring-green-400"
                 />
               </div>
 
