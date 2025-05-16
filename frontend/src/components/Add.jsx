@@ -108,18 +108,21 @@ const AddPage = () => {
 
       // Upload modules and videos
       for (const module of courseData.modules) {
-        const { data: moduleRes } = await axiosInstance.post("/modules/module", {
-          title: module.title,
-          description: module.description,
-          course: courseId,
-        });
+        const { data: moduleRes } = await axiosInstance.post(
+          "/modules/module",
+          {
+            title: module.title,
+            description: module.description,
+            course: courseId,
+          }
+        );
 
         const moduleId = moduleRes._id;
 
         for (const video of module.videos) {
           const videoForm = new FormData();
           videoForm.append("title", video.title);
-          videoForm.append("description", video.description);
+
           videoForm.append("module", moduleId);
           videoForm.append("videoFile", video.videoFile); // Send video file directly
 
@@ -153,10 +156,24 @@ const AddPage = () => {
         ],
       });
     } catch (err) {
-      console.error(err);
+      console.error("❌ Course upload failed:", err);
+
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        console.error("🛑 Server responded with an error:");
+        console.log("Status:", err.response.status);
+        console.log("Data:", err.response.data);
+        console.log("Headers:", err.response.headers);
+      } else if (err.request) {
+        // The request was made but no response was received
+        console.error("⚠️ No response received from server:");
+        console.log(err.request);
+      } else {
+        // Something happened in setting up the request
+        console.error("🚨 Error setting up request:", err.message);
+      }
+
       toast.error("❌ Upload failed.", { id: toastId });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -166,203 +183,216 @@ const AddPage = () => {
     courseData.description &&
     courseData.outcome &&
     courseData.thumbnail;
-    return (
-      <div className="max-w-6xl mx-auto mt-8 mb-12 p-8 border rounded-lg shadow-lg bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
-        <h2 className="text-4xl font-extrabold text-center text-green-700 mb-10">
-          Add New Course
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Course Info */}
-          <section className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col">
-                <label htmlFor="title" className="mb-2 font-semibold text-gray-700">
-                  Course Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="title"
-                  type="text"
-                  name="title"
-                  value={courseData.title}
-                  onChange={handleCourseChange}
-                  placeholder="Enter course title"
-                  className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-              </div>
-  
-              <div className="flex flex-col">
-                <label htmlFor="price" className="mb-2 font-semibold text-gray-700">
-                  Price (AED) <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="price"
-                  type="number"
-                  name="price"
-                  value={courseData.price}
-                  onChange={handleCourseChange}
-                  placeholder="Enter price"
-                  className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                />
-              </div>
-            </div>
-  
+  return (
+    <div className="max-w-6xl mx-auto mt-8 mb-12 p-8 border rounded-lg shadow-lg bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
+      <h2 className="text-4xl font-extrabold text-center text-green-700 mb-10">
+        Add New Course
+      </h2>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Course Info */}
+        <section className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
-              <label className="mb-2 font-semibold text-gray-700">
-                Description <span className="text-red-500">*</span>
-              </label>
-              <ReactQuill
-                value={courseData.description}
-                onChange={(val) => handleEditorChange(val, "description")}
-                className="bg-white rounded-md border border-gray-300"
-              />
-            </div>
-  
-            <div className="flex flex-col">
-              <label className="mb-2 font-semibold text-gray-700">
-                Outcome <span className="text-red-500">*</span>
-              </label>
-              <ReactQuill
-                value={courseData.outcome}
-                onChange={(val) => handleEditorChange(val, "outcome")}
-                className="bg-white rounded-md border border-gray-300"
-              />
-            </div>
-  
-            <div className="flex flex-col">
-              <label htmlFor="thumbnail" className="mb-2 font-semibold text-gray-700">
-                Thumbnail <span className="text-red-500">*</span>
+              <label
+                htmlFor="title"
+                className="mb-2 font-semibold text-gray-700"
+              >
+                Course Title <span className="text-red-500">*</span>
               </label>
               <input
-                id="thumbnail"
-                type="file"
-                name="thumbnail"
-                accept="image/*"
+                id="title"
+                type="text"
+                name="title"
+                value={courseData.title}
                 onChange={handleCourseChange}
-                className="input border border-gray-300 rounded-md p-2 cursor-pointer"
+                placeholder="Enter course title"
+                className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                 required
               />
             </div>
-          </section>
-  
-          {/* Modules & Videos */}
-          <section className="space-y-8">
-            {courseData.modules.map((module, mIdx) => (
-              <div
-                key={mIdx}
-                className="border border-gray-300 rounded-md p-6 bg-gray-50 shadow-sm"
+
+            <div className="flex flex-col">
+              <label
+                htmlFor="price"
+                className="mb-2 font-semibold text-gray-700"
               >
-                <h3 className="text-xl font-semibold mb-4 text-green-800">
-                  Module {mIdx + 1}
-                </h3>
-  
-                <div className="flex flex-col mb-4">
-                  <label className="mb-2 font-medium text-gray-700">Module Title</label>
-                  <input
-                    type="text"
-                    placeholder="Module Title"
-                    value={module.title}
-                    onChange={(e) => handleModuleChange(mIdx, "title", e.target.value)}
-                    className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
-                  />
-                </div>
-  
-                <div className="flex flex-col mb-6">
-                  <label className="mb-2 font-medium text-gray-700">Module Description</label>
-                  <textarea
-                    placeholder="Module Description"
-                    value={module.description}
-                    onChange={(e) => handleModuleChange(mIdx, "description", e.target.value)}
-                    className="input border border-gray-300 rounded-md p-3 min-h-[60px] resize-none focus:outline-none focus:ring-2 focus:ring-green-400"
-                  />
-                </div>
-  
-                {/* Videos List */}
-                <div className="space-y-6">
-                  {module.videos.map((video, vIdx) => (
-                    <div
-                      key={vIdx}
-                      className="border border-gray-300 rounded-md p-4 bg-white shadow-sm"
-                    >
-                      <h4 className="font-semibold mb-3 text-green-600">
-                        Video {vIdx + 1}
-                      </h4>
-  
-                      <div className="flex flex-col mb-3">
-                        <label className="mb-1 font-medium text-gray-700">Video Title</label>
-                        <input
-                          type="text"
-                          placeholder="Video Title"
-                          value={video.title}
-                          onChange={(e) =>
-                            handleVideoChange(mIdx, vIdx, "title", e.target.value)
-                          }
-                          className="input border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-                        />
-                      </div>
-  
-                      <div className="flex flex-col mb-3">
-                        <label className="mb-1 font-medium text-gray-700">Video Description</label>
-                        <textarea
-                          placeholder="Video Description"
-                          value={video.description}
-                          onChange={(e) =>
-                            handleVideoChange(mIdx, vIdx, "description", e.target.value)
-                          }
-                          className="input border border-gray-300 rounded-md p-2 min-h-[50px] resize-none focus:outline-none focus:ring-2 focus:ring-green-300"
-                        />
-                      </div>
-  
-                      <div className="flex flex-col">
-                        <label className="mb-1 font-medium text-gray-700">Upload Video File</label>
-                        <input
-                          type="file"
-                          accept="video/*"
-                          onChange={(e) =>
-                            handleVideoChange(mIdx, vIdx, "videoFile", e.target.files[0])
-                          }
-                          className="input border border-gray-300 rounded-md p-1 cursor-pointer"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-  
-                <button
-                  type="button"
-                  onClick={() => addVideoToModule(mIdx)}
-                  className="mt-4 inline-block px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition"
-                >
-                  ➕ Add Video
-                </button>
-              </div>
-            ))}
-  
-            <button
-              type="button"
-              onClick={addModule}
-              className="w-full py-3 rounded-md font-semibold text-white bg-green-700 hover:bg-green-800 transition"
+                Price (AED) <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="price"
+                type="number"
+                name="price"
+                value={courseData.price}
+                onChange={handleCourseChange}
+                placeholder="Enter price"
+                className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col">
+            <label className="mb-2 font-semibold text-gray-700">
+              Description <span className="text-red-500">*</span>
+            </label>
+            <ReactQuill
+              value={courseData.description}
+              onChange={(val) => handleEditorChange(val, "description")}
+              className="bg-white rounded-md border border-gray-300"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="mb-2 font-semibold text-gray-700">
+              Outcome <span className="text-red-500">*</span>
+            </label>
+            <ReactQuill
+              value={courseData.outcome}
+              onChange={(val) => handleEditorChange(val, "outcome")}
+              className="bg-white rounded-md border border-gray-300"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label
+              htmlFor="thumbnail"
+              className="mb-2 font-semibold text-gray-700"
             >
-              ➕ Add Module
-            </button>
-          </section>
-  
+              Thumbnail <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="thumbnail"
+              type="file"
+              name="thumbnail"
+              accept="image/*"
+              onChange={handleCourseChange}
+              className="input border border-gray-300 rounded-md p-2 cursor-pointer"
+              required
+            />
+          </div>
+        </section>
+
+        {/* Modules & Videos */}
+        <section className="space-y-8">
+          {courseData.modules.map((module, mIdx) => (
+            <div
+              key={mIdx}
+              className="border border-gray-300 rounded-md p-6 bg-gray-50 shadow-sm"
+            >
+              <h3 className="text-xl font-semibold mb-4 text-green-800">
+                Module {mIdx + 1}
+              </h3>
+
+              <div className="flex flex-col mb-4">
+                <label className="mb-2 font-medium text-gray-700">
+                  Module Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="Module Title"
+                  value={module.title}
+                  onChange={(e) =>
+                    handleModuleChange(mIdx, "title", e.target.value)
+                  }
+                  className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
+
+              <div className="flex flex-col mb-6">
+                <label className="mb-2 font-medium text-gray-700">
+                  Module Description
+                </label>
+                <textarea
+                  placeholder="Module Description"
+                  value={module.description}
+                  onChange={(e) =>
+                    handleModuleChange(mIdx, "description", e.target.value)
+                  }
+                  className="input border border-gray-300 rounded-md p-3 min-h-[60px] resize-none focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
+
+              {/* Videos List */}
+              <div className="space-y-6">
+                {module.videos.map((video, vIdx) => (
+                  <div
+                    key={vIdx}
+                    className="border border-gray-300 rounded-md p-4 bg-white shadow-sm"
+                  >
+                    <h4 className="font-semibold mb-3 text-green-600">
+                      Video {vIdx + 1}
+                    </h4>
+
+                    <div className="flex flex-col mb-3">
+                      <label className="mb-1 font-medium text-gray-700">
+                        Video Title
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Video Title"
+                        value={video.title}
+                        onChange={(e) =>
+                          handleVideoChange(mIdx, vIdx, "title", e.target.value)
+                        }
+                        className="input border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-300"
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label className="mb-1 font-medium text-gray-700">
+                        Upload Video File
+                      </label>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) =>
+                          handleVideoChange(
+                            mIdx,
+                            vIdx,
+                            "videoFile",
+                            e.target.files[0]
+                          )
+                        }
+                        className="input border border-gray-300 rounded-md p-1 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => addVideoToModule(mIdx)}
+                className="mt-4 inline-block px-4 py-2 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700 transition"
+              >
+                ➕ Add Video
+              </button>
+            </div>
+          ))}
+
           <button
-            type="submit"
-            disabled={!isFormValid || loading}
-            className={`w-full py-4 rounded-md font-semibold text-white transition ${
-              loading || !isFormValid
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-700 hover:bg-green-800"
-            }`}
+            type="button"
+            onClick={addModule}
+            className="w-full py-3 rounded-md font-semibold text-white bg-green-700 hover:bg-green-800 transition"
           >
-            {loading ? "Adding Course..." : "Add Course"}
+            ➕ Add Module
           </button>
-        </form>
-      </div>
-    );
-  };
-  
+        </section>
+
+        <button
+          type="submit"
+          disabled={!isFormValid || loading}
+          className={`w-full py-4 rounded-md font-semibold text-white transition ${
+            loading || !isFormValid
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-700 hover:bg-green-800"
+          }`}
+        >
+          {loading ? "Adding Course..." : "Add Course"}
+        </button>
+      </form>
+    </div>
+  );
+};
 
 export default AddPage;
