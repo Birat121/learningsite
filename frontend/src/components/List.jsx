@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from '../api/axiosInstance';
-import toast from 'react-hot-toast';
-import EditableField from './EditableField';
-import CollapsibleSection from './CollapsibleSection';
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../api/axiosInstance";
+import toast from "react-hot-toast";
 
 const CourseManagementPage = () => {
   const [courses, setCourses] = useState([]);
-  const [editing, setEditing] = useState({});
   const [loading, setLoading] = useState(false);
+  const [editCourse, setEditCourse] = useState(null); // course being edited
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    price: "",
+    thumbnailUrl: "",
+  });
 
   const fetchCourses = async () => {
     setLoading(true);
     try {
-      // Assuming backend returns courses with populated modules and modules with populated videos
-      const { data } = await axiosInstance.get('/courses/course?populate=modules,videos');
+      const { data } = await axiosInstance.get("/courses/course");
       setCourses(data);
     } catch (err) {
-      toast.error('Failed to load courses');
+      toast.error("Failed to load courses");
       console.error(err);
     } finally {
       setLoading(false);
@@ -27,53 +30,57 @@ const CourseManagementPage = () => {
     fetchCourses();
   }, []);
 
-  const startEdit = (type, id, field, currentValue) => {
-    setEditing({ type, id, field, value: currentValue });
+  const openEditModal = (course) => {
+    setEditCourse(course);
+    setFormData({
+      title: course.title || "",
+      description: course.description || "",
+      price: course.price?.toString() || "",
+      thumbnailUrl: course.thumbnailUrl || "",
+    });
   };
 
-  const cancelEdit = () => setEditing({});
+  const closeEditModal = () => {
+    setEditCourse(null);
+  };
 
-  const onEditChange = (e) => setEditing((ed) => ({ ...ed, value: e.target.value }));
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((fd) => ({ ...fd, [name]: value }));
+  };
 
   const saveEdit = async () => {
-    if (!editing.value.trim()) {
-      toast.error('Value cannot be empty');
+    if (!formData.title.trim()) {
+      toast.error("Title cannot be empty");
       return;
     }
 
-    const { type, id, field, value } = editing;
     try {
-      const url =
-        type === 'course'
-          ? `/courses/course/${id}`
-          : type === 'module'
-          ? `/modules/module/${id}`
-          : `/videos/videos/${id}`;
-      await axiosInstance.put(url, { [field]: value });
+      await axiosInstance.put(`/courses/course/${editCourse._id}`, {
+        title: formData.title,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        thumbnailUrl: formData.thumbnailUrl,
+      });
 
-      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} updated!`);
-      setEditing({});
+      toast.success("Course updated!");
+      closeEditModal();
       fetchCourses();
     } catch (err) {
-      toast.error('Update failed');
+      toast.error("Update failed");
       console.error(err);
     }
   };
 
-  const deleteItem = async (type, id) => {
-    if (!window.confirm(`Are you sure to delete this ${type}? This cannot be undone.`)) return;
+  const deleteCourse = async (courseId) => {
+    if (!window.confirm("Are you sure you want to delete this course? This cannot be undone.")) return;
+
     try {
-      const url =
-        type === 'course'
-          ? `/courses/course/${id}`
-          : type === 'module'
-          ? `/modules/module/${id}`
-          : `/videos/videos/${id}`;
-      await axiosInstance.delete(url);
-      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted!`);
+      await axiosInstance.delete(`/courses/course/${courseId}`);
+      toast.success("Course deleted!");
       fetchCourses();
     } catch (err) {
-      toast.error('Delete failed');
+      toast.error("Delete failed");
       console.error(err);
     }
   };
@@ -97,10 +104,8 @@ const CourseManagementPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-4xl font-extrabold mb-8 text-blue-900 drop-shadow-md">
-        Courses Management
-      </h1>
+    <div className="max-w-7xl mx-auto p-6 min-h-screen">
+      <h1 className="text-4xl font-extrabold mb-8 text-blue-900 drop-shadow-md">Courses Management</h1>
 
       {courses.length === 0 && (
         <p className="text-center text-gray-600 italic">No courses found.</p>
@@ -110,143 +115,105 @@ const CourseManagementPage = () => {
         {courses.map((course) => (
           <div
             key={course._id}
-            className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between hover:shadow-2xl transition-shadow duration-300"
+            className="bg-white rounded-xl shadow-lg p-4 flex flex-col justify-between hover:shadow-2xl transition-shadow duration-300"
           >
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-2xl font-semibold text-blue-800 hover:text-blue-600 cursor-pointer">
-                  <EditableField
-                    type="course"
-                    item={course}
-                    field="title"
-                    editing={editing}
-                    onEdit={startEdit}
-                    onChange={onEditChange}
-                    onSave={saveEdit}
-                    onCancel={cancelEdit}
-                  />
-                </h2>
-                <button
-                  onClick={() => deleteItem('course', course._id)}
-                  className="text-red-600 hover:text-red-700 font-semibold"
-                  title="Delete Course"
-                >
-                  ✕
-                </button>
-              </div>
-              <p className="mb-2 text-gray-700">
-                <span className="font-semibold">Description: </span>
-                <EditableField
-                  type="course"
-                  item={course}
-                  field="description"
-                  editing={editing}
-                  onEdit={startEdit}
-                  onChange={onEditChange}
-                  onSave={saveEdit}
-                  onCancel={cancelEdit}
-                />
-              </p>
-              <p className="mb-4 text-gray-700">
-                <span className="font-semibold">Price: </span>₹{' '}
-                <EditableField
-                  type="course"
-                  item={course}
-                  field="price"
-                  editing={editing}
-                  onEdit={startEdit}
-                  onChange={onEditChange}
-                  onSave={saveEdit}
-                  onCancel={cancelEdit}
-                />
-              </p>
+            <img
+              src={course.thumbnailUrl || "/default-thumbnail.jpg"}
+              alt={course.title}
+              className="w-full h-48 object-cover rounded-lg mb-4"
+            />
+            <h2 className="text-xl font-semibold text-blue-800 mb-2">{course.title}</h2>
+            <p className="mb-4 font-semibold">Price: ₹ {course.price?.toFixed(2)}</p>
 
-              <CollapsibleSection title={`Modules (${course.modules?.length || 0})`}>
-                {course.modules?.length > 0 ? (
-                  course.modules.map((mod) => (
-                    <div
-                      key={mod._id}
-                      className="bg-gray-100 rounded-md p-3 mb-4 border border-gray-300"
-                    >
-                      <div className="flex justify-between items-center mb-1">
-                        <h3 className="font-semibold text-gray-800">
-                          <EditableField
-                            type="module"
-                            item={mod}
-                            field="title"
-                            editing={editing}
-                            onEdit={startEdit}
-                            onChange={onEditChange}
-                            onSave={saveEdit}
-                            onCancel={cancelEdit}
-                          />
-                        </h3>
-                        <button
-                          onClick={() => deleteItem('module', mod._id)}
-                          className="text-red-600 hover:text-red-700 font-semibold"
-                          title="Delete Module"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                      <p className="mb-2 text-gray-600 text-sm">
-                        <span className="font-semibold">Description: </span>
-                        <EditableField
-                          type="module"
-                          item={mod}
-                          field="description"
-                          editing={editing}
-                          onEdit={startEdit}
-                          onChange={onEditChange}
-                          onSave={saveEdit}
-                          onCancel={cancelEdit}
-                        />
-                      </p>
-
-                      <CollapsibleSection title={`Videos (${mod.videos?.length || 0})`}>
-                        {mod.videos?.length > 0 ? (
-                          mod.videos.map((vid) => (
-                            <div
-                              key={vid._id}
-                              className="flex justify-between items-center mb-2 text-sm"
-                            >
-                              <EditableField
-                                type="video"
-                                item={vid}
-                                field="title"
-                                editing={editing}
-                                onEdit={startEdit}
-                                onChange={onEditChange}
-                                onSave={saveEdit}
-                                onCancel={cancelEdit}
-                              />
-                              <button
-                                onClick={() => deleteItem('video', vid._id)}
-                                className="text-red-500 hover:text-red-700"
-                                title="Delete Video"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="italic text-gray-500 text-xs ml-2">
-                            No videos available.
-                          </p>
-                        )}
-                      </CollapsibleSection>
-                    </div>
-                  ))
-                ) : (
-                  <p className="italic text-gray-500 text-sm ml-2">
-                    No modules available for this course.
-                  </p>
-                )}
-              </CollapsibleSection>
+            <div className="flex justify-between">
+              <button
+                onClick={() => openEditModal(course)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => deleteCourse(course._id)}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold"
+              >
+                Delete
+              </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Edit Modal */}
+      {editCourse && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={closeEditModal}
+        >
+          <div
+            className="bg-white rounded-lg p-6 w-full max-w-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-2xl font-bold mb-4">Edit Course</h2>
+            <div className="flex flex-col space-y-4">
+              <label>
+                Title
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleFormChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                />
+              </label>
+              <label>
+                Description
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleFormChange}
+                  rows={4}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                />
+              </label>
+              <label>
+                Price (₹)
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleFormChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                />
+              </label>
+              <label>
+                Thumbnail URL
+                <input
+                  type="text"
+                  name="thumbnailUrl"
+                  value={formData.thumbnailUrl}
+                  onChange={handleFormChange}
+                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                />
+              </label>
+
+              <div className="flex justify-end space-x-4 mt-4">
+                <button
+                  onClick={closeEditModal}
+                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

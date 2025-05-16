@@ -1,6 +1,6 @@
-import Module from "../models/Module.js"; // Adjust the path as needed
+import Module from "../models/Module.js";
+import Course from "../models/course.js";
 
-// Create a new module
 export const createModule = async (req, res) => {
   try {
     const { title, course } = req.body;
@@ -12,6 +12,9 @@ export const createModule = async (req, res) => {
     const newModule = new Module({ title, course });
     const savedModule = await newModule.save();
 
+    // Add module reference to course
+    await Course.findByIdAndUpdate(course, { $push: { modules: savedModule._id } });
+
     res.status(201).json(savedModule);
   } catch (error) {
     console.error("Error creating module:", error);
@@ -19,10 +22,9 @@ export const createModule = async (req, res) => {
   }
 };
 
-// Get all modules (optionally filter by course)
 export const getModules = async (req, res) => {
   try {
-    const { courseId } = req.query; // optional filter
+    const { courseId } = req.query;
 
     const filter = courseId ? { course: courseId } : {};
     const modules = await Module.find(filter).populate("course", "title");
@@ -34,7 +36,6 @@ export const getModules = async (req, res) => {
   }
 };
 
-// Get module by ID
 export const getModuleById = async (req, res) => {
   try {
     const module = await Module.findById(req.params.id).populate("course", "title");
@@ -48,10 +49,11 @@ export const getModuleById = async (req, res) => {
   }
 };
 
-// Update a module
 export const updateModule = async (req, res) => {
   try {
     const { title, course } = req.body;
+
+    // Update the module
     const updatedModule = await Module.findByIdAndUpdate(
       req.params.id,
       { title, course },
@@ -62,6 +64,18 @@ export const updateModule = async (req, res) => {
       return res.status(404).json({ message: "Module not found" });
     }
 
+    // If course changed, update the course modules array
+    if (course) {
+      // Remove from old course modules array
+      await Course.updateMany(
+        { modules: updatedModule._id, _id: { $ne: course } },
+        { $pull: { modules: updatedModule._id } }
+      );
+
+      // Add to new course modules array
+      await Course.findByIdAndUpdate(course, { $addToSet: { modules: updatedModule._id } });
+    }
+
     res.status(200).json(updatedModule);
   } catch (error) {
     console.error("Error updating module:", error);
@@ -69,13 +83,17 @@ export const updateModule = async (req, res) => {
   }
 };
 
-// Delete a module
 export const deleteModule = async (req, res) => {
   try {
     const deletedModule = await Module.findByIdAndDelete(req.params.id);
+
     if (!deletedModule) {
       return res.status(404).json({ message: "Module not found" });
     }
+
+    // Remove module from the course's modules array
+    await Course.findByIdAndUpdate(deletedModule.course, { $pull: { modules: deletedModule._id } });
+
     res.status(200).json({ message: "Module deleted" });
   } catch (error) {
     console.error("Error deleting module:", error);
