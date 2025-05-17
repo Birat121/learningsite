@@ -87,7 +87,7 @@ const ModuleVideoManagementPage = () => {
           videoForm.append("video", formData.file);
         }
 
-        await axiosInstance.put(`/videos/video/${editItem.data._id}`, videoForm, {
+        await axiosInstance.put(`/videos/videos/${editItem.data._id}`, videoForm, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("Video updated");
@@ -110,7 +110,7 @@ const ModuleVideoManagementPage = () => {
     if (!confirmed) return;
 
     try {
-      const route = type === "module" ? "modules/module" : "videos/video";
+      const route = type === "module" ? "modules/module" : "videos/videos";
       await axiosInstance.delete(`/${route}/${id}`);
       toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted`);
       fetchModules();
