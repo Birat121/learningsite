@@ -55,7 +55,7 @@ const AddCoursePage = () => {
       toast.success("✅ Course created!", { id: toastId });
 
       // Redirect to modules/videos page with new course ID
-      navigate(`/add-modules/${data._id}`);
+      navigate(`/admin/dashboard/addmodules/${data._id}`);
     } catch (err) {
       console.error(err);
       toast.error("❌ Course creation failed.", { id: toastId });
