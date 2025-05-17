@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const CourseManagementPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [editCourse, setEditCourse] = useState(null); // course being edited
+  const [editCourse, setEditCourse] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     price: "",
-    thumbnailUrl: "",
+    image: null,
+    thumbnailPreview: "", // for preview
   });
 
   const fetchCourses = async () => {
@@ -37,7 +40,8 @@ const CourseManagementPage = () => {
       title: course.title || "",
       description: course.description || "",
       price: course.price?.toString() || "",
-      thumbnailUrl: course.thumbnailUrl || "",
+      image: null, // new image not selected yet
+      thumbnailPreview: course.thumbnailUrl || "", // for preview
     });
   };
 
@@ -50,19 +54,43 @@ const CourseManagementPage = () => {
     setFormData((fd) => ({ ...fd, [name]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((fd) => ({
+        ...fd,
+        image: file,
+        thumbnailPreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
+  const handleDescriptionChange = (value) => {
+    setFormData((fd) => ({ ...fd, description: value }));
+  };
+
   const saveEdit = async () => {
     if (!formData.title.trim()) {
       toast.error("Title cannot be empty");
       return;
     }
 
+    const updateData = new FormData();
+    updateData.append("title", formData.title);
+    updateData.append("description", formData.description);
+    updateData.append("price", formData.price);
+    if (formData.image) {
+      updateData.append("image", formData.image);
+    }
+
     try {
-      await axiosInstance.put(`/courses/course/${editCourse._id}`, {
-        title: formData.title,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        thumbnailUrl: formData.thumbnailUrl,
-      });
+      await axiosInstance.put(
+        `/courses/course/${editCourse._id}`,
+        updateData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
       toast.success("Course updated!");
       closeEditModal();
@@ -74,13 +102,7 @@ const CourseManagementPage = () => {
   };
 
   const deleteCourse = async (courseId) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this course? This cannot be undone."
-      )
-    )
-      return;
-
+    if (!window.confirm("Are you sure you want to delete this course?")) return;
     try {
       await axiosInstance.delete(`/courses/course/${courseId}`);
       toast.success("Course deleted!");
@@ -148,7 +170,7 @@ const CourseManagementPage = () => {
           onClick={closeEditModal}
         >
           <div
-            className="bg-white rounded-lg p-6 w-full max-w-lg"
+            className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-2xl font-bold mb-4">Edit Course</h2>
@@ -163,16 +185,17 @@ const CourseManagementPage = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 />
               </label>
+
               <label>
                 Description
-                <textarea
-                  name="description"
+                <ReactQuill
                   value={formData.description}
-                  onChange={handleFormChange}
-                  rows={4}
-                  className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
+                  onChange={handleDescriptionChange}
+                  className="mt-1"
+                  theme="snow"
                 />
               </label>
+
               <label>
                 Price (₹)
                 <input
@@ -183,16 +206,24 @@ const CourseManagementPage = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 />
               </label>
+
               <label>
-                Thumbnail URL
+                Thumbnail Image
                 <input
-                  type="text"
-                  name="thumbnailUrl"
-                  value={formData.thumbnailUrl}
-                  onChange={handleFormChange}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
                   className="w-full border border-gray-300 rounded px-3 py-2 mt-1"
                 />
               </label>
+
+              {formData.thumbnailPreview && (
+                <img
+                  src={formData.thumbnailPreview}
+                  alt="Preview"
+                  className="w-full h-40 object-cover rounded"
+                />
+              )}
 
               <div className="flex justify-end space-x-4 mt-4">
                 <button
@@ -217,3 +248,4 @@ const CourseManagementPage = () => {
 };
 
 export default CourseManagementPage;
+
