@@ -52,10 +52,17 @@ export const createVideo = async (req, res) => {
       title,
       videoUrl: result.secure_url,
       videoPublicId: result.public_id,
-      module: new mongoose.Types.ObjectId(module), // <--- Fix here
+      module: new mongoose.Types.ObjectId(module),
     });
 
     await video.save();
+
+    // 🔥 Push video to module
+    await Module.findByIdAndUpdate(
+      module,
+      { $push: { videos: video._id } },
+      { new: true }
+    );
 
     console.log("🎉 Video saved:", video._id);
     res.status(201).json(video);

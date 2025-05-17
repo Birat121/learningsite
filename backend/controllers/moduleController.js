@@ -58,19 +58,21 @@ export const getModules = async (req, res) => {
 
 export const getModuleById = async (req, res) => {
   try {
-    const module = await Module.findById(req.params.id).populate(
-      "course",
-      "title"
-    );
+    const module = await Module.findById(req.params.id)
+      .populate("course", "title")
+      .populate("videos"); // 👈 Add this line
+
     if (!module) {
       return res.status(404).json({ message: "Module not found" });
     }
+
     res.status(200).json(module);
   } catch (error) {
     console.error("Error fetching module:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const updateModule = async (req, res) => {
   try {
