@@ -1,5 +1,6 @@
 import Module from "../models/Module.js";
 import Course from "../models/course.js";
+import mongoose from "mongoose";
 
 // controllers/moduleController.js
 export const createModule = async (req, res) => {
