@@ -2,16 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/authContext";
-import DOMPurify from "dompurify";
 
 const WatchCourse = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { hasCourseAccess } = useAuth();
-  const [course, setCourse] = useState(null);
+  const [modules, setModules] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [quiz, setQuiz] = useState([]);
-  const [showQuiz, setShowQuiz] = useState(false);
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -20,11 +17,12 @@ const WatchCourse = () => {
       return;
     }
 
-    const fetchCourse = async () => {
+    const fetchModules = async () => {
       try {
-        // Assuming this returns course with modules and their videos
+        // Fetch course with modules & videos (you only need modules & videos)
         const res = await axiosInstance.get(`/courses/course/slug/${slug}`);
-        setCourse(res.data);
+        setModules(res.data.modules || []);
+
         // Set first video of first module as default selected
         if (res.data.modules && res.data.modules.length > 0) {
           const firstModule = res.data.modules[0];
@@ -33,120 +31,75 @@ const WatchCourse = () => {
           }
         }
       } catch (err) {
-        console.error("Failed to load course", err);
+        console.error("Failed to load modules", err);
       }
     };
 
-    fetchCourse();
+    fetchModules();
   }, [slug, hasCourseAccess, navigate]);
 
-  const handleVideoEnded = async () => {
-    if (!selectedVideo) return;
-    try {
-      const res = await axiosInstance.get(`/quiz/quizzes/${selectedVideo._id}`);
-      setQuiz(res.data.quiz || []);
-      setShowQuiz(true);
-    } catch (err) {
-      console.error("Failed to fetch quiz:", err);
-    }
-  };
-
-  if (!course)
-    return <div className="text-center py-10">Loading course...</div>;
-
-  const sanitizedDescription = DOMPurify.sanitize(course.description);
-
   return (
-    <div className="max-w-6xl mx-auto px-4 py-20 mt-20 mb-26">
-      <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
-      <div
-        className="text-gray-700 mb-6"
-        dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left: Modules list */}
-        <div className="space-y-6 overflow-y-auto max-h-[600px] border p-4 rounded shadow">
-          {course.modules && course.modules.length > 0 ? (
-            course.modules.map((module) => (
-              <div key={module._id}>
-                <h3 className="font-semibold text-lg mb-2">{module.title}</h3>
-                <ul className="pl-4">
-                  {module.videos && module.videos.length > 0 ? (
-                    module.videos.map((video) => (
-                      <li key={video._id} className="mb-1">
-                        <button
-                          onClick={() => {
-                            setSelectedVideo(video);
-                            setShowQuiz(false);
-                            setQuiz([]);
-                            if (videoRef.current) videoRef.current.load();
-                          }}
-                          className={`text-left w-full ${
-                            selectedVideo && selectedVideo._id === video._id
-                              ? "font-bold text-blue-600"
-                              : "text-gray-800 hover:text-blue-600"
-                          }`}
-                        >
-                          {video.title}
-                        </button>
-                      </li>
-                    ))
-                  ) : (
-                    <li>No videos</li>
-                  )}
+    <div className="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row gap-8">
+      {/* Modules & Videos List */}
+      <aside className="md:w-1/3 bg-white rounded-lg shadow p-5 overflow-y-auto max-h-[600px]">
+        <h2 className="text-xl font-semibold mb-4 border-b pb-2">Modules</h2>
+        {modules.length === 0 ? (
+          <p className="text-gray-500">No modules found.</p>
+        ) : (
+          modules.map((module) => (
+            <div key={module._id} className="mb-6">
+              <h3 className="font-semibold text-lg mb-2 border-l-4 border-blue-600 pl-2">
+                {module.title}
+              </h3>
+              {module.videos && module.videos.length > 0 ? (
+                <ul>
+                  {module.videos.map((video) => (
+                    <li key={video._id} className="mb-1">
+                      <button
+                        onClick={() => {
+                          setSelectedVideo(video);
+                          if (videoRef.current) videoRef.current.load();
+                        }}
+                        className={`text-left w-full px-2 py-1 rounded ${
+                          selectedVideo && selectedVideo._id === video._id
+                            ? "bg-blue-600 text-white font-semibold"
+                            : "text-gray-800 hover:bg-blue-100"
+                        } focus:outline-none`}
+                      >
+                        {video.title}
+                      </button>
+                    </li>
+                  ))}
                 </ul>
-              </div>
-            ))
-          ) : (
-            <p>No modules found</p>
-          )}
-        </div>
+              ) : (
+                <p className="text-gray-400 italic ml-4">No videos available</p>
+              )}
+            </div>
+          ))
+        )}
+      </aside>
 
-        {/* Right: Video player and quiz */}
-        <div className="md:col-span-2">
-          {selectedVideo ? (
+      {/* Video Player */}
+      <main className="md:w-2/3 bg-white rounded-lg shadow p-5 flex flex-col">
+        {selectedVideo ? (
+          <>
+            <h2 className="text-xl font-semibold mb-4">{selectedVideo.title}</h2>
             <video
               ref={videoRef}
               controls
               controlsList="nodownload noremoteplayback"
               disablePictureInPicture
               onContextMenu={(e) => e.preventDefault()}
-              className="w-full h-64 md:h-96 rounded shadow"
+              className="w-full rounded-lg shadow-md"
               src={selectedVideo.videoUrl}
-              onEnded={handleVideoEnded}
             />
-          ) : (
-            <p>Select a video to start watching.</p>
-          )}
-
-          {/* Quiz Section */}
-          {showQuiz && quiz.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-6">Quiz</h2>
-              {quiz.map((question, idx) => (
-                <div key={question._id} className="mb-6">
-                  <p className="font-medium">
-                    {idx + 1}. {question.question}
-                  </p>
-                  {question.options.map((opt, i) => (
-                    <div key={i} className="flex items-center mt-2">
-                      <input
-                        type="radio"
-                        name={`question-${idx}`}
-                        id={`q${idx}-opt${i}`}
-                        value={opt}
-                        className="mr-2"
-                      />
-                      <label htmlFor={`q${idx}-opt${i}`}>{opt}</label>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+          </>
+        ) : (
+          <p className="text-center text-gray-500 py-20">
+            Select a video to start watching
+          </p>
+        )}
+      </main>
     </div>
   );
 };
