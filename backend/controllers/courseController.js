@@ -12,10 +12,12 @@ const { Types } = mongoose;
 // Create a new course
 export const createCourse = async (req, res) => {
   try {
-    const { title, description, price, published } = req.body;
+    const { title, description, price, published, modules } = req.body;
 
+    // Slug from title
     const slug = slugify(title, { lower: true, strict: true });
 
+    // Upload thumbnail to Cloudinary
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream({ resource_type: "image" }, (err, image) => {
         if (err) reject(err);
@@ -23,6 +25,7 @@ export const createCourse = async (req, res) => {
       }).end(req.files.thumbnail[0].buffer);
     });
 
+    // 1. Create course without modules yet
     const course = new Course({
       title,
       slug,
@@ -34,7 +37,27 @@ export const createCourse = async (req, res) => {
     });
 
     await course.save();
-    res.status(201).json(course);
+
+    // 2. Save modules with course._id reference
+    let savedModules = [];
+    if (modules && Array.isArray(modules)) {
+      savedModules = await Promise.all(
+        modules.map(async (mod) => {
+          const newModule = new Module({
+            title: mod.title,
+            course: course._id,
+            videos: mod.videos || [],
+          });
+          return await newModule.save();
+        })
+      );
+    }
+
+    // 3. Update course with module IDs
+    course.modules = savedModules.map(m => m._id);
+    await course.save();
+
+    res.status(201).json({ course, modules: savedModules });
   } catch (error) {
     res.status(500).json({ error: "Failed to create course: " + error.message });
   }

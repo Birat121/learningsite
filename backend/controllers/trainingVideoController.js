@@ -32,7 +32,10 @@ export const createVideo = async (req, res) => {
               console.error("❌ Cloudinary upload error:", error);
               reject(error);
             } else {
-              console.log("✅ Cloudinary upload successful:", result.secure_url);
+              console.log(
+                "✅ Cloudinary upload successful:",
+                result.secure_url
+              );
               resolve(result);
             }
           }
@@ -49,20 +52,18 @@ export const createVideo = async (req, res) => {
       title,
       videoUrl: result.secure_url,
       videoPublicId: result.public_id,
-      module: mongoose.Types.ObjectId(module),
+      module: new mongoose.Types.ObjectId(module), // <--- Fix here
     });
 
     await video.save();
 
     console.log("🎉 Video saved:", video._id);
     res.status(201).json(video);
-
   } catch (error) {
     console.error("❌ Create video error (unexpected):", error);
     res.status(500).json({ error: error.message, stack: error.stack });
   }
 };
-
 
 // Get all videos (optionally filtered by module)
 export const getAllVideos = async (req, res) => {
@@ -71,7 +72,9 @@ export const getAllVideos = async (req, res) => {
     if (req.query.module) {
       filter.module = req.query.module;
     }
-    const videos = await Video.find(filter).populate("module").sort({ createdAt: -1 });
+    const videos = await Video.find(filter)
+      .populate("module")
+      .sort({ createdAt: -1 });
     res.json(videos);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -114,7 +117,9 @@ export const updateVideo = async (req, res) => {
 
     // If new video file provided, delete old one and upload new one
     if (videoFile) {
-      await cloudinary.uploader.destroy(video.videoPublicId, { resource_type: "video" });
+      await cloudinary.uploader.destroy(video.videoPublicId, {
+        resource_type: "video",
+      });
 
       const streamUpload = () => {
         return new Promise((resolve, reject) => {
@@ -152,7 +157,9 @@ export const deleteVideo = async (req, res) => {
     const video = await Video.findById(id);
     if (!video) return res.status(404).json({ error: "Video not found" });
 
-    await cloudinary.uploader.destroy(video.videoPublicId, { resource_type: "video" });
+    await cloudinary.uploader.destroy(video.videoPublicId, {
+      resource_type: "video",
+    });
     await Video.findByIdAndDelete(id);
 
     res.json({ message: "Video deleted successfully" });
