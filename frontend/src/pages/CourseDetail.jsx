@@ -52,7 +52,7 @@ const CourseDetails = () => {
   const sanitizedOutcome = DOMPurify.sanitize(course.courseOutcome);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24 min-h-screen">
+    <div className="max-w-6xl mx-auto px-4 py-20 mt-20 mb-24 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 h-full">
         {/* Left Section: Text */}
         <div className="self-center">
