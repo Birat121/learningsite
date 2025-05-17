@@ -8,13 +8,20 @@ export const createModule = async (req, res) => {
 
     // Validate inputs
     if (!title || !course) {
-      return res.status(400).json({ message: "Module title and course ID are required." });
+      return res
+        .status(400)
+        .json({ message: "Module title and course ID are required." });
     }
 
+    if (!mongoose.Types.ObjectId.isValid(course)) {
+      return res.status(400).json({ message: "Invalid course ID format." });
+    }
     // Check if course ID is valid
     const existingCourse = await Course.findById(course);
     if (!existingCourse) {
-      return res.status(404).json({ message: "Course not found with the provided ID." });
+      return res
+        .status(404)
+        .json({ message: "Course not found with the provided ID." });
     }
 
     // Create and save module
@@ -28,10 +35,11 @@ export const createModule = async (req, res) => {
     res.status(201).json(savedModule);
   } catch (error) {
     console.error("Error creating module:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-
 
 export const getModules = async (req, res) => {
   try {
@@ -49,7 +57,10 @@ export const getModules = async (req, res) => {
 
 export const getModuleById = async (req, res) => {
   try {
-    const module = await Module.findById(req.params.id).populate("course", "title");
+    const module = await Module.findById(req.params.id).populate(
+      "course",
+      "title"
+    );
     if (!module) {
       return res.status(404).json({ message: "Module not found" });
     }
@@ -84,7 +95,9 @@ export const updateModule = async (req, res) => {
       );
 
       // Add to new course modules array
-      await Course.findByIdAndUpdate(course, { $addToSet: { modules: updatedModule._id } });
+      await Course.findByIdAndUpdate(course, {
+        $addToSet: { modules: updatedModule._id },
+      });
     }
 
     res.status(200).json(updatedModule);
@@ -103,7 +116,9 @@ export const deleteModule = async (req, res) => {
     }
 
     // Remove module from the course's modules array
-    await Course.findByIdAndUpdate(deletedModule.course, { $pull: { modules: deletedModule._id } });
+    await Course.findByIdAndUpdate(deletedModule.course, {
+      $pull: { modules: deletedModule._id },
+    });
 
     res.status(200).json({ message: "Module deleted" });
   } catch (error) {
