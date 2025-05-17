@@ -12,11 +12,7 @@ const AdminPage = () => {
   const isActive = (path) => location.pathname === `/admin/dashboard/${path}`;
 
   const handleLogout = async () => {
-    await axiosInstance.post(
-      "/auth/admin/logout",
-      {},
-      { withCredentials: true }
-    );
+    await axiosInstance.post("/auth/admin/logout", {}, { withCredentials: true });
     localStorage.removeItem("adminToken");
     navigate("/admin/login");
     toast.success("Logged out successfully!");
@@ -25,6 +21,33 @@ const AdminPage = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  const navLinks = [
+    { to: "add", icon: <Plus size={20} />, label: "Add Course" },
+    { to: "list", icon: <List size={20} />, label: "List Courses" },
+    { to: "quiz", icon: <Plus size={20} />, label: "Add Quiz" },
+    { to: "listquiz", icon: <List size={20} />, label: "Quiz List" },
+    { to: "addblog", icon: <Plus size={20} />, label: "Add Blog" },
+    { to: "listblog", icon: <List size={20} />, label: "List Blogs" },
+    { to: "heroeditor", icon: <List size={20} />, label: "Hero Editor" },
+    { to: "introeditor", icon: <List size={20} />, label: "Intro Editor" },
+    { to: "youtubeadd", icon: <List size={20} />, label: "Youtube Add" },
+  ];
+
+  const renderLinks = (onClick) =>
+    navLinks.map(({ to, icon, label }) => (
+      <Link
+        key={to}
+        to={to}
+        onClick={onClick}
+        className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
+          isActive(to) ? "bg-green-800" : "hover:bg-green-600"
+        }`}
+      >
+        {icon}
+        {label}
+      </Link>
+    ));
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
@@ -36,7 +59,7 @@ const AdminPage = () => {
         </button>
       </div>
 
-      {/* Fullscreen Mobile Sidebar */}
+      {/* Mobile Sidebar */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-[rgb(0,104,80)] text-white z-50 flex flex-col p-6">
           <div className="flex justify-between items-center mb-10">
@@ -45,201 +68,25 @@ const AdminPage = () => {
               <X size={28} />
             </button>
           </div>
-
-          <nav className="flex flex-col gap-6 text-lg">
-            {/* Consistent mobile and desktop links */}
-            <Link
-              to="add"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("add") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <Plus size={20} />
-              Add Course
-            </Link>
-            <Link
-              to="list"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("list") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              List Courses
-            </Link>
-            
-            <Link
-              to="quiz"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("quiz") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Manage Quizzes
-            </Link>
-            <Link
-              to="addblog"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("add-blog") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <Plus size={20} />
-              Add Blog
-            </Link>
-            <Link
-              to="listblog"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("list-blog") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              List Blogs
-            </Link>
-            <Link
-              to="heroeditor"  
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Hero Editor
-            </Link>
-            <Link
-              to="introeditor"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("intro-editor") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Intro Editor
-            </Link>
-            <Link
-              to="youtubeadd"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("youtube-add") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Youtube Add
-            </Link>
-            
-         
-
-            <button
-              onClick={() => {
-                handleLogout();
-                setSidebarOpen(false);
-              }}
-              className="flex items-center gap-3 px-4 py-2 rounded-md bg-red-600 hover:bg-red-700"
-            >
-              <LogOut size={20} />
-              Logout
-            </button>
-          </nav>
+          <nav className="flex flex-col gap-4 text-lg">{renderLinks(() => setSidebarOpen(false))}</nav>
+          <button
+            onClick={() => {
+              handleLogout();
+              setSidebarOpen(false);
+            }}
+            className="flex items-center gap-3 px-4 py-2 rounded-md bg-red-600 hover:bg-red-700 mt-6"
+          >
+            <LogOut size={20} />
+            Logout
+          </button>
         </div>
       )}
 
       {/* Desktop Sidebar */}
       <aside className="bg-[rgb(0,104,80)] text-white w-64 p-6 hidden md:flex flex-col justify-between">
         <div>
-          <h2 className="text-3xl font-semibold mb-10 text-center">
-            Dashboard
-          </h2>
-          <nav className="space-y-4">
-            {/* Consistent mobile and desktop links */}
-            <Link
-              to="add"
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("add") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <Plus size={20} />
-              Add Course
-            </Link>
-            <Link
-              to="list"
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("list") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              List Courses
-            </Link>
-           
-            <Link
-              to="quiz"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("quiz") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <Plus size={20} />
-              Add Quiz
-            </Link>
-            <Link
-              to="listquiz"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("listquiz") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Quiz List
-            </Link>
-            <Link
-              to="addblog"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("add-blog") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <Plus size={20} />
-              Add Blog
-            </Link>
-            <Link
-              to="listblog"
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center gap-3 px-4 py-2 rounded-md ${
-                isActive("list-blog") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              List Blogs
-            </Link>
-            <Link
-              to="heroeditor"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("hero-editor") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Hero Editor
-            </Link>
-            <Link
-              to="introeditor"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("intro-editor") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Intro Editor
-            </Link>
-            <Link
-              to="youtubeadd"  
-              className={`flex items-center gap-3 px-4 py-2 rounded-md text-lg transition duration-200 ${
-                isActive("youtube-add") ? "bg-green-800" : "hover:bg-green-600"
-              }`}
-            >
-              <List size={20} />
-              Youtube Add
-            </Link>
-            
-          </nav>
+          <h2 className="text-3xl font-semibold mb-10 text-center">Dashboard</h2>
+          <nav className="space-y-4">{renderLinks()}</nav>
         </div>
         <button
           onClick={handleLogout}
