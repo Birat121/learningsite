@@ -59,7 +59,7 @@ const WatchCourse = () => {
 
         console.log("Fetching quiz for course ID:", course._id);
         // 2. Fetch quiz by course ID
-        const quizRes = await axiosInstance.get(`/quiz/quizzes/${course._id}`);
+        const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
         console.log("Quiz response:", quizRes);
         setQuiz(quizRes.data);
       } catch (err) {
