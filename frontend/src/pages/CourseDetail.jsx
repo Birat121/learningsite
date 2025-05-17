@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../context/authContext';
-import DOMPurify from 'dompurify';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../context/authContext";
+import DOMPurify from "dompurify";
 
 const CourseDetails = () => {
   const { slug } = useParams();
@@ -15,11 +15,13 @@ const CourseDetails = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const response = await axiosInstance.get(
+          `/courses/course/slug/${slug}`
+        );
         setCourse(response.data);
       } catch (error) {
-        console.error('Error fetching course:', error);
-        toast.error('Failed to load course');
+        console.error("Error fetching course:", error);
+        toast.error("Failed to load course");
       } finally {
         setLoading(false);
       }
@@ -30,8 +32,8 @@ const CourseDetails = () => {
 
   const handleBuyNowClick = () => {
     if (!user || !authToken) {
-      toast.error('Please log in to purchase this course.');
-      navigate('/login');
+      toast.error("Please log in to purchase this course.");
+      navigate("/login");
       return;
     }
 
@@ -50,10 +52,10 @@ const CourseDetails = () => {
   const sanitizedOutcome = DOMPurify.sanitize(course.courseOutcome);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+    <div className="max-w-6xl mx-auto px-4 py-20 mt-18 mb-24 min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 h-full">
         {/* Left Section: Text */}
-        <div>
+        <div className="self-center">
           <h1 className="text-3xl font-bold mb-4">{course.title}</h1>
           <div
             className="text-gray-700 mb-6"
@@ -71,13 +73,15 @@ const CourseDetails = () => {
         </div>
 
         {/* Right Section: Thumbnail + Buttons */}
-        <div className="bg-white shadow p-4 rounded-lg">
+        <div className="bg-white shadow p-4 rounded-lg self-start">
           <img
-            src={course.thumbnailUrl || '/default-course.jpg'}
+            src={course.thumbnailUrl || "/default-course.jpg"}
             alt={course.title}
             className="w-full h-64 object-cover rounded mb-4"
           />
-          <div className="text-xl font-semibold mb-4">Price: AED {course.price}</div>
+          <div className="text-xl font-semibold mb-4">
+            Price: AED {course.price}
+          </div>
           {hasCourseAccess(slug) ? (
             <button
               onClick={handleGoToCourseClick}

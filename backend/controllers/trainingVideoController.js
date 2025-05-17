@@ -59,6 +59,7 @@ export const getAllVideos = async (req, res) => {
 };
 
 // Get single video by ID or slug
+// Get single video by ID or slug
 export const getVideoByIdOrSlug = async (req, res) => {
   try {
     const { idOrSlug } = req.params;
@@ -70,9 +71,13 @@ export const getVideoByIdOrSlug = async (req, res) => {
       video = await Video.findOne({ slug: idOrSlug }).populate("module");
     }
 
-    if (!video) return res.status(404).json({ error: "Video not found" });
+    if (!video) {
+      return res.status(404).json({ error: "Video not found" });
+    }
+
     res.json(video);
   } catch (error) {
+    console.error("Get video error:", error);
     res.status(500).json({ error: error.message });
   }
 };

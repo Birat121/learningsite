@@ -19,10 +19,25 @@ const ModuleVideoManagementPage = () => {
     }
     setLoading(true);
     try {
-      const { data } = await axiosInstance.get(`/courses/${courseId}/modules`);
+      const url = `/courses/course/${courseId}/modules`;
+      console.log("Fetching modules from URL:", url);
+      const { data } = await axiosInstance.get(url);
+      console.log("Modules fetched:", data);
       setModules(data);
     } catch (error) {
-      console.error(error);
+      console.error("Fetch modules error:", error);
+
+      // Log detailed axios error info
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        console.error("Response headers:", error.response.headers);
+      } else if (error.request) {
+        console.error("No response received, request:", error.request);
+      } else {
+        console.error("Error setting up request:", error.message);
+      }
+
       toast.error("Failed to load modules");
     } finally {
       setLoading(false);
@@ -116,7 +131,9 @@ const ModuleVideoManagementPage = () => {
       <h1 className="text-2xl font-bold mb-6">Manage Modules & Videos</h1>
 
       {loading && (
-        <p className="text-center text-gray-600 font-semibold">Loading modules...</p>
+        <p className="text-center text-gray-600 font-semibold">
+          Loading modules...
+        </p>
       )}
 
       {!loading && modules.length === 0 && (
@@ -158,9 +175,14 @@ const ModuleVideoManagementPage = () => {
           </div>
 
           {module.videos.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No videos in this module.</p>
+            <p className="text-sm text-gray-500 italic">
+              No videos in this module.
+            </p>
           ) : (
-            <ul className="space-y-3" aria-label={`Videos in module ${module.title}`}>
+            <ul
+              className="space-y-3"
+              aria-label={`Videos in module ${module.title}`}
+            >
               {module.videos.map((video) => (
                 <li
                   key={video._id}
@@ -213,10 +235,7 @@ const ModuleVideoManagementPage = () => {
             className="bg-white rounded-lg p-6 w-full max-w-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2
-              id="edit-modal-title"
-              className="text-xl font-bold mb-4"
-            >
+            <h2 id="edit-modal-title" className="text-xl font-bold mb-4">
               Edit {editItem.type === "module" ? "Module" : "Video"}
             </h2>
 

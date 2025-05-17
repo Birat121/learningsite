@@ -15,8 +15,9 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
 }).fields([
-  { name: "videoFile", maxCount: 1 }, // Changed from "video" to "videoFile" to match frontend
+  { name: "video", maxCount: 1 },  // <-- key changed here to "video"
 ]);
+
 
 // Create video with video upload
 videoRouter.post("/videos", upload, createVideo);

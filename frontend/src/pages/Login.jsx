@@ -57,7 +57,7 @@ const AuthPage = () => {
 
       if (isSignIn) {
         login(res.data.token);
-        navigate("/");
+        navigate("/enrolledCOurse");
       }
 
       setFormData({ name: "", email: "", password: "" });

@@ -151,7 +151,7 @@ const AddPage = () => {
           const videoForm = new FormData();
           videoForm.append("title", video.title);
           videoForm.append("module", moduleRes._id);
-          videoForm.append("videoFile", video.videoFile);
+          videoForm.append("video", video.videoFile); // ✅ key must be "video"
 
           await axiosInstance.post("/videos/videos", videoForm, {
             headers: { "Content-Type": "multipart/form-data" },
@@ -340,6 +340,7 @@ const AddPage = () => {
                       </label>
                       <input
                         type="file"
+                        name="video"
                         accept="video/*"
                         onChange={(e) =>
                           handleVideoChange(
