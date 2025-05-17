@@ -6,21 +6,35 @@ import streamifier from "streamifier";
 // Create video with Cloudinary upload (using buffer stream)
 export const createVideo = async (req, res) => {
   try {
+    console.log("📥 Incoming video upload request");
+
+    // Log incoming data
+    console.log("📝 Request body:", req.body);
+    console.log("📦 Uploaded files:", req.files);
+
     const { title, module } = req.body;
     const videoFile = req.files?.video?.[0];
 
     if (!videoFile) {
+      console.warn("⚠️ No video file provided");
       return res.status(400).json({ error: "Video file is required" });
     }
 
-    // Upload video buffer stream to Cloudinary
+    // Upload video to Cloudinary
+    console.log("☁️ Starting Cloudinary upload...");
+
     const streamUpload = () => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           { resource_type: "video", folder: "course_videos" },
           (error, result) => {
-            if (result) resolve(result);
-            else reject(error);
+            if (error) {
+              console.error("❌ Cloudinary upload error:", error);
+              reject(error);
+            } else {
+              console.log("✅ Cloudinary upload successful:", result.secure_url);
+              resolve(result);
+            }
           }
         );
         streamifier.createReadStream(videoFile.buffer).pipe(stream);
@@ -28,6 +42,8 @@ export const createVideo = async (req, res) => {
     };
 
     const result = await streamUpload();
+
+    console.log("📄 Saving video to DB...");
 
     const video = new Video({
       title,
@@ -37,12 +53,16 @@ export const createVideo = async (req, res) => {
     });
 
     await video.save();
+
+    console.log("🎉 Video saved:", video._id);
     res.status(201).json(video);
+
   } catch (error) {
-    console.error("Create video error:", error);
-    res.status(500).json({ error: error.message });
+    console.error("❌ Create video error (unexpected):", error);
+    res.status(500).json({ error: error.message, stack: error.stack });
   }
 };
+
 
 // Get all videos (optionally filtered by module)
 export const getAllVideos = async (req, res) => {

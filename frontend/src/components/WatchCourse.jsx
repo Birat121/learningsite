@@ -37,7 +37,7 @@ const WatchCourse = () => {
   }, [slug, hasCourseAccess, navigate]);
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-gray-50">
+    <div className="min-h-screen pt-24 pb-12 bg-gray-50 mt-28">
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
         {/* Sidebar - Modules & Videos */}
         <aside className="md:w-1/3 bg-white rounded-2xl shadow-lg p-5 overflow-y-auto max-h-[75vh] border border-gray-100">

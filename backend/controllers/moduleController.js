@@ -1,26 +1,37 @@
 import Module from "../models/Module.js";
 import Course from "../models/course.js";
 
+// controllers/moduleController.js
 export const createModule = async (req, res) => {
   try {
     const { title, course } = req.body;
 
+    // Validate inputs
     if (!title || !course) {
-      return res.status(400).json({ message: "Title and course are required" });
+      return res.status(400).json({ message: "Module title and course ID are required." });
     }
 
+    // Check if course ID is valid
+    const existingCourse = await Course.findById(course);
+    if (!existingCourse) {
+      return res.status(404).json({ message: "Course not found with the provided ID." });
+    }
+
+    // Create and save module
     const newModule = new Module({ title, course });
     const savedModule = await newModule.save();
 
-    // Add module reference to course
-    await Course.findByIdAndUpdate(course, { $push: { modules: savedModule._id } });
+    // Add reference to course
+    existingCourse.modules.push(savedModule._id);
+    await existingCourse.save();
 
     res.status(201).json(savedModule);
   } catch (error) {
     console.error("Error creating module:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 export const getModules = async (req, res) => {
   try {

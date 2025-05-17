@@ -3,6 +3,7 @@ import axiosInstance from "../api/axiosInstance";
 import toast from "react-hot-toast";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { v4 as uuidv4 } from "uuid";
 
 const AddPage = () => {
   const [courseData, setCourseData] = useState({
@@ -12,12 +13,12 @@ const AddPage = () => {
     thumbnail: null,
     modules: [
       {
+        id: uuidv4(),
         title: "",
-
         videos: [
           {
+            id: uuidv4(),
             title: "",
-
             videoFile: null,
           },
         ],
@@ -57,12 +58,12 @@ const AddPage = () => {
       modules: [
         ...prev.modules,
         {
+          id: uuidv4(),
           title: "",
-
           videos: [
             {
+              id: uuidv4(),
               title: "",
-
               videoFile: null,
             },
           ],
@@ -71,13 +72,25 @@ const AddPage = () => {
     }));
   };
 
+  const removeModule = (index) => {
+    const updatedModules = [...courseData.modules];
+    updatedModules.splice(index, 1);
+    setCourseData((prev) => ({ ...prev, modules: updatedModules }));
+  };
+
   const addVideoToModule = (moduleIndex) => {
     const updatedModules = [...courseData.modules];
     updatedModules[moduleIndex].videos.push({
+      id: uuidv4(),
       title: "",
-
       videoFile: null,
     });
+    setCourseData((prev) => ({ ...prev, modules: updatedModules }));
+  };
+
+  const removeVideoFromModule = (moduleIndex, videoIndex) => {
+    const updatedModules = [...courseData.modules];
+    updatedModules[moduleIndex].videos.splice(videoIndex, 1);
     setCourseData((prev) => ({ ...prev, modules: updatedModules }));
   };
 
@@ -114,8 +127,8 @@ const AddPage = () => {
     try {
       // Prepare form data for course
       const courseForm = new FormData();
-      courseForm.append("title", courseData.title);
-      courseForm.append("description", courseData.description);
+      courseForm.append("title", courseData.title.trim());
+      courseForm.append("description", courseData.description.trim());
       courseForm.append("price", courseData.price);
       courseForm.append("thumbnail", courseData.thumbnail);
 
@@ -135,8 +148,7 @@ const AddPage = () => {
         const { data: moduleRes } = await axiosInstance.post(
           "/modules/module",
           {
-            title: module.title,
-
+            title: module.title.trim(),
             course: courseId,
           }
         );
@@ -149,12 +161,18 @@ const AddPage = () => {
           }
 
           const videoForm = new FormData();
-          videoForm.append("title", video.title);
+          videoForm.append("title", video.title.trim());
           videoForm.append("module", moduleRes._id);
-          videoForm.append("video", video.videoFile); // ✅ key must be "video"
+          videoForm.append("video", video.videoFile); // key must be "video"
 
           await axiosInstance.post("/videos/videos", videoForm, {
             headers: { "Content-Type": "multipart/form-data" },
+            onUploadProgress: (progressEvent) => {
+              const percent = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              console.log(`Video Upload Progress: ${percent}%`);
+            },
           });
         }
       }
@@ -169,12 +187,12 @@ const AddPage = () => {
         thumbnail: null,
         modules: [
           {
+            id: uuidv4(),
             title: "",
-
             videos: [
               {
+                id: uuidv4(),
                 title: "",
-
                 videoFile: null,
               },
             ],
@@ -284,12 +302,24 @@ const AddPage = () => {
         <section className="space-y-8">
           {courseData.modules.map((module, mIdx) => (
             <div
-              key={mIdx}
+              key={module.id}
               className="border border-gray-300 rounded-md p-6 bg-gray-50 shadow-sm"
             >
-              <h3 className="text-xl font-semibold mb-4 text-green-800">
-                Module {mIdx + 1}
-              </h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-semibold text-green-800">
+                  Module {mIdx + 1}
+                </h3>
+                {courseData.modules.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeModule(mIdx)}
+                    className="text-red-600 hover:underline font-semibold"
+                    title="Remove module"
+                  >
+                    Remove Module
+                  </button>
+                )}
+              </div>
 
               <div className="flex flex-col mb-4">
                 <label className="mb-2 font-medium text-gray-700">
@@ -302,57 +332,70 @@ const AddPage = () => {
                   onChange={(e) =>
                     handleModuleChange(mIdx, "title", e.target.value)
                   }
-                  className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  className="input border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
                 />
               </div>
 
-              {/* Videos List */}
+              {/* Videos in Module */}
               <div className="space-y-6">
                 {module.videos.map((video, vIdx) => (
                   <div
-                    key={vIdx}
-                    className="border border-gray-300 rounded-md p-4 bg-white shadow-sm"
+                    key={video.id}
+                    className="border border-gray-300 rounded-md p-4 bg-white"
                   >
-                    <h4 className="font-semibold mb-3 text-green-600">
-                      Video {vIdx + 1}
-                    </h4>
-
-                    <div className="flex flex-col mb-3">
-                      <label className="mb-2 font-medium text-gray-700">
-                        Video Title <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Video Title"
-                        value={video.title}
-                        onChange={(e) =>
-                          handleVideoChange(mIdx, vIdx, "title", e.target.value)
-                        }
-                        className="input border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-green-400"
-                        required
-                      />
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="font-semibold text-green-700">
+                        Video {vIdx + 1}
+                      </h4>
+                      {module.videos.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeVideoFromModule(mIdx, vIdx)}
+                          className="text-red-600 hover:underline font-semibold"
+                          title="Remove video"
+                        >
+                          Remove Video
+                        </button>
+                      )}
                     </div>
 
-                    <div className="flex flex-col">
-                      <label className="mb-2 font-medium text-gray-700">
-                        Video File <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="file"
-                        name="video"
-                        accept="video/*"
-                        onChange={(e) =>
-                          handleVideoChange(
-                            mIdx,
-                            vIdx,
-                            "videoFile",
-                            e.target.files ? e.target.files[0] : null
-                          )
-                        }
-                        className="input border border-gray-300 rounded-md p-2 cursor-pointer"
-                        required
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex flex-col">
+                        <label className="mb-2 font-medium text-gray-700">
+                          Video Title <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Video Title"
+                          value={video.title}
+                          onChange={(e) =>
+                            handleVideoChange(mIdx, vIdx, "title", e.target.value)
+                          }
+                          className="input border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                          required
+                        />
+                      </div>
+
+                      <div className="flex flex-col">
+                        <label className="mb-2 font-medium text-gray-700">
+                          Video File <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          onChange={(e) =>
+                            handleVideoChange(
+                              mIdx,
+                              vIdx,
+                              "videoFile",
+                              e.target.files[0]
+                            )
+                          }
+                          className="input border border-gray-300 rounded-md p-2 cursor-pointer"
+                          required
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -360,9 +403,9 @@ const AddPage = () => {
                 <button
                   type="button"
                   onClick={() => addVideoToModule(mIdx)}
-                  className="text-green-600 font-semibold hover:underline mt-2"
+                  className="mt-3 text-green-700 font-semibold hover:underline"
                 >
-                  + Add Video
+                  + Add Another Video
                 </button>
               </div>
             </div>
@@ -371,23 +414,18 @@ const AddPage = () => {
           <button
             type="button"
             onClick={addModule}
-            className="px-6 py-3 rounded-md bg-green-600 text-white font-semibold hover:bg-green-700"
+            className="text-green-700 font-semibold hover:underline"
           >
-            + Add Module
+            + Add Another Module
           </button>
         </section>
 
-        {/* Submit Button */}
         <button
           type="submit"
-          disabled={!isFormValid || loading}
-          className={`w-full py-4 rounded-md text-white font-semibold ${
-            isFormValid && !loading
-              ? "bg-green-600 hover:bg-green-700 cursor-pointer"
-              : "bg-gray-400 cursor-not-allowed"
-          }`}
+          disabled={loading}
+          className={`mt-8 w-full bg-green-600 text-white py-3 rounded-md font-semibold hover:bg-green-700 transition disabled:opacity-60 disabled:cursor-not-allowed`}
         >
-          {loading ? "Submitting..." : "Submit"}
+          {loading ? "Uploading..." : "Save Course"}
         </button>
       </form>
     </div>
