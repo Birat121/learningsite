@@ -84,7 +84,7 @@ export const getQuizByCourseId = async (req, res) => {
       return res.status(400).json({ message: "Invalid course ID" });
     }
 
-    const quizDoc = await quiz.findOne({ courseId: mongoose.Types.ObjectId(courseId) });
+    const quizDoc = await quiz.findOne({ courseId: new mongoose.Types.ObjectId(courseId) });
 
     if (!quizDoc) {
       return res.status(404).json({ message: "Quiz not found" });
