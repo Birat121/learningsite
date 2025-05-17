@@ -34,6 +34,7 @@ import AdminHeroEditor from "./components/HeroEditor";
 import AdminIntroduction from "./components/IntroEditor";
 import PodcastVideoManager from "./components/Youtube";
 import ModuleVideoManagementPage from "./components/ModuleManagement";
+import AddModulesPage from "./components/AddModule";
 
 function App() {
   const location = useLocation();
@@ -185,6 +186,14 @@ function App() {
             element={
               <AdminRoute>
                 <ModuleVideoManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard/addmodules/:courseId"
+            element={
+              <AdminRoute>
+                <AddModulesPage />
               </AdminRoute>
             }
           />
