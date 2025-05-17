@@ -15,56 +15,46 @@ const WatchCourse = () => {
   const [userAnswers, setUserAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
   const videoRef = useRef(null);
 
   useEffect(() => {
-  if (!hasCourseAccess(slug)) {
-    console.warn("Access denied or not logged in for course:", slug);
-    navigate("/login");
-    return;
-  }
-
-  const fetchCourseAndQuiz = async () => {
-    try {
-      console.log("Fetching course with slug:", slug);
-      const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
-      const course = courseRes.data;
-
-      console.log("Fetched course:", course);
-
-      if (!course || !course.modules) {
-        console.warn("No course data or modules found.");
-        setModules([]);
-      } else {
-        setModules(course.modules);
-      }
-
-      // Select first video
-      if (course.modules?.length > 0) {
-        const firstModule = course.modules[0];
-        if (firstModule.videos?.length > 0) {
-          setSelectedVideo(firstModule.videos[0]);
-        }
-      }
-
-      // Fetch quiz if course has an ID
-      if (course._id) {
-        console.log("Fetching quiz for course ID:", course._id);
-        const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
-        console.log("Fetched quiz:", quizRes.data);
-        setQuiz(quizRes.data);
-      } else {
-        console.warn("Course ID not found. Skipping quiz fetch.");
-      }
-    } catch (err) {
-      console.error("Error loading course or quiz:", err);
+    if (!hasCourseAccess(slug)) {
+      console.warn("Access denied or not logged in for course:", slug);
+      navigate("/login");
+      return;
     }
-  };
 
-  fetchCourseAndQuiz();
-}, [slug, hasCourseAccess, navigate]);
+    const fetchCourseAndQuiz = async () => {
+      try {
+        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const course = courseRes.data;
 
+        if (!course || !course.modules) {
+          setModules([]);
+        } else {
+          setModules(course.modules);
+        }
+
+        if (course.modules?.length > 0) {
+          const firstModule = course.modules[0];
+          if (firstModule.videos?.length > 0) {
+            setSelectedVideo(firstModule.videos[0]);
+          }
+        }
+
+        if (course._id) {
+          const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
+          setQuiz(quizRes.data);
+        }
+      } catch (err) {
+        console.error("Error loading course or quiz:", err);
+      }
+    };
+
+    fetchCourseAndQuiz();
+  }, [slug, hasCourseAccess, navigate]);
 
   const markVideoComplete = (videoId) => {
     setCompletedVideos((prev) => new Set(prev).add(videoId));
@@ -165,49 +155,84 @@ const WatchCourse = () => {
                 Course Quiz
               </h2>
               {quiz.questions?.length > 0 ? (
-                quiz.questions.map((q, i) => (
-                  <div key={i} className="mb-5 p-4 border rounded shadow-sm">
+                <>
+                  <div className="mb-5 p-4 border rounded shadow-sm">
                     <p className="font-semibold mb-2">
-                      {i + 1}. {q.question}
+                      {currentQuestionIndex + 1}.{" "}
+                      {quiz.questions[currentQuestionIndex].question}
                     </p>
                     <div className="space-y-2">
-                      {q.options?.map((opt, idx) => (
-                        <label key={idx} className="block">
-                          <input
-                            type="radio"
-                            name={`question-${i}`}
-                            value={opt}
-                            disabled={submitted}
-                            checked={userAnswers[i] === opt}
-                            onChange={() =>
-                              setUserAnswers((prev) => ({
-                                ...prev,
-                                [i]: opt,
-                              }))
-                            }
-                            className="mr-2"
-                          />
-                          {opt}
-                        </label>
-                      ))}
+                      {quiz.questions[currentQuestionIndex].options?.map(
+                        (opt, idx) => (
+                          <label key={idx} className="block">
+                            <input
+                              type="radio"
+                              name={`question-${currentQuestionIndex}`}
+                              value={opt}
+                              disabled={submitted}
+                              checked={
+                                userAnswers[currentQuestionIndex] === opt
+                              }
+                              onChange={() =>
+                                setUserAnswers((prev) => ({
+                                  ...prev,
+                                  [currentQuestionIndex]: opt,
+                                }))
+                              }
+                              className="mr-2"
+                            />
+                            {opt}
+                          </label>
+                        )
+                      )}
                     </div>
                   </div>
-                ))
+
+                  {/* Navigation Buttons */}
+                  <div className="flex justify-between mt-4">
+                    <button
+                      onClick={() =>
+                        setCurrentQuestionIndex((i) => Math.max(i - 1, 0))
+                      }
+                      disabled={currentQuestionIndex === 0}
+                      className={`px-4 py-2 rounded-lg ${
+                        currentQuestionIndex === 0
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-blue-500 text-white hover:bg-blue-600"
+                      }`}
+                    >
+                      Previous
+                    </button>
+
+                    {currentQuestionIndex < quiz.questions.length - 1 ? (
+                      <button
+                        onClick={() =>
+                          setCurrentQuestionIndex((i) =>
+                            Math.min(i + 1, quiz.questions.length - 1)
+                          )
+                        }
+                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                      >
+                        Next
+                      </button>
+                    ) : !submitted ? (
+                      <button
+                        onClick={handleSubmitQuiz}
+                        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+                      >
+                        Submit Quiz
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {submitted && (
+                    <p className="mt-4 text-lg font-semibold text-green-600 text-center">
+                      You scored {score} out of {quiz.questions.length}
+                    </p>
+                  )}
+                </>
               ) : (
                 <p>No quiz questions available.</p>
-              )}
-
-              {!submitted ? (
-                <button
-                  onClick={handleSubmitQuiz}
-                  className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
-                >
-                  Submit Quiz
-                </button>
-              ) : (
-                <p className="mt-4 text-lg font-semibold text-green-600">
-                  You scored {score} out of {quiz.questions.length}
-                </p>
               )}
             </div>
           )}
