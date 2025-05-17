@@ -85,7 +85,7 @@ const CourseManagementPage = () => {
 
     try {
       await axiosInstance.put(
-        `/courses/course/${editCourse._slug}`,
+        `/courses/course/${editCourse.slug}`,
         updateData,
         {
           headers: { "Content-Type": "multipart/form-data" },

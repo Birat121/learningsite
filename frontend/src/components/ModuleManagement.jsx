@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance"; // Make sure baseURL is set here
 import toast from "react-hot-toast";
 
 const ModuleVideoManagementPage = () => {
@@ -37,6 +37,7 @@ const ModuleVideoManagementPage = () => {
   const openEditModal = (type, data) => {
     setEditItem({ type, data });
     setFormData({ title: data.title || "", file: null });
+    // For video, use existing video url for preview; for module no preview
     setPreviewUrl(type === "video" ? data.url : null);
   };
 
@@ -73,11 +74,13 @@ const ModuleVideoManagementPage = () => {
     setSaving(true);
     try {
       if (editItem.type === "module") {
+        // Update module title only
         await axiosInstance.put(`/modules/module/${editItem.data._id}`, {
           title: formData.title.trim(),
         });
         toast.success("Module updated");
       } else {
+        // Update video title and optional video file
         const videoForm = new FormData();
         videoForm.append("title", formData.title.trim());
         if (formData.file) {
@@ -87,14 +90,13 @@ const ModuleVideoManagementPage = () => {
         await axiosInstance.put(`/videos/video/${editItem.data._id}`, videoForm, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-
         toast.success("Video updated");
       }
 
       closeEditModal();
       fetchModules();
     } catch (error) {
-      console.error(error);
+      console.error("Update failed:", error.response || error);
       toast.error("Update failed");
     } finally {
       setSaving(false);
@@ -113,7 +115,7 @@ const ModuleVideoManagementPage = () => {
       toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted`);
       fetchModules();
     } catch (error) {
-      console.error(error);
+      console.error("Delete failed:", error.response || error);
       toast.error("Delete failed");
     }
   };
@@ -162,7 +164,12 @@ const ModuleVideoManagementPage = () => {
                 <li key={video._id} className="flex justify-between items-center border-b pb-2">
                   <div>
                     <p className="font-medium">{video.title}</p>
-                    <a href={video.url} target="_blank" rel="noreferrer" className="text-blue-500 text-sm hover:underline">
+                    <a
+                      href={video.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-500 text-sm hover:underline"
+                    >
                       Watch
                     </a>
                   </div>
@@ -189,7 +196,10 @@ const ModuleVideoManagementPage = () => {
 
       {/* Edit Modal */}
       {editItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeEditModal}>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={closeEditModal}
+        >
           <div
             className="bg-white rounded-lg p-6 w-full max-w-lg"
             onClick={(e) => e.stopPropagation()}
@@ -249,9 +259,7 @@ const ModuleVideoManagementPage = () => {
                   onClick={saveEdit}
                   disabled={saving || !formData.title.trim()}
                   className={`px-4 py-2 rounded text-white ${
-                    saving
-                      ? "bg-blue-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
+                    saving ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
                   }`}
                 >
                   {saving ? "Saving..." : "Save"}
