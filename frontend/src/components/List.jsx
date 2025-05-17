@@ -80,12 +80,13 @@ const CourseManagementPage = () => {
     updateData.append("description", formData.description);
     updateData.append("price", formData.price);
     if (formData.image) {
-      updateData.append("image", formData.image);
+      updateData.append("file", formData.image);
+
     }
 
     try {
       await axiosInstance.put(
-        `/courses//courses/course/${editCourse.slug}`,
+        `/courses/courses/course/${editCourse.slug}`,
         updateData,
         {
           headers: { "Content-Type": "multipart/form-data" },
