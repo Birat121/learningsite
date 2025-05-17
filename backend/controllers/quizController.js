@@ -1,4 +1,5 @@
 import quiz from "../models/quiz.js";
+import mongoose from "mongoose";
 
 export const createQuiz = async (req, res) => {
   try {
@@ -69,6 +70,27 @@ export const deleteQuestionInQuiz = async (req, res) => {
     await quizDoc.save();
 
     res.status(200).json({ message: "Question deleted", quiz: quizDoc });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+ 
+
+export const getQuizByCourseId = async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+
+    if (!mongoose.Types.ObjectId.isValid(courseId)) {
+      return res.status(400).json({ message: "Invalid course ID" });
+    }
+
+    const quizDoc = await quiz.findOne({ courseId: mongoose.Types.ObjectId(courseId) });
+
+    if (!quizDoc) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    res.status(200).json(quizDoc);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
