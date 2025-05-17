@@ -25,7 +25,7 @@ const upload = multer({ storage: storage }).fields([
 courseRouter.post('/course', upload, createCourse);
 courseRouter.get('/course', getAllCourses);
 courseRouter.get('/course/slug/:slug', getCourseBySlug); // Prevents slug/id conflict
-courseRouter.put('/course/:id', upload, updateCourse);
+courseRouter.put('/courses/course/:slug', upload, updateCourse);
 courseRouter.delete('/course/:id',  deleteCourse);
 
 courseRouter.get('/course/:courseId/modules', getModulesByCourseId);

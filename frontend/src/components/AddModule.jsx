@@ -120,7 +120,7 @@ const AddModulesPage = () => {
       }
 
       toast.success("✅ Modules and videos added!", { id: toastId });
-      navigate("/courses");
+      navigate("/admin/dashboard/list");
     } catch (err) {
       console.error("❌ Upload failed:");
       if (err.response) {
