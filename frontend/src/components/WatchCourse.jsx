@@ -37,7 +37,7 @@ const WatchCourse = () => {
         }
 
         // 2. Fetch quiz by course ID
-        const quizRes = await axiosInstance.get(`/quizzes/${course._id}`);
+        const quizRes = await axiosInstance.get(`/quiz/quizzes/${course._id}`);
         setQuiz(quizRes.data);
       } catch (err) {
         console.error("Failed to load course or quiz", err);

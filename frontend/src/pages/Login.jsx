@@ -15,26 +15,23 @@ const AuthPage = () => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-
   const { login } = useAuth();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Basic client-side validation
+    // Validation
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       return setError("Please enter a valid email address.");
     }
-
     if (formData.password.length < 6) {
       return setError("Password must be at least 6 characters long.");
     }
-
     if (!isSignIn && formData.name.trim().length < 3) {
       return setError("Name must be at least 3 characters.");
     }
@@ -56,12 +53,14 @@ const AuthPage = () => {
       );
 
       if (isSignIn) {
-        login(res.data.token);
-        navigate("/enrolledCOurse");
+        // Await login to ensure user state and token are set before navigating
+        await login(res.data.token, res.data.user);
+        navigate("/enrolledCOurse"); // Fix spelling here if needed
+      } else {
+        // After register, switch to sign-in mode and clear form
+        setIsSignIn(true);
+        setFormData({ name: "", email: "", password: "" });
       }
-
-      setFormData({ name: "", email: "", password: "" });
-      setIsSignIn(true);
     } catch (err) {
       console.error(err);
       const message = err.response?.data?.message || "Something went wrong.";
@@ -73,9 +72,7 @@ const AuthPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href =
-      "https://learningsite-lsgy.onrender.com/api/auth/google";
-    // Redirect to backend Google OAuth route
+    window.location.href = "https://learningsite-lsgy.onrender.com/api/auth/google";
   };
 
   return (
@@ -88,8 +85,12 @@ const AuthPage = () => {
           <p className="mt-2 text-center text-sm text-gray-600">
             {isSignIn ? "Don't have an account?" : "Already have an account?"}{" "}
             <button
-              onClick={() => setIsSignIn(!isSignIn)}
+              onClick={() => {
+                setIsSignIn(!isSignIn);
+                setError("");
+              }}
               className="font-medium text-blue-600 hover:text-blue-500"
+              type="button"
             >
               {isSignIn ? "Create an account" : "Sign in"}
             </button>
@@ -112,7 +113,7 @@ const AuthPage = () => {
                   type="text"
                   value={formData.name}
                   onChange={handleChange}
-                  required
+                  required={!isSignIn}
                   placeholder="Enter your full name"
                   className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300"
                 />

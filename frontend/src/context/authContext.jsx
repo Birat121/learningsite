@@ -1,25 +1,38 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 
-// Create context
 const AuthContext = createContext();
 
-// Custom hook
 export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-// AuthProvider
 export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Login function
-  const login = (token, userData) => {
+  // Login function (async)
+  const login = async (token, userData = null) => {
     localStorage.setItem("token", token);
     setAuthToken(token);
-    setUser(userData);
+
+    if (userData) {
+      setUser(userData);
+    } else {
+      // fetch user info if not passed
+      try {
+        const res = await axiosInstance.get("/auth/user", { withCredentials: true });
+        setUser(res.data.user);
+      } catch (error) {
+        console.error("Failed to fetch user after login:", error);
+        setUser(null);
+      }
+    }
+
+    // fetch enrolled courses after login
+    await fetchEnrolledCourses();
   };
 
   // Logout function
@@ -45,11 +58,17 @@ export const AuthProvider = ({ children }) => {
         logout();
       }
       console.error("Error fetching user:", error);
+      setUser(null);
     }
   };
 
   // Fetch enrolled courses
   const fetchEnrolledCourses = async () => {
+    if (!authToken) {
+      setEnrolledCourses([]);
+      return;
+    }
+
     try {
       const res = await axiosInstance.get("/courses/enrolled", {
         headers: {
@@ -75,11 +94,22 @@ export const AuthProvider = ({ children }) => {
 
   // On mount or token change
   useEffect(() => {
-    if (authToken) {
-      fetchUser();
-      fetchEnrolledCourses();
-    }
+    const initializeAuth = async () => {
+      setLoading(true);
+      if (authToken) {
+        await fetchUser();
+        await fetchEnrolledCourses();
+      } else {
+        setUser(null);
+        setEnrolledCourses([]);
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, [authToken]);
+
+  const isAuthenticated = !!authToken && !!user;
 
   return (
     <AuthContext.Provider
@@ -91,6 +121,8 @@ export const AuthProvider = ({ children }) => {
         enrolledCourses,
         fetchEnrolledCourses,
         hasCourseAccess,
+        loading,
+        isAuthenticated,
       }}
     >
       {children}
