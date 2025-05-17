@@ -2,6 +2,7 @@ import Video from "../models/videoModel.js";
 import cloudinary from "../utils/cloudinary.js"; // your cloudinary config import
 import mongoose from "mongoose";
 import streamifier from "streamifier";
+import Module from "../models/Module.js";
 
 // Create video with Cloudinary upload (using buffer stream)
 export const createVideo = async (req, res) => {
