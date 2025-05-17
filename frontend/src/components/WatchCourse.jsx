@@ -17,30 +17,62 @@ const WatchCourse = () => {
 
   useEffect(() => {
     if (!hasCourseAccess(slug)) {
+      console.log("Access denied for course slug:", slug);
       navigate("/login");
       return;
     }
 
     const fetchCourseAndQuiz = async () => {
       try {
+        console.log("Fetching course for slug:", slug);
         // 1. Get course by slug
-        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const courseRes = await axiosInstance.get(
+          `/courses/course/slug/${slug}`
+        );
+        console.log("Course response:", courseRes);
         const course = courseRes.data;
-        setModules(course.modules || []);
+
+        if (!course || !course.modules) {
+          console.warn("Course data or modules missing:", course);
+          setModules([]);
+        } else {
+          setModules(course.modules);
+        }
 
         // Select first video by default
         if (course.modules && course.modules.length > 0) {
           const firstModule = course.modules[0];
           if (firstModule.videos && firstModule.videos.length > 0) {
             setSelectedVideo(firstModule.videos[0]);
+          } else {
+            console.warn("First module has no videos:", firstModule);
           }
+        } else {
+          console.warn("No modules found in course");
         }
 
+        if (!course._id) {
+          console.error("Course ID missing, cannot fetch quiz");
+          setQuiz(null);
+          return;
+        }
+
+        console.log("Fetching quiz for course ID:", course._id);
         // 2. Fetch quiz by course ID
         const quizRes = await axiosInstance.get(`/quiz/quizzes/${course._id}`);
+        console.log("Quiz response:", quizRes);
         setQuiz(quizRes.data);
       } catch (err) {
         console.error("Failed to load course or quiz", err);
+        if (err.response) {
+          console.error("Response data:", err.response.data);
+          console.error("Response status:", err.response.status);
+          console.error("Response headers:", err.response.headers);
+        } else if (err.request) {
+          console.error("No response received, request:", err.request);
+        } else {
+          console.error("Error message:", err.message);
+        }
       }
     };
 
@@ -54,14 +86,17 @@ const WatchCourse = () => {
 
   // Check if all videos are completed
   const allVideos = modules.flatMap((module) => module.videos || []);
-  const allCompleted = allVideos.length > 0 && allVideos.every((v) => completedVideos.has(v._id));
+  const allCompleted =
+    allVideos.length > 0 && allVideos.every((v) => completedVideos.has(v._id));
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-gray-50 mt-28">
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
         {/* Sidebar - Modules & Videos */}
         <aside className="md:w-1/3 bg-white rounded-2xl shadow-lg p-5 overflow-y-auto max-h-[75vh] border border-gray-100">
-          <h2 className="text-2xl font-bold mb-4 text-blue-700 border-b pb-2">Modules</h2>
+          <h2 className="text-2xl font-bold mb-4 text-blue-700 border-b pb-2">
+            Modules
+          </h2>
           {modules.length === 0 ? (
             <p className="text-gray-500">No modules found.</p>
           ) : (
@@ -87,14 +122,18 @@ const WatchCourse = () => {
                         >
                           {video.title}
                           {completedVideos.has(video._id) && (
-                            <span className="ml-2 text-green-600 font-bold">✓</span>
+                            <span className="ml-2 text-green-600 font-bold">
+                              ✓
+                            </span>
                           )}
                         </button>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-gray-400 italic ml-4">No videos available</p>
+                  <p className="text-gray-400 italic ml-4">
+                    No videos available
+                  </p>
                 )}
               </div>
             ))
@@ -105,7 +144,9 @@ const WatchCourse = () => {
         <main className="md:w-2/3 bg-white rounded-2xl shadow-lg p-5 flex flex-col border border-gray-100">
           {selectedVideo && !allCompleted && (
             <>
-              <h2 className="text-2xl font-semibold mb-4 text-gray-800">{selectedVideo.title}</h2>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                {selectedVideo.title}
+              </h2>
               <video
                 ref={videoRef}
                 controls
@@ -124,7 +165,9 @@ const WatchCourse = () => {
 
           {allCompleted && quiz && (
             <div className="quiz-section mt-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900">Course Quiz</h2>
+              <h2 className="text-2xl font-bold mb-6 text-gray-900">
+                Course Quiz
+              </h2>
               {quiz.questions && quiz.questions.length > 0 ? (
                 quiz.questions.map((q, i) => (
                   <div key={i} className="mb-5 p-4 border rounded shadow-sm">
@@ -149,7 +192,9 @@ const WatchCourse = () => {
           )}
 
           {!selectedVideo && !allCompleted && (
-            <p className="text-center text-gray-500 py-20">Select a video to start watching</p>
+            <p className="text-center text-gray-500 py-20">
+              Select a video to start watching
+            </p>
           )}
         </main>
       </div>
@@ -158,4 +203,3 @@ const WatchCourse = () => {
 };
 
 export default WatchCourse;
-
