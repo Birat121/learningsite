@@ -99,10 +99,13 @@ const AddModulesPage = () => {
 
     try {
       for (const module of modules) {
-        const { data: moduleRes } = await axiosInstance.post("/modules/module", {
-          title: module.title.trim(),
-          course: courseId,
-        });
+        const { data: moduleRes } = await axiosInstance.post(
+          "/modules/module",
+          {
+            title: module.title.trim(),
+            course: courseId,
+          }
+        );
 
         for (const video of module.videos) {
           const videoForm = new FormData();
@@ -115,11 +118,25 @@ const AddModulesPage = () => {
           });
         }
       }
+
       toast.success("✅ Modules and videos added!", { id: toastId });
-      navigate("/courses"); // or wherever you want to redirect after completion
+      navigate("/courses");
     } catch (err) {
-      console.error(err);
-      toast.error("❌ Upload failed.", { id: toastId });
+      console.error("❌ Upload failed:");
+      if (err.response) {
+        console.error("Response Data:", err.response.data);
+        console.error("Status:", err.response.status);
+        console.error("Headers:", err.response.headers);
+      } else if (err.request) {
+        console.error("Request made but no response received:", err.request);
+      } else {
+        console.error("Error Message:", err.message);
+      }
+      console.error("Axios Config:", err.config);
+
+      toast.error("❌ Upload failed. Check console for details.", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
@@ -171,10 +188,7 @@ const AddModulesPage = () => {
             {/* Videos */}
             <div className="space-y-6">
               {module.videos.map((video, vIdx) => (
-                <div
-                  key={video.id}
-                  className="border rounded-md p-4 bg-white"
-                >
+                <div key={video.id} className="border rounded-md p-4 bg-white">
                   <div className="flex justify-between items-center mb-3">
                     <h4 className="font-semibold text-green-700">
                       Video {vIdx + 1}
