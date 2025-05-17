@@ -19,43 +19,52 @@ const WatchCourse = () => {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    if (!hasCourseAccess(slug)) {
-      navigate("/login");
-      return;
-    }
+  if (!hasCourseAccess(slug)) {
+    console.warn("Access denied or not logged in for course:", slug);
+    navigate("/login");
+    return;
+  }
 
-    const fetchCourseAndQuiz = async () => {
-      try {
-        const courseRes = await axiosInstance.get(
-          `/courses/course/slug/${slug}`
-        );
-        const course = courseRes.data;
+  const fetchCourseAndQuiz = async () => {
+    try {
+      console.log("Fetching course with slug:", slug);
+      const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+      const course = courseRes.data;
 
-        if (!course || !course.modules) {
-          setModules([]);
-        } else {
-          setModules(course.modules);
-        }
+      console.log("Fetched course:", course);
 
-        // Select first video
-        if (course.modules?.length > 0) {
-          const firstModule = course.modules[0];
-          if (firstModule.videos?.length > 0) {
-            setSelectedVideo(firstModule.videos[0]);
-          }
-        }
-
-        if (course._id) {
-          const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
-          setQuiz(quizRes.data);
-        }
-      } catch (err) {
-        console.error("Error loading course or quiz:", err);
+      if (!course || !course.modules) {
+        console.warn("No course data or modules found.");
+        setModules([]);
+      } else {
+        setModules(course.modules);
       }
-    };
 
-    fetchCourseAndQuiz();
-  }, [slug, hasCourseAccess, navigate]);
+      // Select first video
+      if (course.modules?.length > 0) {
+        const firstModule = course.modules[0];
+        if (firstModule.videos?.length > 0) {
+          setSelectedVideo(firstModule.videos[0]);
+        }
+      }
+
+      // Fetch quiz if course has an ID
+      if (course._id) {
+        console.log("Fetching quiz for course ID:", course._id);
+        const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
+        console.log("Fetched quiz:", quizRes.data);
+        setQuiz(quizRes.data);
+      } else {
+        console.warn("Course ID not found. Skipping quiz fetch.");
+      }
+    } catch (err) {
+      console.error("Error loading course or quiz:", err);
+    }
+  };
+
+  fetchCourseAndQuiz();
+}, [slug, hasCourseAccess, navigate]);
+
 
   const markVideoComplete = (videoId) => {
     setCompletedVideos((prev) => new Set(prev).add(videoId));
