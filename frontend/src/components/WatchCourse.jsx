@@ -12,87 +12,74 @@ const WatchCourse = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [completedVideos, setCompletedVideos] = useState(new Set());
   const [quiz, setQuiz] = useState(null);
+  const [userAnswers, setUserAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
 
   const videoRef = useRef(null);
 
   useEffect(() => {
     if (!hasCourseAccess(slug)) {
-      console.log("Access denied for course slug:", slug);
       navigate("/login");
       return;
     }
 
     const fetchCourseAndQuiz = async () => {
       try {
-        console.log("Fetching course for slug:", slug);
-        // 1. Get course by slug
         const courseRes = await axiosInstance.get(
           `/courses/course/slug/${slug}`
         );
-        console.log("Course response:", courseRes);
         const course = courseRes.data;
 
         if (!course || !course.modules) {
-          console.warn("Course data or modules missing:", course);
           setModules([]);
         } else {
           setModules(course.modules);
         }
 
-        // Select first video by default
-        if (course.modules && course.modules.length > 0) {
+        // Select first video
+        if (course.modules?.length > 0) {
           const firstModule = course.modules[0];
-          if (firstModule.videos && firstModule.videos.length > 0) {
+          if (firstModule.videos?.length > 0) {
             setSelectedVideo(firstModule.videos[0]);
-          } else {
-            console.warn("First module has no videos:", firstModule);
           }
-        } else {
-          console.warn("No modules found in course");
         }
 
-        if (!course._id) {
-          console.error("Course ID missing, cannot fetch quiz");
-          setQuiz(null);
-          return;
+        if (course._id) {
+          const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
+          setQuiz(quizRes.data);
         }
-
-        console.log("Fetching quiz for course ID:", course._id);
-        // 2. Fetch quiz by course ID
-        const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
-        console.log("Quiz response:", quizRes);
-        setQuiz(quizRes.data);
       } catch (err) {
-        console.error("Failed to load course or quiz", err);
-        if (err.response) {
-          console.error("Response data:", err.response.data);
-          console.error("Response status:", err.response.status);
-          console.error("Response headers:", err.response.headers);
-        } else if (err.request) {
-          console.error("No response received, request:", err.request);
-        } else {
-          console.error("Error message:", err.message);
-        }
+        console.error("Error loading course or quiz:", err);
       }
     };
 
     fetchCourseAndQuiz();
   }, [slug, hasCourseAccess, navigate]);
 
-  // Mark video as completed when it ends
   const markVideoComplete = (videoId) => {
     setCompletedVideos((prev) => new Set(prev).add(videoId));
   };
 
-  // Check if all videos are completed
-  const allVideos = modules.flatMap((module) => module.videos || []);
+  const allVideos = modules.flatMap((m) => m.videos || []);
   const allCompleted =
     allVideos.length > 0 && allVideos.every((v) => completedVideos.has(v._id));
+
+  const handleSubmitQuiz = () => {
+    let total = 0;
+    quiz.questions.forEach((q, index) => {
+      if (userAnswers[index] === q.correctAnswer) {
+        total++;
+      }
+    });
+    setScore(total);
+    setSubmitted(true);
+  };
 
   return (
     <div className="min-h-screen pt-24 pb-12 bg-gray-50 mt-28">
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
-        {/* Sidebar - Modules & Videos */}
+        {/* Sidebar */}
         <aside className="md:w-1/3 bg-white rounded-2xl shadow-lg p-5 overflow-y-auto max-h-[75vh] border border-gray-100">
           <h2 className="text-2xl font-bold mb-4 text-blue-700 border-b pb-2">
             Modules
@@ -105,7 +92,7 @@ const WatchCourse = () => {
                 <h3 className="text-lg font-semibold text-gray-800 mb-2 pl-2 border-l-4 border-blue-600">
                   {module.title}
                 </h3>
-                {module.videos && module.videos.length > 0 ? (
+                {module.videos?.length > 0 ? (
                   <ul className="space-y-1">
                     {module.videos.map((video) => (
                       <li key={video._id}>
@@ -140,7 +127,7 @@ const WatchCourse = () => {
           )}
         </aside>
 
-        {/* Main Content - Video Player & Quiz */}
+        {/* Main Content */}
         <main className="md:w-2/3 bg-white rounded-2xl shadow-lg p-5 flex flex-col border border-gray-100">
           {selectedVideo && !allCompleted && (
             <>
@@ -168,25 +155,50 @@ const WatchCourse = () => {
               <h2 className="text-2xl font-bold mb-6 text-gray-900">
                 Course Quiz
               </h2>
-              {quiz.questions && quiz.questions.length > 0 ? (
+              {quiz.questions?.length > 0 ? (
                 quiz.questions.map((q, i) => (
                   <div key={i} className="mb-5 p-4 border rounded shadow-sm">
                     <p className="font-semibold mb-2">
                       {i + 1}. {q.question}
                     </p>
-                    {q.options && q.options.length > 0 ? (
-                      <ul className="list-disc list-inside">
-                        {q.options.map((opt, idx) => (
-                          <li key={idx}>{opt}</li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p>No options available.</p>
-                    )}
+                    <div className="space-y-2">
+                      {q.options?.map((opt, idx) => (
+                        <label key={idx} className="block">
+                          <input
+                            type="radio"
+                            name={`question-${i}`}
+                            value={opt}
+                            disabled={submitted}
+                            checked={userAnswers[i] === opt}
+                            onChange={() =>
+                              setUserAnswers((prev) => ({
+                                ...prev,
+                                [i]: opt,
+                              }))
+                            }
+                            className="mr-2"
+                          />
+                          {opt}
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 ))
               ) : (
                 <p>No quiz questions available.</p>
+              )}
+
+              {!submitted ? (
+                <button
+                  onClick={handleSubmitQuiz}
+                  className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                >
+                  Submit Quiz
+                </button>
+              ) : (
+                <p className="mt-4 text-lg font-semibold text-green-600">
+                  You scored {score} out of {quiz.questions.length}
+                </p>
               )}
             </div>
           )}
