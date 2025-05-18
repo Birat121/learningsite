@@ -92,7 +92,7 @@ const CourseDetails = () => {
           ) : (
             <button
               onClick={handleBuyNowClick}
-              className="w-full bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition"
+              className="w-full bg-[rgb(0,104,80)] text-white px-6 py-3 rounded-md hover:bg-green-700 transition"
             >
               Buy Now
             </button>

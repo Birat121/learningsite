@@ -117,7 +117,7 @@ const CheckoutPage = () => {
           <button
             onClick={handlePayment}
             disabled={paying}
-            className="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50"
+            className="mt-6 bg-[rgb(0,104,88)] hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition disabled:opacity-50"
             aria-label="Proceed with payment for course"
           >
             {paying ? "Processing..." : "Pay Now"}

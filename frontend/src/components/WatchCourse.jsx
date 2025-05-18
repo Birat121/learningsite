@@ -198,7 +198,7 @@ const WatchCourse = () => {
                       className={`px-4 py-2 rounded-lg ${
                         currentQuestionIndex === 0
                           ? "bg-gray-300 cursor-not-allowed"
-                          : "bg-blue-500 text-white hover:bg-blue-600"
+                          : "bg-[rgb(0,104,80)] text-white hover:bg-green-700"
                       }`}
                     >
                       Previous
@@ -211,7 +211,7 @@ const WatchCourse = () => {
                             Math.min(i + 1, quiz.questions.length - 1)
                           )
                         }
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                        className="bg-[rgb(0,104,80)] text-white px-4 py-2 rounded-lg hover:bg-green-700"
                       >
                         Next
                       </button>
