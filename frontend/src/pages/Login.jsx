@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 

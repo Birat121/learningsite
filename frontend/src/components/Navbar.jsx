@@ -3,7 +3,7 @@ import { FiSearch, FiMenu, FiX } from "react-icons/fi";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logoLight from "../assets/darklogo.webp";
 import logoDark from "../assets/white logo.webp";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "react-hot-toast";
 
 const Navbar = () => {
