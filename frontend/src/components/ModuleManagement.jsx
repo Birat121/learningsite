@@ -9,7 +9,7 @@ const ModuleVideoManagementPage = () => {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState(null); // { type: "module" | "video", data: {} }
-  const [formData, setFormData] = useState({ title: "", file: null });
+  const [formData, setFormData] = useState({ title: "", videoUrl: "" });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -20,7 +20,9 @@ const ModuleVideoManagementPage = () => {
     }
     setLoading(true);
     try {
-      const { data } = await axiosInstance.get(`/courses/course/${courseId}/modules`);
+      const { data } = await axiosInstance.get(
+        `/courses/course/${courseId}/modules`
+      );
       setModules(data);
     } catch (error) {
       console.error("Fetch modules error:", error);
@@ -36,38 +38,32 @@ const ModuleVideoManagementPage = () => {
 
   const openEditModal = (type, data) => {
     setEditItem({ type, data });
-    setFormData({ title: data.title || "", file: null });
-    // For video, use existing video url for preview; for module no preview
+    setFormData({ title: data.title || "", videoUrl: data.url || "" });
     setPreviewUrl(type === "video" ? data.url : null);
   };
 
   const closeEditModal = () => {
     if (saving) return;
     setEditItem(null);
-    setFormData({ title: "", file: null });
+    setFormData({ title: "", videoUrl: "" });
     setPreviewUrl(null);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((f) => ({ ...f, [name]: value }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((f) => ({ ...f, file }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (name === "videoUrl") {
+      setPreviewUrl(value);
     }
   };
 
   const saveEdit = async () => {
     if (!formData.title.trim()) {
       toast.error("Title is required");
+      return;
+    }
+    if (editItem.type === "video" && !formData.videoUrl.trim()) {
+      toast.error("Video URL is required");
       return;
     }
 
@@ -80,15 +76,10 @@ const ModuleVideoManagementPage = () => {
         });
         toast.success("Module updated");
       } else {
-        // Update video title and optional video file
-        const videoForm = new FormData();
-        videoForm.append("title", formData.title.trim());
-        if (formData.file) {
-          videoForm.append("video", formData.file);
-        }
-
-        await axiosInstance.put(`/videos/videos/${editItem.data._id}`, videoForm, {
-          headers: { "Content-Type": "multipart/form-data" },
+        // Update video title and video URL
+        await axiosInstance.put(`/videos/videos/${editItem.data._id}`, {
+          title: formData.title.trim(),
+          url: formData.videoUrl.trim(),
         });
         toast.success("Video updated");
       }
@@ -121,7 +112,11 @@ const ModuleVideoManagementPage = () => {
   };
 
   if (!courseId) {
-    return <div className="text-center text-red-600 mt-10">Error: No course selected.</div>;
+    return (
+      <div className="text-center text-red-600 mt-10">
+        Error: No course selected.
+      </div>
+    );
   }
 
   return (
@@ -129,17 +124,23 @@ const ModuleVideoManagementPage = () => {
       <h1 className="text-2xl font-bold mb-6">Manage Modules & Videos</h1>
 
       {loading && (
-        <p className="text-center text-gray-600 font-semibold">Loading modules...</p>
+        <p className="text-center text-gray-600 font-semibold">
+          Loading modules...
+        </p>
       )}
 
       {!loading && modules.length === 0 && (
-        <p className="text-center text-gray-500 italic">No modules found for this course.</p>
+        <p className="text-center text-gray-500 italic">
+          No modules found for this course.
+        </p>
       )}
 
       {modules.map((module) => (
         <div key={module._id} className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-xl font-semibold text-gray-800">{module.title}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {module.title}
+            </h2>
             <div>
               <button
                 onClick={() => openEditModal("module", module)}
@@ -157,11 +158,16 @@ const ModuleVideoManagementPage = () => {
           </div>
 
           {module.videos.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No videos in this module.</p>
+            <p className="text-sm text-gray-500 italic">
+              No videos in this module.
+            </p>
           ) : (
             <ul className="space-y-3">
               {module.videos.map((video) => (
-                <li key={video._id} className="flex justify-between items-center border-b pb-2">
+                <li
+                  key={video._id}
+                  className="flex justify-between items-center border-b pb-2"
+                >
                   <div>
                     <p className="font-medium">{video.title}</p>
                     <a
@@ -225,12 +231,15 @@ const ModuleVideoManagementPage = () => {
               {editItem.type === "video" && (
                 <>
                   <label className="block">
-                    Replace Video File
+                    Video URL
                     <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleFileChange}
+                      type="url"
+                      name="videoUrl"
+                      value={formData.videoUrl}
+                      onChange={handleChange}
                       className="w-full mt-1 border px-3 py-2 rounded"
+                      required
+                      placeholder="https://example.com/video.mp4"
                     />
                   </label>
 
@@ -257,9 +266,15 @@ const ModuleVideoManagementPage = () => {
                 </button>
                 <button
                   onClick={saveEdit}
-                  disabled={saving || !formData.title.trim()}
+                  disabled={
+                    saving ||
+                    !formData.title.trim() ||
+                    (editItem.type === "video" && !formData.videoUrl.trim())
+                  }
                   className={`px-4 py-2 rounded text-white ${
-                    saving ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                    saving
+                      ? "bg-blue-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
                   }`}
                 >
                   {saving ? "Saving..." : "Save"}
