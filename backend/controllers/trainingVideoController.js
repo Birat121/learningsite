@@ -1,11 +1,24 @@
 import Video from "../models/videoModel.js";
-import cloudinary from "../utils/cloudinary.js"; // your cloudinary config import
+import cloudinary from "../utils/cloudinary.js";
 import mongoose from "mongoose";
-import streamifier from "streamifier";
 import Module from "../models/Module.js";
-
-// Create video with Cloudinary upload (using buffer stream)
 import fs from "fs";
+
+// Helper function to upload large video using stream + Promise
+const uploadLargeVideo = (filePath) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_large_stream(
+      { resource_type: "video", folder: "course_videos" },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+
+    // Pipe the file read stream into Cloudinary upload stream
+    fs.createReadStream(filePath).pipe(uploadStream);
+  });
+};
 
 export const createVideo = async (req, res) => {
   try {
@@ -18,30 +31,11 @@ export const createVideo = async (req, res) => {
 
     const filePath = videoFile.path;
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(400).json({ error: "Video file not found on server" });
-    }
+    // Upload large video with stream helper
+    const result = await uploadLargeVideo(filePath);
 
-    const result = await cloudinary.uploader.upload_large(filePath, {
-      resource_type: "video",
-      chunk_size: 20 * 1024 * 1024,
-      folder: "course_videos",
-    });
-
-    console.log("Cloudinary upload_large result:", result);
-
-    if (!result || !result.secure_url || !result.public_id) {
-      return res.status(500).json({
-        error: "Cloudinary upload failed: Missing secure_url or public_id",
-        details: result,
-      });
-    }
-
-    try {
-      fs.unlinkSync(filePath);
-    } catch (unlinkError) {
-      console.warn("Failed to delete temp file:", unlinkError);
-    }
+    // Delete local file after upload
+    fs.unlinkSync(filePath);
 
     const video = new Video({
       title,
@@ -114,19 +108,16 @@ export const updateVideo = async (req, res) => {
     if (!video) return res.status(404).json({ error: "Video not found" });
 
     if (videoFile) {
-      // Delete previous video
+      // Delete previous video from Cloudinary
       await cloudinary.uploader.destroy(video.videoPublicId, {
         resource_type: "video",
       });
 
-      // Upload new video
+      // Upload new video file stream to Cloudinary
       const filePath = videoFile.path;
-      const result = await cloudinary.uploader.upload_large(filePath, {
-        resource_type: "video",
-        chunk_size: 20 * 1024 * 1024,
-        folder: "course_videos",
-      });
+      const result = await uploadLargeVideo(filePath);
 
+      // Delete local temp file after upload
       fs.unlinkSync(filePath);
 
       video.videoUrl = result.secure_url;
@@ -139,6 +130,7 @@ export const updateVideo = async (req, res) => {
     await video.save();
     res.json(video);
   } catch (error) {
+    console.error("❌ Video update failed:", error);
     res.status(500).json({ error: error.message });
   }
 };
