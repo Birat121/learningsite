@@ -20,7 +20,7 @@ const WatchCourse = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState(false);
-  const [isVimeo, setIsVimeo] = useState(false);
+ 
 
   const videoRef = useRef(null);
 
@@ -58,13 +58,7 @@ const WatchCourse = () => {
     fetchCourseData();
   }, [slug, hasCourseAccess, navigate]);
 
-  useEffect(() => {
-    if (selectedVideo?.videoUrl) {
-      setIsVimeo(selectedVideo.videoUrl.includes("vimeo.com"));
-    } else {
-      setIsVimeo(false);
-    }
-  }, [selectedVideo]);
+  
 
   const markVideoComplete = (videoId) => {
     setCompletedVideos((prev) => new Set(prev).add(videoId));
@@ -167,31 +161,11 @@ const WatchCourse = () => {
                 {selectedVideo.title}
               </h2>
 
-              {selectedVideo.videoUrl ? (
-                isVimeo ? (
-                  <>
-                    <ReactPlayer
-                      url={selectedVideo.videoUrl}
-                      controls
-                      width="100%"
-                      height="360px"
-                      onEnded={() => markVideoComplete(selectedVideo._id)}
-                      onStart={onVideoLoadStart}
-                      onReady={onVideoLoadedData}
-                      onError={onVideoError}
-                      playing
-                    />
-                    {videoLoading && (
-                      <p className="mt-2 text-gray-600">Loading video...</p>
-                    )}
-                    {videoError && (
-                      <p className="mt-2 text-red-600">
-                        Failed to load video. Please try another video.
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <>
+              {selectedVideo?.videoUrl ? (
+                <>
+                  {[".mp4", ".webm", ".ogg"].some((ext) =>
+                    selectedVideo.videoUrl.toLowerCase().includes(ext)
+                  ) ? (
                     <video
                       key={selectedVideo._id}
                       ref={videoRef}
@@ -206,16 +180,29 @@ const WatchCourse = () => {
                       className="w-full rounded-lg shadow-md aspect-video"
                       src={selectedVideo.videoUrl}
                     />
-                    {videoLoading && (
-                      <p className="mt-2 text-gray-600">Loading video...</p>
-                    )}
-                    {videoError && (
-                      <p className="mt-2 text-red-600">
-                        Failed to load video. Please try another video.
-                      </p>
-                    )}
-                  </>
-                )
+                  ) : (
+                    <ReactPlayer
+                      url={selectedVideo.videoUrl}
+                      controls
+                      width="100%"
+                      height="360px"
+                      onEnded={() => markVideoComplete(selectedVideo._id)}
+                      onStart={onVideoLoadStart}
+                      onReady={onVideoLoadedData}
+                      onError={onVideoError}
+                      playing
+                    />
+                  )}
+
+                  {videoLoading && (
+                    <p className="mt-2 text-gray-600">Loading video...</p>
+                  )}
+                  {videoError && (
+                    <p className="mt-2 text-red-600">
+                      Failed to load video. Please try another video.
+                    </p>
+                  )}
+                </>
               ) : (
                 <p className="text-red-600">Video URL is not available.</p>
               )}
