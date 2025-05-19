@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -33,7 +33,6 @@ const ProfilePage = () => {
     setFormData({
       name: user.name,
       email: user.email,
-      
     });
     setIsEditing(false);
   };
@@ -41,13 +40,19 @@ const ProfilePage = () => {
   return (
     <div className="min-h-[80vh] px-4 pt-36 pb-12 bg-gray-50 flex justify-center">
       <div className="w-full max-w-xl bg-white p-8 rounded-xl shadow-lg">
-        <h2 className="text-3xl font-bold mb-8 text-center text-[rgb(0,104,80)]">👤 My Profile</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center text-[rgb(0,104,80)]">
+          👤 My Profile
+        </h2>
 
         <div className="space-y-6">
           {["name", "email", "phone", "role"].map((field) => (
             <div key={field}>
               <label className="block text-gray-600 font-medium mb-1 capitalize">
-                {field === "role" ? "User Role" : field === "name" ? "Full Name" : field}
+                {field === "role"
+                  ? "User Role"
+                  : field === "name"
+                  ? "Full Name"
+                  : field}
               </label>
               {isEditing ? (
                 <input
@@ -59,7 +64,9 @@ const ProfilePage = () => {
                 />
               ) : (
                 <div className="p-3 border border-gray-300 rounded-md bg-gray-100 capitalize">
-                  {formData[field] || <span className="text-gray-400">Not provided</span>}
+                  {formData[field] || (
+                    <span className="text-gray-400">Not provided</span>
+                  )}
                 </div>
               )}
             </div>

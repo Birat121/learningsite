@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
 
@@ -25,7 +25,10 @@ const CheckoutPage = () => {
         console.log(`${DEBUG_TAG} Course fetch success:`, res.data);
         setCourse(res.data);
       } catch (error) {
-        console.error(`${DEBUG_TAG} Course fetch failed:`, error?.response?.data || error.message);
+        console.error(
+          `${DEBUG_TAG} Course fetch failed:`,
+          error?.response?.data || error.message
+        );
         toast.error("Failed to fetch course details");
         navigate("/");
       } finally {
@@ -57,14 +60,22 @@ const CheckoutPage = () => {
       const res = await axiosInstance.post("/payment/initiate", payload);
 
       if (res.data?.paymentUrl) {
-        console.log(`${DEBUG_TAG} Payment URL received: ${res.data.paymentUrl}`);
+        console.log(
+          `${DEBUG_TAG} Payment URL received: ${res.data.paymentUrl}`
+        );
         window.location.href = res.data.paymentUrl;
       } else {
-        console.error(`${DEBUG_TAG} Payment URL not found in response:`, res.data);
+        console.error(
+          `${DEBUG_TAG} Payment URL not found in response:`,
+          res.data
+        );
         toast.error("Payment URL not found.");
       }
     } catch (err) {
-      console.error(`${DEBUG_TAG} Payment initiation failed:`, err?.response?.data || err.message);
+      console.error(
+        `${DEBUG_TAG} Payment initiation failed:`,
+        err?.response?.data || err.message
+      );
       toast.error("Payment initiation failed.");
     } finally {
       setPaying(false);
@@ -87,7 +98,9 @@ const CheckoutPage = () => {
     );
   }
 
-  console.log(`${DEBUG_TAG} UI Render: Checkout ready for course "${course.title}"`);
+  console.log(
+    `${DEBUG_TAG} UI Render: Checkout ready for course "${course.title}"`
+  );
 
   return (
     <div className="pt-32 pb-20 px-4 max-w-5xl mx-auto mt-18 mb-26">
@@ -109,7 +122,6 @@ const CheckoutPage = () => {
             <p className="mb-3 text-gray-700 text-lg">
               <strong>Price:</strong> AED {course.price?.toFixed(2)}
             </p>
-            
           </div>
 
           <button

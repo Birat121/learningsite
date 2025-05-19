@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -72,7 +72,8 @@ const AuthPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "https://learningsite-lsgy.onrender.com/api/auth/google";
+    window.location.href =
+      "https://learningsite-lsgy.onrender.com/api/auth/google";
   };
 
   return (

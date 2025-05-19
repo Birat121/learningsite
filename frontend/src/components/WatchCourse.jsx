@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../utils/axiosInstance";
-import { useAuth } from "../context/AuthContext";
+import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/authContext";
 import Loader from "../components/Loader";
 import Error from "../components/Error";
 
@@ -33,7 +33,9 @@ const WatchCourse = () => {
 
     const fetchCourseData = async () => {
       try {
-        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const courseRes = await axiosInstance.get(
+          `/courses/course/slug/${slug}`
+        );
         const course = courseRes.data;
         console.log("Fetched course:", course);
         setCourseTitle(course.title || "");
@@ -107,7 +109,9 @@ const WatchCourse = () => {
 
         {selectedVideo ? (
           <div className="mb-4">
-            <h3 className="text-xl font-semibold mb-2">{selectedVideo.title}</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              {selectedVideo.title}
+            </h3>
             <video
               ref={videoRef}
               key={selectedVideo.videoUrl}
@@ -133,30 +137,36 @@ const WatchCourse = () => {
             <h3 className="text-xl font-semibold mb-2">Quiz</h3>
             {!submitted ? (
               <div>
-                <p className="mb-4">{quiz.questions[currentQuestionIndex].question}</p>
+                <p className="mb-4">
+                  {quiz.questions[currentQuestionIndex].question}
+                </p>
                 <ul className="mb-4">
-                  {quiz.questions[currentQuestionIndex].options.map((opt, idx) => (
-                    <li key={idx}>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name={`q-${currentQuestionIndex}`}
-                          value={opt}
-                          checked={userAnswers[currentQuestionIndex] === opt}
-                          onChange={() => {
-                            console.log(
-                              `Answer selected for question ${currentQuestionIndex + 1}: ${opt}`
-                            );
-                            setUserAnswers((prev) => ({
-                              ...prev,
-                              [currentQuestionIndex]: opt,
-                            }));
-                          }}
-                        />
-                        {opt}
-                      </label>
-                    </li>
-                  ))}
+                  {quiz.questions[currentQuestionIndex].options.map(
+                    (opt, idx) => (
+                      <li key={idx}>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name={`q-${currentQuestionIndex}`}
+                            value={opt}
+                            checked={userAnswers[currentQuestionIndex] === opt}
+                            onChange={() => {
+                              console.log(
+                                `Answer selected for question ${
+                                  currentQuestionIndex + 1
+                                }: ${opt}`
+                              );
+                              setUserAnswers((prev) => ({
+                                ...prev,
+                                [currentQuestionIndex]: opt,
+                              }));
+                            }}
+                          />
+                          {opt}
+                        </label>
+                      </li>
+                    )
+                  )}
                 </ul>
                 <div className="flex justify-between">
                   <button
