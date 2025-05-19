@@ -109,9 +109,7 @@ const CheckoutPage = () => {
             <p className="mb-3 text-gray-700 text-lg">
               <strong>Price:</strong> AED {course.price?.toFixed(2)}
             </p>
-            <p className="text-gray-600">
-              {course.description?.substring(0, 150)}...
-            </p>
+            
           </div>
 
           <button

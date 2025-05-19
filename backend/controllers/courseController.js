@@ -168,6 +168,9 @@ export const deleteCourse = async (req, res) => {
       { $pull: { enrolledCourses: course._id } }
     );
 
+    // ✅ Delete enrollments related to this course
+    await Enrollment.deleteMany({ course: course._id });
+
     await course.deleteOne();
 
     res.json({ message: "Course deleted successfully" });
@@ -175,6 +178,7 @@ export const deleteCourse = async (req, res) => {
     res.status(500).json({ error: "Error deleting course: " + error.message });
   }
 };
+
 
 export const getModulesByCourseId = async (req, res) => {
   try {

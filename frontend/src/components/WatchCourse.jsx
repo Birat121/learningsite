@@ -8,6 +8,7 @@ const WatchCourse = () => {
   const navigate = useNavigate();
   const { hasCourseAccess } = useAuth();
 
+  const [courseTitle, setCourseTitle] = useState("");
   const [modules, setModules] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [completedVideos, setCompletedVideos] = useState(new Set());
@@ -23,23 +24,18 @@ const WatchCourse = () => {
 
   useEffect(() => {
     if (!hasCourseAccess(slug)) {
-      console.warn("Access denied or not logged in for course:", slug);
       navigate("/login");
       return;
     }
 
-    const fetchCourseAndQuiz = async () => {
+    const fetchCourseData = async () => {
       try {
         const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
         const course = courseRes.data;
-
-        if (!course || !course.modules) {
-          setModules([]);
-        } else {
-          setModules(course.modules);
-        }
+        setCourseTitle(course.title || "");
 
         if (course.modules?.length > 0) {
+          setModules(course.modules);
           const firstModule = course.modules[0];
           if (firstModule.videos?.length > 0) {
             setSelectedVideo(firstModule.videos[0]);
@@ -55,7 +51,7 @@ const WatchCourse = () => {
       }
     };
 
-    fetchCourseAndQuiz();
+    fetchCourseData();
   }, [slug, hasCourseAccess, navigate]);
 
   const markVideoComplete = (videoId) => {
@@ -92,7 +88,13 @@ const WatchCourse = () => {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 bg-gray-50 mt-28">
+    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
+      <div className="max-w-6xl mx-auto px-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+          {courseTitle}
+        </h1>
+      </div>
+
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <aside className="md:w-1/3 bg-white rounded-2xl shadow-lg p-5 overflow-y-auto max-h-[75vh] border border-gray-100">
@@ -126,9 +128,7 @@ const WatchCourse = () => {
                         >
                           {video.title}
                           {completedVideos.has(video._id) && (
-                            <span className="ml-2 text-green-600 font-bold">
-                              ✓
-                            </span>
+                            <span className="ml-2 text-green-600 font-bold">✓</span>
                           )}
                         </button>
                       </li>
@@ -146,6 +146,7 @@ const WatchCourse = () => {
 
         {/* Main Content */}
         <main className="md:w-2/3 bg-white rounded-2xl shadow-lg p-5 flex flex-col border border-gray-100">
+          {/* Show video player if course videos not completed */}
           {selectedVideo && !allCompleted && (
             <>
               <h2 className="text-2xl font-semibold mb-4 text-gray-800">
@@ -187,13 +188,15 @@ const WatchCourse = () => {
             </>
           )}
 
-          {allCompleted && quiz && (
-            <div className="quiz-section mt-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-900">
-                Course Quiz
-              </h2>
-              {quiz.questions?.length > 0 ? (
-                <>
+          {/* Show quiz or no quiz message when all videos completed */}
+          {allCompleted && (
+            <>
+              {quiz && quiz.questions?.length > 0 ? (
+                <div className="quiz-section mt-6">
+                  <h2 className="text-2xl font-bold mb-6 text-gray-900 text-center">
+                    Course Quiz
+                  </h2>
+
                   <div className="mb-5 p-4 border rounded shadow-sm">
                     <p className="font-semibold mb-2">
                       {currentQuestionIndex + 1}.{" "}
@@ -208,9 +211,7 @@ const WatchCourse = () => {
                               name={`question-${currentQuestionIndex}`}
                               value={opt}
                               disabled={submitted}
-                              checked={
-                                userAnswers[currentQuestionIndex] === opt
-                              }
+                              checked={userAnswers[currentQuestionIndex] === opt}
                               onChange={() =>
                                 setUserAnswers((prev) => ({
                                   ...prev,
@@ -226,7 +227,6 @@ const WatchCourse = () => {
                     </div>
                   </div>
 
-                  {/* Navigation Buttons */}
                   <div className="flex justify-between mt-4">
                     <button
                       onClick={() =>
@@ -268,22 +268,17 @@ const WatchCourse = () => {
                       You scored {score} out of {quiz.questions.length}
                     </p>
                   )}
-                </>
+                </div>
               ) : (
-                <p>No quiz questions available.</p>
+                <p className="text-center mt-6 text-gray-600 italic text-lg">
+                  No quiz available for this course.
+                </p>
               )}
-            </div>
-          )}
-
-          {!selectedVideo && !allCompleted && (
-            <p className="text-center text-gray-500 py-20">
-              Select a video to start watching
-            </p>
+            </>
           )}
         </main>
       </div>
     </div>
-
   );
 };
 
