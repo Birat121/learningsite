@@ -7,8 +7,6 @@ import Module from "../models/Module.js";
 // Create video with Cloudinary upload (using buffer stream)
 import fs from "fs";
 
-
-
 export const createVideo = async (req, res) => {
   try {
     const { title, module } = req.body;
@@ -20,15 +18,30 @@ export const createVideo = async (req, res) => {
 
     const filePath = videoFile.path;
 
-    // Upload to Cloudinary using chunked upload
+    if (!fs.existsSync(filePath)) {
+      return res.status(400).json({ error: "Video file not found on server" });
+    }
+
     const result = await cloudinary.uploader.upload_large(filePath, {
       resource_type: "video",
-      chunk_size: 20 * 1024 * 1024, // 20MB chunks
+      chunk_size: 20 * 1024 * 1024,
       folder: "course_videos",
     });
 
-    // Delete local file after upload
-    fs.unlinkSync(filePath);
+    console.log("Cloudinary upload_large result:", result);
+
+    if (!result || !result.secure_url || !result.public_id) {
+      return res.status(500).json({
+        error: "Cloudinary upload failed: Missing secure_url or public_id",
+        details: result,
+      });
+    }
+
+    try {
+      fs.unlinkSync(filePath);
+    } catch (unlinkError) {
+      console.warn("Failed to delete temp file:", unlinkError);
+    }
 
     const video = new Video({
       title,
@@ -49,7 +62,6 @@ export const createVideo = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Get all videos (optionally filtered by module)
 export const getAllVideos = async (req, res) => {
@@ -130,7 +142,6 @@ export const updateVideo = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // Delete video from DB and Cloudinary
 export const deleteVideo = async (req, res) => {
