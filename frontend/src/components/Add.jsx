@@ -13,6 +13,7 @@ const AddCoursePage = () => {
     thumbnail: null,
   });
   const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const navigate = useNavigate();
 
   const handleCourseChange = (e) => {
@@ -33,12 +34,17 @@ const AddCoursePage = () => {
     courseData.description.trim() &&
     courseData.thumbnail;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid) {
       toast.error("Please fill in all required fields before submitting.");
       return;
     }
+    setShowConfirmModal(true); // Open modal
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirmModal(false);
     setLoading(true);
     const toastId = toast.loading("Creating course...");
     try {
@@ -53,8 +59,6 @@ const AddCoursePage = () => {
       });
 
       toast.success("✅ Course created!", { id: toastId });
-
-      // Redirect to modules/videos page with new course ID
       navigate(`/admin/dashboard/addmodules/${data.course._id}`);
     } catch (err) {
       console.error(err);
@@ -132,6 +136,31 @@ const AddCoursePage = () => {
           {loading ? "Creating..." : "Create Course"}
         </button>
       </form>
+
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirm Submission</h3>
+            <p className="mb-6 text-gray-600">
+              Are you sure you want to create this course?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmSubmit}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

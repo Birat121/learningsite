@@ -36,7 +36,7 @@ const Introduction = () => {
       {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10">
         <img
-          src={`https://learningsite-lsgy.onrender.com${content.image}`}
+          src={content.image}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
           className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"

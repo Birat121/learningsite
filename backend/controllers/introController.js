@@ -14,23 +14,42 @@ export const getIntroduction = async (req, res) => {
 export const updateIntroduction = async (req, res) => {
   try {
     const { heading, subheading, paragraph1, paragraph2 } = req.body;
-   const image = req.file ? `/uploads/${req.file.filename}` : undefined;
-    
+
+    let imageUrl;
+
+    if (req.file) {
+      // Upload the file buffer or local path to Cloudinary
+      // If multer stores locally, use req.file.path
+      // If multer stores in memory, use req.file.buffer with upload_stream (more advanced)
+      
+      // Assuming multer saves file locally and path is in req.file.path:
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "your_folder_name", // optional: to organize in Cloudinary
+      });
+      imageUrl = result.secure_url; // this is the Cloudinary image URL
+    }
 
     let intro = await Introduction.findOne();
     if (!intro) {
-      intro = new Introduction({ heading, subheading, paragraph1, paragraph2, image });
+      intro = new Introduction({
+        heading,
+        subheading,
+        paragraph1,
+        paragraph2,
+        image: imageUrl,
+      });
     } else {
       intro.heading = heading;
       intro.subheading = subheading;
       intro.paragraph1 = paragraph1;
       intro.paragraph2 = paragraph2;
-      if (image) intro.image = image;
+      if (imageUrl) intro.image = imageUrl;
     }
 
     await intro.save();
     res.json(intro);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update introduction' });
+    console.error(err);
+    res.status(500).json({ error: "Failed to update introduction" });
   }
 };

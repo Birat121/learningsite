@@ -12,7 +12,15 @@ export const getHero = async (req, res) => {
 export const updateHero = async (req, res) => {
   try {
     const { title, subtitle } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : undefined;
+    let image;
+
+    if (req.file) {
+      // Upload the image file buffer to Cloudinary
+      const result = await cloudinary.v2.uploader.upload(req.file.path, {
+        folder: 'hero_images', // optional: folder name in Cloudinary
+      });
+      image = result.secure_url;
+    }
 
     let hero = await Hero.findOne();
 

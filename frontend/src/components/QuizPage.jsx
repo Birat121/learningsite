@@ -1,4 +1,3 @@
-// src/pages/admin/AddQuizPage.jsx
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-hot-toast";
@@ -9,6 +8,7 @@ const AddQuizPage = () => {
   const [questions, setQuestions] = useState([
     { question: "", options: ["", "", "", ""], correctAnswer: 0 },
   ]);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -37,8 +37,12 @@ const AddQuizPage = () => {
     ]);
   };
 
-  const handleSubmit = async () => {
+  const handleSaveClick = () => {
     if (!selectedCourseId) return toast.error("Please select a course.");
+    setShowConfirmDialog(true);
+  };
+
+  const confirmSubmit = async () => {
     try {
       await axiosInstance.post("/quiz/quizzes", {
         courseId: selectedCourseId,
@@ -46,8 +50,10 @@ const AddQuizPage = () => {
       });
       toast.success("Quiz added successfully!");
       setQuestions([{ question: "", options: ["", "", "", ""], correctAnswer: 0 }]);
+      setShowConfirmDialog(false);
     } catch (err) {
       toast.error("Error saving quiz");
+      setShowConfirmDialog(false);
     }
   };
 
@@ -129,12 +135,36 @@ const AddQuizPage = () => {
           ➕ Add Question
         </button>
         <button
-          onClick={handleSubmit}
+          onClick={handleSaveClick}
           className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition duration-200"
         >
           ✅ Save Quiz
         </button>
       </div>
+
+      {/* Confirm Dialog */}
+      {showConfirmDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-semibold mb-4">Confirm Save</h3>
+            <p className="mb-6 text-gray-700">Are you sure you want to save this quiz?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={() => setShowConfirmDialog(false)}
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmSubmit}
+                className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white"
+              >
+                Yes, Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
