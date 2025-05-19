@@ -28,7 +28,9 @@ const WatchCourse = () => {
 
     const fetchCourseAndQuiz = async () => {
       try {
-        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const courseRes = await axiosInstance.get(
+          `/courses/course/slug/${slug}`
+        );
         const course = courseRes.data;
 
         setCourseTitle(course.title || "");
@@ -80,7 +82,7 @@ const WatchCourse = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-12">
       {/* Course Title */}
-      <div className="max-w-6xl mx-auto px-4 mb-8">
+      <div className="max-w-6xl mx-auto px-4 mb-8 mt-8">
         <h1 className="text-4xl font-bold text-center text-blue-700">
           {courseTitle}
         </h1>
@@ -158,12 +160,17 @@ const WatchCourse = () => {
             </>
           )}
 
-          {allCompleted && quiz && (
+          {allCompleted && (
             <div className="quiz-section mt-6">
               <h2 className="text-2xl font-bold mb-6 text-gray-900">
                 Course Quiz
               </h2>
-              {quiz.questions?.length > 0 ? (
+
+              {!quiz || quiz.questions?.length === 0 ? (
+                <p className="text-gray-500 text-lg font-medium">
+                  No quiz available for this course.
+                </p>
+              ) : (
                 <>
                   <div className="mb-5 p-4 border rounded shadow-sm">
                     <p className="font-semibold mb-2">
@@ -240,8 +247,6 @@ const WatchCourse = () => {
                     </p>
                   )}
                 </>
-              ) : (
-                <p>No quiz questions available.</p>
               )}
             </div>
           )}
