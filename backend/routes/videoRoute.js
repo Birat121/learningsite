@@ -1,5 +1,4 @@
 import express from "express";
-import multer from "multer";
 import {
   createVideo,
   getAllVideos,
@@ -10,17 +9,8 @@ import {
 
 const videoRouter = express.Router();
 
-const storage = multer.memoryStorage();
-
-const upload = multer({
-  storage: storage,
-}).fields([
-  { name: "video", maxCount: 1 },  // <-- key changed here to "video"
-]);
-
-
-// Create video with video upload
-videoRouter.post("/videos", upload, createVideo);
+// Create video with external video URL (no upload)
+videoRouter.post("/videos", createVideo);
 
 // Get all videos
 videoRouter.get("/videos", getAllVideos);
@@ -28,12 +18,10 @@ videoRouter.get("/videos", getAllVideos);
 // Get single video
 videoRouter.get("/videos/:idOrSlug", getVideoByIdOrSlug);
 
-// Update video with optional file
-videoRouter.put("/videos/:id", upload, updateVideo);
+// Update video details, including videoUrl (no upload)
+videoRouter.put("/videos/:id", updateVideo);
 
-// Delete video (fixed route)
+// Delete video
 videoRouter.delete("/videos/:id", deleteVideo);
 
 export default videoRouter;
-
-

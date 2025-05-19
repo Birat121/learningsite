@@ -16,7 +16,7 @@ const AddModulesPage = () => {
         {
           id: uuidv4(),
           title: "",
-          videoFile: null,
+          videoUrl: "", // <-- changed here
         },
       ],
     },
@@ -45,7 +45,7 @@ const AddModulesPage = () => {
           {
             id: uuidv4(),
             title: "",
-            videoFile: null,
+            videoUrl: "", // <-- changed here
           },
         ],
       },
@@ -63,7 +63,7 @@ const AddModulesPage = () => {
     updatedModules[moduleIndex].videos.push({
       id: uuidv4(),
       title: "",
-      videoFile: null,
+      videoUrl: "", // <-- changed here
     });
     setModules(updatedModules);
   };
@@ -74,14 +74,14 @@ const AddModulesPage = () => {
     setModules(updatedModules);
   };
 
-  // Validate modules and videos
+  // Validate modules and videos - check videoUrl instead of videoFile
   const areModulesValid = () => {
     if (!modules.length) return false;
     return modules.every((module) => {
       if (!module.title.trim()) return false;
       if (!module.videos.length) return false;
       return module.videos.every(
-        (video) => video.title.trim() && video.videoFile
+        (video) => video.title.trim() && video.videoUrl.trim()
       );
     });
   };
@@ -108,13 +108,10 @@ const AddModulesPage = () => {
         );
 
         for (const video of module.videos) {
-          const videoForm = new FormData();
-          videoForm.append("title", video.title.trim());
-          videoForm.append("module", moduleRes._id);
-          videoForm.append("video", video.videoFile);
-
-          await axiosInstance.post("/videos/videos", videoForm, {
-            headers: { "Content-Type": "multipart/form-data" },
+          await axiosInstance.post("/videos/videos", {
+            title: video.title.trim(),
+            module: moduleRes._id,
+            videoUrl: video.videoUrl.trim(), // <-- sending URL instead of file
           });
         }
       }
@@ -223,20 +220,16 @@ const AddModulesPage = () => {
 
                   <div>
                     <label className="block font-medium mb-1">
-                      Video File <span className="text-red-500">*</span>
+                      Video URL <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="file"
-                      accept="video/*"
+                      type="url"
+                      placeholder="https://example.com/video.mp4"
+                      value={video.videoUrl}
                       onChange={(e) =>
-                        handleVideoChange(
-                          mIdx,
-                          vIdx,
-                          "videoFile",
-                          e.target.files[0]
-                        )
+                        handleVideoChange(mIdx, vIdx, "videoUrl", e.target.value)
                       }
-                      className="w-full cursor-pointer"
+                      className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                       required
                     />
                   </div>

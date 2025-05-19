@@ -16,6 +16,8 @@ const WatchCourse = () => {
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   const videoRef = useRef(null);
 
@@ -75,6 +77,20 @@ const WatchCourse = () => {
     setSubmitted(true);
   };
 
+  const onVideoLoadStart = () => {
+    setVideoLoading(true);
+    setVideoError(false);
+  };
+
+  const onVideoLoadedData = () => {
+    setVideoLoading(false);
+  };
+
+  const onVideoError = () => {
+    setVideoLoading(false);
+    setVideoError(true);
+  };
+
   return (
     <div className="min-h-screen pt-24 pb-12 bg-gray-50 mt-28">
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
@@ -99,6 +115,8 @@ const WatchCourse = () => {
                           onClick={() => {
                             setSelectedVideo(video);
                             if (videoRef.current) videoRef.current.load();
+                            setVideoError(false);
+                            setVideoLoading(false);
                           }}
                           className={`w-full text-left px-3 py-2 rounded-lg transition duration-200 ${
                             selectedVideo && selectedVideo._id === video._id
@@ -133,16 +151,36 @@ const WatchCourse = () => {
               <h2 className="text-2xl font-semibold mb-4 text-gray-800">
                 {selectedVideo.title}
               </h2>
-              <video
-                ref={videoRef}
-                controls
-                controlsList="nodownload noremoteplayback"
-                disablePictureInPicture
-                onContextMenu={(e) => e.preventDefault()}
-                onEnded={() => markVideoComplete(selectedVideo._id)}
-                className="w-full rounded-lg shadow-md aspect-video"
-                src={selectedVideo.videoUrl}
-              />
+
+              {selectedVideo.videoUrl ? (
+                <>
+                  <video
+                    key={selectedVideo._id}
+                    ref={videoRef}
+                    controls
+                    controlsList="nodownload noremoteplayback"
+                    disablePictureInPicture
+                    onContextMenu={(e) => e.preventDefault()}
+                    onEnded={() => markVideoComplete(selectedVideo._id)}
+                    onLoadStart={onVideoLoadStart}
+                    onLoadedData={onVideoLoadedData}
+                    onError={onVideoError}
+                    className="w-full rounded-lg shadow-md aspect-video"
+                    src={selectedVideo.videoUrl}
+                  />
+                  {videoLoading && (
+                    <p className="mt-2 text-gray-600">Loading video...</p>
+                  )}
+                  {videoError && (
+                    <p className="mt-2 text-red-600">
+                      Failed to load video. Please try another video.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-red-600">Video URL is not available.</p>
+              )}
+
               <p className="mt-2 text-sm text-gray-600">
                 Watch all videos to unlock the quiz.
               </p>
@@ -245,6 +283,7 @@ const WatchCourse = () => {
         </main>
       </div>
     </div>
+
   );
 };
 
