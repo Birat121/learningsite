@@ -1,5 +1,6 @@
 // controllers/introductionController.js
 import Introduction from "../models/intro.js";
+import cloudinary from "../utils/cloudinary.js";
 
 
 export const getIntroduction = async (req, res) => {

@@ -1,4 +1,5 @@
 import Hero from "../models/hero.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export const getHero = async (req, res) => {
   try {
@@ -16,7 +17,7 @@ export const updateHero = async (req, res) => {
 
     if (req.file) {
       // Upload the image file buffer to Cloudinary
-      const result = await cloudinary.v2.uploader.upload(req.file.path, {
+      const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'hero_images', // optional: folder name in Cloudinary
       });
       image = result.secure_url;
