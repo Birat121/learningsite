@@ -79,8 +79,9 @@ const ModuleVideoManagementPage = () => {
         // Update video title and video URL
         await axiosInstance.put(`/videos/videos/${editItem.data._id}`, {
           title: formData.title.trim(),
-          url: formData.videoUrl.trim(),
+          videoUrl: formData.videoUrl.trim(), // fix here
         });
+
         toast.success("Video updated");
       }
 
@@ -171,7 +172,7 @@ const ModuleVideoManagementPage = () => {
                   <div>
                     <p className="font-medium">{video.title}</p>
                     <a
-                      href={video.url}
+                      href={video.videoUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue-500 text-sm hover:underline"
