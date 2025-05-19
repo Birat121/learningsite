@@ -12,7 +12,7 @@ const BlogForm = () => {
   });
   const [image, setImage] = useState(null);
   const [editorContent, setEditorContent] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // ⬅️ for loading dialog
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     setFormData(prev => ({
@@ -35,7 +35,7 @@ const BlogForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // show dialog
+    setIsSubmitting(true);
 
     try {
       const payload = new FormData();
@@ -55,24 +55,22 @@ const BlogForm = () => {
     } catch (err) {
       toast.error('Failed to create blog');
     } finally {
-      setIsSubmitting(false); // hide dialog
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="relative">
-      {/* Overlay Modal */}
-      {isSubmitting && (
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-md text-center">
-            <div className="text-lg font-semibold mb-2">Adding Blog...</div>
-            <div className="loader border-4 border-blue-500 border-t-transparent rounded-full w-10 h-10 animate-spin mx-auto"></div>
-          </div>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto p-6 relative z-10">
+    <div>
+      <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto p-6">
         <h2 className="text-2xl font-bold text-center">📝 Create Blog</h2>
+
+        {/* Inline loading indicator at top */}
+        {isSubmitting && (
+          <div className="mb-4 flex items-center space-x-2">
+            <div className="loader border-4 border-blue-500 border-t-transparent rounded-full w-6 h-6 animate-spin"></div>
+            <span className="text-blue-600 font-medium">Adding Blog...</span>
+          </div>
+        )}
 
         <div>
           <label className="block font-medium">Title</label>
@@ -83,6 +81,7 @@ const BlogForm = () => {
             onChange={handleInputChange}
             className="w-full border px-4 py-2 rounded"
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -93,6 +92,7 @@ const BlogForm = () => {
             onChange={handleEditorChange}
             placeholder="Write your blog description here..."
             className="border p-4 rounded"
+            readOnly={isSubmitting}
           />
         </div>
 
@@ -105,6 +105,7 @@ const BlogForm = () => {
             onChange={handleInputChange}
             className="w-full border px-4 py-2 rounded"
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -115,19 +116,32 @@ const BlogForm = () => {
             accept="image/*"
             onChange={handleImageChange}
             className="w-full border px-4 py-2 rounded"
+            disabled={isSubmitting}
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
           disabled={isSubmitting}
         >
           Publish Blog
         </button>
       </form>
+
+      {/* Loader CSS */}
+      <style>{`
+        .loader {
+          border-top-color: transparent;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };
 
 export default BlogForm;
+
