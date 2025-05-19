@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/authContext";
+import ReactPlayer from "react-player";
 
 const WatchCourse = () => {
   const { slug } = useParams();
@@ -19,6 +20,7 @@ const WatchCourse = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [videoLoading, setVideoLoading] = useState(false);
   const [videoError, setVideoError] = useState(false);
+  const [isVimeo, setIsVimeo] = useState(false);
 
   const videoRef = useRef(null);
 
@@ -30,7 +32,9 @@ const WatchCourse = () => {
 
     const fetchCourseData = async () => {
       try {
-        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const courseRes = await axiosInstance.get(
+          `/courses/course/slug/${slug}`
+        );
         const course = courseRes.data;
         setCourseTitle(course.title || "");
 
@@ -53,6 +57,14 @@ const WatchCourse = () => {
 
     fetchCourseData();
   }, [slug, hasCourseAccess, navigate]);
+
+  useEffect(() => {
+    if (selectedVideo?.videoUrl) {
+      setIsVimeo(selectedVideo.videoUrl.includes("vimeo.com"));
+    } else {
+      setIsVimeo(false);
+    }
+  }, [selectedVideo]);
 
   const markVideoComplete = (videoId) => {
     setCompletedVideos((prev) => new Set(prev).add(videoId));
@@ -88,8 +100,8 @@ const WatchCourse = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-28 pb-12">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 pt-32 pb-16">
+      <div className="max-w-6xl mx-auto px-4 mt-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
           {courseTitle}
         </h1>
@@ -128,7 +140,9 @@ const WatchCourse = () => {
                         >
                           {video.title}
                           {completedVideos.has(video._id) && (
-                            <span className="ml-2 text-green-600 font-bold">✓</span>
+                            <span className="ml-2 text-green-600 font-bold">
+                              ✓
+                            </span>
                           )}
                         </button>
                       </li>
@@ -154,30 +168,54 @@ const WatchCourse = () => {
               </h2>
 
               {selectedVideo.videoUrl ? (
-                <>
-                  <video
-                    key={selectedVideo._id}
-                    ref={videoRef}
-                    controls
-                    controlsList="nodownload noremoteplayback"
-                    disablePictureInPicture
-                    onContextMenu={(e) => e.preventDefault()}
-                    onEnded={() => markVideoComplete(selectedVideo._id)}
-                    onLoadStart={onVideoLoadStart}
-                    onLoadedData={onVideoLoadedData}
-                    onError={onVideoError}
-                    className="w-full rounded-lg shadow-md aspect-video"
-                    src={selectedVideo.videoUrl}
-                  />
-                  {videoLoading && (
-                    <p className="mt-2 text-gray-600">Loading video...</p>
-                  )}
-                  {videoError && (
-                    <p className="mt-2 text-red-600">
-                      Failed to load video. Please try another video.
-                    </p>
-                  )}
-                </>
+                isVimeo ? (
+                  <>
+                    <ReactPlayer
+                      url={selectedVideo.videoUrl}
+                      controls
+                      width="100%"
+                      height="360px"
+                      onEnded={() => markVideoComplete(selectedVideo._id)}
+                      onStart={onVideoLoadStart}
+                      onReady={onVideoLoadedData}
+                      onError={onVideoError}
+                      playing
+                    />
+                    {videoLoading && (
+                      <p className="mt-2 text-gray-600">Loading video...</p>
+                    )}
+                    {videoError && (
+                      <p className="mt-2 text-red-600">
+                        Failed to load video. Please try another video.
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <video
+                      key={selectedVideo._id}
+                      ref={videoRef}
+                      controls
+                      controlsList="nodownload noremoteplayback"
+                      disablePictureInPicture
+                      onContextMenu={(e) => e.preventDefault()}
+                      onEnded={() => markVideoComplete(selectedVideo._id)}
+                      onLoadStart={onVideoLoadStart}
+                      onLoadedData={onVideoLoadedData}
+                      onError={onVideoError}
+                      className="w-full rounded-lg shadow-md aspect-video"
+                      src={selectedVideo.videoUrl}
+                    />
+                    {videoLoading && (
+                      <p className="mt-2 text-gray-600">Loading video...</p>
+                    )}
+                    {videoError && (
+                      <p className="mt-2 text-red-600">
+                        Failed to load video. Please try another video.
+                      </p>
+                    )}
+                  </>
+                )
               ) : (
                 <p className="text-red-600">Video URL is not available.</p>
               )}
@@ -211,7 +249,9 @@ const WatchCourse = () => {
                               name={`question-${currentQuestionIndex}`}
                               value={opt}
                               disabled={submitted}
-                              checked={userAnswers[currentQuestionIndex] === opt}
+                              checked={
+                                userAnswers[currentQuestionIndex] === opt
+                              }
                               onChange={() =>
                                 setUserAnswers((prev) => ({
                                   ...prev,

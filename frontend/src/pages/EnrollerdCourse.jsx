@@ -7,6 +7,14 @@ const EnrolledCoursesPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // Helper function to sanitize and shorten description
+  const sanitizeAndShorten = (html, maxLength = 100) => {
+    const plainText = html?.replace(/<[^>]+>/g, "") || "";
+    return plainText.length > maxLength
+      ? plainText.substring(0, maxLength) + "..."
+      : plainText;
+  };
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -19,7 +27,6 @@ const EnrolledCoursesPage = () => {
           ? response.data.courses
           : [];
 
-        // Filter out null or undefined entries
         const validCourses = enrolledCourses.filter(
           (course) => course && course._id
         );
@@ -77,9 +84,7 @@ const EnrolledCoursesPage = () => {
                       {course.title || "Untitled Course"}
                     </h2>
                     <p className="text-sm text-gray-600 mt-2">
-                      {course.description
-                        ? course.description.substring(0, 100)
-                        : "No description available..."}
+                      {sanitizeAndShorten(course.description)}
                     </p>
                     <p className="text-green-600 mt-3 font-medium">View Course</p>
                   </div>
