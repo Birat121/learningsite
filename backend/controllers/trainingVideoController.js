@@ -5,49 +5,32 @@ import streamifier from "streamifier";
 import Module from "../models/Module.js";
 
 // Create video with Cloudinary upload (using buffer stream)
+import fs from "fs";
+import cloudinary from "../utils/cloudinary.js";
+import Video from "../models/videoModel.js";
+import Module from "../models/Module.js";
+import mongoose from "mongoose";
+
 export const createVideo = async (req, res) => {
   try {
-    console.log("📥 Incoming video upload request");
-
-    // Log incoming data
-    console.log("📝 Request body:", req.body);
-    console.log("📦 Uploaded files:", req.files);
-
     const { title, module } = req.body;
     const videoFile = req.files?.video?.[0];
 
     if (!videoFile) {
-      console.warn("⚠️ No video file provided");
       return res.status(400).json({ error: "Video file is required" });
     }
 
-    // Upload video to Cloudinary
-    console.log("☁️ Starting Cloudinary upload...");
+    const filePath = videoFile.path;
 
-    const streamUpload = () => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          { resource_type: "video", folder: "course_videos" },
-          (error, result) => {
-            if (error) {
-              console.error("❌ Cloudinary upload error:", error);
-              reject(error);
-            } else {
-              console.log(
-                "✅ Cloudinary upload successful:",
-                result.secure_url
-              );
-              resolve(result);
-            }
-          }
-        );
-        streamifier.createReadStream(videoFile.buffer).pipe(stream);
-      });
-    };
+    // Upload to Cloudinary using chunked upload
+    const result = await cloudinary.uploader.upload_large(filePath, {
+      resource_type: "video",
+      chunk_size: 20 * 1024 * 1024, // 20MB chunks
+      folder: "course_videos",
+    });
 
-    const result = await streamUpload();
-
-    console.log("📄 Saving video to DB...");
+    // Delete local file after upload
+    fs.unlinkSync(filePath);
 
     const video = new Video({
       title,
@@ -58,20 +41,17 @@ export const createVideo = async (req, res) => {
 
     await video.save();
 
-    // 🔥 Push video to module
-    await Module.findByIdAndUpdate(
-      module,
-      { $push: { videos: video._id } },
-      { new: true }
-    );
+    await Module.findByIdAndUpdate(module, {
+      $push: { videos: video._id },
+    });
 
-    console.log("🎉 Video saved:", video._id);
     res.status(201).json(video);
   } catch (error) {
-    console.error("❌ Create video error (unexpected):", error);
-    res.status(500).json({ error: error.message, stack: error.stack });
+    console.error("❌ Video upload failed:", error);
+    res.status(500).json({ error: error.message });
   }
 };
+
 
 // Get all videos (optionally filtered by module)
 export const getAllVideos = async (req, res) => {
@@ -123,26 +103,21 @@ export const updateVideo = async (req, res) => {
     const video = await Video.findById(id);
     if (!video) return res.status(404).json({ error: "Video not found" });
 
-    // If new video file provided, delete old one and upload new one
     if (videoFile) {
+      // Delete previous video
       await cloudinary.uploader.destroy(video.videoPublicId, {
         resource_type: "video",
       });
 
-      const streamUpload = () => {
-        return new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            { resource_type: "video", folder: "course_videos" },
-            (error, result) => {
-              if (result) resolve(result);
-              else reject(error);
-            }
-          );
-          streamifier.createReadStream(videoFile.buffer).pipe(stream);
-        });
-      };
+      // Upload new video
+      const filePath = videoFile.path;
+      const result = await cloudinary.uploader.upload_large(filePath, {
+        resource_type: "video",
+        chunk_size: 20 * 1024 * 1024,
+        folder: "course_videos",
+      });
 
-      const result = await streamUpload();
+      fs.unlinkSync(filePath);
 
       video.videoUrl = result.secure_url;
       video.videoPublicId = result.public_id;
@@ -157,6 +132,7 @@ export const updateVideo = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Delete video from DB and Cloudinary
 export const deleteVideo = async (req, res) => {

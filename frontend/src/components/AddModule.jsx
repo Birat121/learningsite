@@ -16,12 +16,14 @@ const AddModulesPage = () => {
         {
           id: uuidv4(),
           title: "",
-          videoUrl: "", // <-- changed here
+          videoFile: null,
         },
       ],
     },
   ]);
   const [loading, setLoading] = useState(false);
+  // Progress state: { videoId: percentage }
+  const [uploadProgress, setUploadProgress] = useState({});
 
   const handleModuleChange = (index, field, value) => {
     const updatedModules = [...modules];
@@ -45,7 +47,7 @@ const AddModulesPage = () => {
           {
             id: uuidv4(),
             title: "",
-            videoFile: null, // <-- file instead of videoUrl
+            videoFile: null,
           },
         ],
       },
@@ -63,7 +65,7 @@ const AddModulesPage = () => {
     updatedModules[moduleIndex].videos.push({
       id: uuidv4(),
       title: "",
-      videoUrl: "", // <-- changed here
+      videoFile: null,
     });
     setModules(updatedModules);
   };
@@ -74,23 +76,20 @@ const AddModulesPage = () => {
     setModules(updatedModules);
   };
 
-  // Validate modules and videos - check videoUrl instead of videoFile
   const areModulesValid = () => {
     if (!modules.length) return false;
     return modules.every((module) => {
       if (!module.title.trim()) return false;
       if (!module.videos.length) return false;
       return module.videos.every(
-        (video) => video.title.trim() && video.videoUrl.trim()
+        (video) => video.title.trim() && video.videoFile
       );
     });
   };
 
-  const isFormValid = areModulesValid();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isFormValid) {
+    if (!areModulesValid()) {
       toast.error("Please fill all required module and video fields.");
       return;
     }
@@ -109,38 +108,41 @@ const AddModulesPage = () => {
 
         for (const video of module.videos) {
           const videoFormData = new FormData();
-          videoFormData.append("file", video.videoFile);
+          videoFormData.append("video", video.videoFile);
           videoFormData.append("title", video.title.trim());
           videoFormData.append("module", moduleRes._id);
 
-          await axiosInstance.post("/videos/upload", videoFormData, {
+          await axiosInstance.post("/videos", videoFormData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round(
+                (progressEvent.loaded * 100) / progressEvent.total
+              );
+              setUploadProgress((prev) => ({
+                ...prev,
+                [video.id]: percentCompleted,
+              }));
+            },
           });
+
+          // Reset progress for this video after upload completes
+          setUploadProgress((prev) => ({
+            ...prev,
+            [video.id]: 0,
+          }));
         }
       }
 
       toast.success("✅ Modules and videos added!", { id: toastId });
       navigate("/admin/dashboard/list");
     } catch (err) {
-      console.error("❌ Upload failed:");
-      if (err.response) {
-        console.error("Response Data:", err.response.data);
-        console.error("Status:", err.response.status);
-        console.error("Headers:", err.response.headers);
-      } else if (err.request) {
-        console.error("Request made but no response received:", err.request);
-      } else {
-        console.error("Error Message:", err.message);
-      }
-      console.error("Axios Config:", err.config);
-
-      toast.error("❌ Upload failed. Check console for details.", {
-        id: toastId,
-      });
+      console.error("❌ Upload failed:", err);
+      toast.error("❌ Upload failed. Check console for details.", { id: toastId });
     } finally {
       setLoading(false);
+      setUploadProgress({});
     }
   };
 
@@ -165,6 +167,7 @@ const AddModulesPage = () => {
                   onClick={() => removeModule(mIdx)}
                   className="text-red-600 hover:underline font-semibold"
                   title="Remove module"
+                  disabled={loading}
                 >
                   Remove Module
                 </button>
@@ -184,6 +187,7 @@ const AddModulesPage = () => {
                 }
                 className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                 required
+                disabled={loading}
               />
             </div>
 
@@ -201,6 +205,7 @@ const AddModulesPage = () => {
                         onClick={() => removeVideoFromModule(mIdx, vIdx)}
                         className="text-red-600 hover:underline font-semibold"
                         title="Remove video"
+                        disabled={loading}
                       >
                         Remove Video
                       </button>
@@ -220,12 +225,13 @@ const AddModulesPage = () => {
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                       required
+                      disabled={loading}
                     />
                   </div>
 
                   <div>
                     <label className="block font-medium mb-1">
-                      Video URL <span className="text-red-500">*</span>
+                      Upload Video File <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="file"
@@ -240,8 +246,24 @@ const AddModulesPage = () => {
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                       required
+                      disabled={loading}
                     />
                   </div>
+
+                  {/* Progress bar */}
+                  {uploadProgress[video.id] > 0 && (
+                    <div className="mt-2 w-full bg-gray-200 rounded-full h-4">
+                      <div
+                        className="bg-green-600 h-4 rounded-full transition-all"
+                        style={{ width: `${uploadProgress[video.id]}%` }}
+                      ></div>
+                    </div>
+                  )}
+                  {uploadProgress[video.id] > 0 && (
+                    <p className="text-sm text-green-700 mt-1">
+                      Uploading: {uploadProgress[video.id]}%
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -250,6 +272,7 @@ const AddModulesPage = () => {
               type="button"
               onClick={() => addVideoToModule(mIdx)}
               className="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+              disabled={loading}
             >
               + Add Video
             </button>
@@ -260,6 +283,7 @@ const AddModulesPage = () => {
           type="button"
           onClick={addModule}
           className="px-6 py-3 bg-green-700 text-white rounded font-semibold hover:bg-green-800"
+          disabled={loading}
         >
           + Add Module
         </button>

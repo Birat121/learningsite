@@ -1,39 +1,41 @@
 import express from "express";
 import multer from "multer";
+import path from "path";
+import fs from "fs";
 import {
   createVideo,
   getAllVideos,
   getVideoByIdOrSlug,
   updateVideo,
   deleteVideo,
-} from '../controllers/trainingVideoController.js';
+} from "../controllers/trainingVideoController.js";
 
 const videoRouter = express.Router();
 
-const storage = multer.memoryStorage();
+// Disk storage for large video files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = "uploads/videos";
+    fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
 
-const upload = multer({
-  storage: storage,
-}).fields([
-  { name: "video", maxCount: 1 },  // <-- key changed here to "video"
+const upload = multer({ storage }).fields([
+  { name: "video", maxCount: 1 },
 ]);
 
-
-// Create video with video upload
 videoRouter.post("/videos", upload, createVideo);
-
-// Get all videos
 videoRouter.get("/videos", getAllVideos);
-
-// Get single video
 videoRouter.get("/videos/:idOrSlug", getVideoByIdOrSlug);
-
-// Update video with optional file
 videoRouter.put("/videos/:id", upload, updateVideo);
-
-// Delete video (fixed route)
 videoRouter.delete("/videos/:id", deleteVideo);
 
 export default videoRouter;
+
 
 

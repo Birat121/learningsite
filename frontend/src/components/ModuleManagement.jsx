@@ -9,8 +9,9 @@ const ModuleVideoManagementPage = () => {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState(null); // { type: "module" | "video", data: {} }
-  const [formData, setFormData] = useState({ title: "", videoUrl: "" });
+  const [formData, setFormData] = useState({ title: "" });
   const [previewUrl, setPreviewUrl] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const fetchModules = async () => {
@@ -38,22 +39,32 @@ const ModuleVideoManagementPage = () => {
 
   const openEditModal = (type, data) => {
     setEditItem({ type, data });
-    setFormData({ title: data.title || "", videoUrl: data.url || "" });
-    setPreviewUrl(type === "video" ? data.url : null);
+    setFormData({ title: data.title || "" });
+    setPreviewUrl(type === "video" ? data.videoUrl || null : null);
+    setVideoFile(null);
   };
 
   const closeEditModal = () => {
     if (saving) return;
     setEditItem(null);
-    setFormData({ title: "", videoUrl: "" });
+    setFormData({ title: "" });
     setPreviewUrl(null);
+    setVideoFile(null);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((f) => ({ ...f, [name]: value }));
-    if (name === "videoUrl") {
-      setPreviewUrl(value);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setVideoFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setVideoFile(null);
+      setPreviewUrl(null);
     }
   };
 
@@ -62,8 +73,8 @@ const ModuleVideoManagementPage = () => {
       toast.error("Title is required");
       return;
     }
-    if (editItem.type === "video" && !formData.videoUrl.trim()) {
-      toast.error("Video URL is required");
+    if (editItem.type === "video" && !videoFile && !previewUrl) {
+      toast.error("Video file is required");
       return;
     }
 
@@ -76,12 +87,17 @@ const ModuleVideoManagementPage = () => {
         });
         toast.success("Module updated");
       } else {
-        // Update video title and video URL
-        await axiosInstance.put(`/videos/videos/${editItem.data._id}`, {
-          title: formData.title.trim(),
-          videoUrl: formData.videoUrl.trim(), // fix here
+        // For videos, upload file via FormData
+        const form = new FormData();
+        form.append("title", formData.title.trim());
+        if (videoFile) {
+          form.append("videoFile", videoFile);
+        }
+        await axiosInstance.put(`/videos/videos/${editItem.data._id}`, form, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
-
         toast.success("Video updated");
       }
 
@@ -139,9 +155,7 @@ const ModuleVideoManagementPage = () => {
       {modules.map((module) => (
         <div key={module._id} className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-xl font-semibold text-gray-800">
-              {module.title}
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800">{module.title}</h2>
             <div>
               <button
                 onClick={() => openEditModal("module", module)}
@@ -159,9 +173,7 @@ const ModuleVideoManagementPage = () => {
           </div>
 
           {module.videos.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">
-              No videos in this module.
-            </p>
+            <p className="text-sm text-gray-500 italic">No videos in this module.</p>
           ) : (
             <ul className="space-y-3">
               {module.videos.map((video) => (
@@ -232,15 +244,12 @@ const ModuleVideoManagementPage = () => {
               {editItem.type === "video" && (
                 <>
                   <label className="block">
-                    Video URL
+                    Upload Video File
                     <input
-                      type="url"
-                      name="videoUrl"
-                      value={formData.videoUrl}
-                      onChange={handleChange}
-                      className="w-full mt-1 border px-3 py-2 rounded"
-                      required
-                      placeholder="https://example.com/video.mp4"
+                      type="file"
+                      accept="video/*"
+                      onChange={handleFileChange}
+                      className="w-full mt-1"
                     />
                   </label>
 
@@ -270,7 +279,7 @@ const ModuleVideoManagementPage = () => {
                   disabled={
                     saving ||
                     !formData.title.trim() ||
-                    (editItem.type === "video" && !formData.videoUrl.trim())
+                    (editItem.type === "video" && !videoFile && !previewUrl)
                   }
                   className={`px-4 py-2 rounded text-white ${
                     saving
@@ -290,3 +299,4 @@ const ModuleVideoManagementPage = () => {
 };
 
 export default ModuleVideoManagementPage;
+
