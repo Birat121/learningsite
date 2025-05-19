@@ -5,19 +5,23 @@ import Module from "../models/Module.js";
 import fs from "fs";
 
 // Helper function to upload large video using stream + Promise
-const uploadLargeVideo = (filePath) => {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_large_stream(
-      { resource_type: "video", folder: "course_videos" },
-      (error, result) => {
-        if (error) return reject(error);
-        resolve(result);
-      }
-    );
+export const uploadVideo = async (filePath) => {
+  const { size } = fs.statSync(filePath); // size in bytes
 
-    // Pipe the file read stream into Cloudinary upload stream
-    fs.createReadStream(filePath).pipe(uploadStream);
-  });
+  if (size <= 100 * 1024 * 1024) {
+    // Small video (<=100MB)
+    return await cloudinary.uploader.upload(filePath, {
+      resource_type: "video",
+      folder: "course_videos",
+    });
+  } else {
+    // Large video (>100MB)
+    return await cloudinary.uploader.upload_large(filePath, {
+      resource_type: "video",
+      chunk_size: 20 * 1024 * 1024, // 20MB chunks
+      folder: "course_videos",
+    });
+  }
 };
 
 export const createVideo = async (req, res) => {
@@ -32,7 +36,7 @@ export const createVideo = async (req, res) => {
     const filePath = videoFile.path;
 
     // Upload large video with stream helper
-    const result = await uploadLargeVideo(filePath);
+    const result = await uploadVideo(filePath);
 
     // Delete local file after upload
     fs.unlinkSync(filePath);
@@ -115,7 +119,8 @@ export const updateVideo = async (req, res) => {
 
       // Upload new video file stream to Cloudinary
       const filePath = videoFile.path;
-      const result = await uploadLargeVideo(filePath);
+      // const result = await uploadLargeVideo(filePath);
+      const result = await uploadVideo(filePath);
 
       // Delete local temp file after upload
       fs.unlinkSync(filePath);
