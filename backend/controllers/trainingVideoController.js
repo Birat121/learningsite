@@ -1,153 +1,105 @@
 import Video from "../models/videoModel.js";
-import cloudinary from "../utils/cloudinary.js"; // your cloudinary config import
-import mongoose from "mongoose";
-import streamifier from "streamifier";
-import Module from "../models/Module.js";
+import { uploadToVimeo, deleteFromVimeo } from "../utils/vimeoUpload.js";
 
-// Create video with Cloudinary upload (using buffer stream)
-import fs from "fs";
-import cloudinary from "../utils/cloudinary.js";
-import Video from "../models/videoModel.js";
-import Module from "../models/Module.js";
-import mongoose from "mongoose";
-
+// Create a video
 export const createVideo = async (req, res) => {
   try {
-    const { title, module } = req.body;
-    const videoFile = req.files?.video?.[0];
+    const { title, description, module } = req.body;
+    const filePath = req.file.path;
 
-    if (!videoFile) {
-      return res.status(400).json({ error: "Video file is required" });
-    }
+    const vimeoId = await uploadToVimeo(filePath, title, description);
+    const videoUrl = `https://player.vimeo.com/video/${vimeoId}`;
 
-    const filePath = videoFile.path;
-
-    // Upload to Cloudinary using chunked upload
-    const result = await cloudinary.uploader.upload_large(filePath, {
-      resource_type: "video",
-      chunk_size: 20 * 1024 * 1024, // 20MB chunks
-      folder: "course_videos",
-    });
-
-    // Delete local file after upload
+    // Delete local file
     fs.unlinkSync(filePath);
 
-    const video = new Video({
+    const newVideo = await Video.create({
       title,
-      videoUrl: result.secure_url,
-      videoPublicId: result.public_id,
-      module: new mongoose.Types.ObjectId(module),
+      videoUrl,
+      videoPublicId: vimeoId,
+      module,
     });
 
-    await video.save();
-
-    await Module.findByIdAndUpdate(module, {
-      $push: { videos: video._id },
-    });
-
-    res.status(201).json(video);
-  } catch (error) {
-    console.error("❌ Video upload failed:", error);
-    res.status(500).json({ error: error.message });
+    res.status(201).json(newVideo);
+  } catch (err) {
+    console.error("Create Video Error:", err);
+    res.status(500).json({ message: "Failed to upload and save video." });
   }
 };
 
-
-// Get all videos (optionally filtered by module)
+// Get all videos
 export const getAllVideos = async (req, res) => {
   try {
-    const filter = {};
-    if (req.query.module) {
-      filter.module = req.query.module;
-    }
-    const videos = await Video.find(filter)
-      .populate("module")
-      .sort({ createdAt: -1 });
+    const videos = await Video.find().populate("module");
     res.json(videos);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching videos" });
   }
 };
 
-// Get single video by ID or slug
 // Get single video by ID or slug
 export const getVideoByIdOrSlug = async (req, res) => {
+  const { idOrSlug } = req.params;
   try {
-    const { idOrSlug } = req.params;
+    const video = await Video.findOne(
+      mongoose.Types.ObjectId.isValid(idOrSlug)
+        ? { _id: idOrSlug }
+        : { slug: idOrSlug }
+    ).populate("module");
 
-    let video;
-    if (mongoose.Types.ObjectId.isValid(idOrSlug)) {
-      video = await Video.findById(idOrSlug).populate("module");
-    } else {
-      video = await Video.findOne({ slug: idOrSlug }).populate("module");
-    }
-
-    if (!video) {
-      return res.status(404).json({ error: "Video not found" });
-    }
-
+    if (!video) return res.status(404).json({ message: "Video not found" });
     res.json(video);
-  } catch (error) {
-    console.error("Get video error:", error);
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Error retrieving video" });
   }
 };
 
-// Update video details and optionally replace video file
+// Update a video
 export const updateVideo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, module } = req.body;
-    const videoFile = req.files?.video?.[0];
+    const { title, description, module } = req.body;
 
     const video = await Video.findById(id);
-    if (!video) return res.status(404).json({ error: "Video not found" });
+    if (!video) return res.status(404).json({ message: "Video not found" });
 
-    if (videoFile) {
-      // Delete previous video
-      await cloudinary.uploader.destroy(video.videoPublicId, {
-        resource_type: "video",
-      });
+    if (req.file) {
+      // Delete old Vimeo video
+      await deleteFromVimeo(video.videoPublicId);
 
       // Upload new video
-      const filePath = videoFile.path;
-      const result = await cloudinary.uploader.upload_large(filePath, {
-        resource_type: "video",
-        chunk_size: 20 * 1024 * 1024,
-        folder: "course_videos",
-      });
+      const vimeoId = await uploadToVimeo(req.file.path, title, description);
+      const videoUrl = `https://player.vimeo.com/video/${vimeoId}`;
 
-      fs.unlinkSync(filePath);
+      // Delete local file
+      fs.unlinkSync(req.file.path);
 
-      video.videoUrl = result.secure_url;
-      video.videoPublicId = result.public_id;
+      video.videoPublicId = vimeoId;
+      video.videoUrl = videoUrl;
     }
 
-    if (title) video.title = title;
-    if (module) video.module = mongoose.Types.ObjectId(module);
+    video.title = title || video.title;
+    video.module = module || video.module;
 
     await video.save();
     res.json(video);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update video" });
   }
 };
 
-
-// Delete video from DB and Cloudinary
+// Delete a video
 export const deleteVideo = async (req, res) => {
   try {
     const { id } = req.params;
     const video = await Video.findById(id);
-    if (!video) return res.status(404).json({ error: "Video not found" });
+    if (!video) return res.status(404).json({ message: "Video not found" });
 
-    await cloudinary.uploader.destroy(video.videoPublicId, {
-      resource_type: "video",
-    });
-    await Video.findByIdAndDelete(id);
+    await deleteFromVimeo(video.videoPublicId);
+    await video.deleteOne();
 
     res.json({ message: "Video deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete video" });
   }
 };

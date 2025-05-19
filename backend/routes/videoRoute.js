@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
-import path from "path";
 import fs from "fs";
+import path from "path";
 import {
   createVideo,
   getAllVideos,
@@ -12,7 +12,6 @@ import {
 
 const videoRouter = express.Router();
 
-// Disk storage for large video files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = "uploads/videos";
@@ -25,17 +24,16 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage }).fields([
-  { name: "video", maxCount: 1 },
-]);
+const upload = multer({ storage });
 
-videoRouter.post("/videos", upload, createVideo);
+videoRouter.post("/videos", upload.single("video"), createVideo);
 videoRouter.get("/videos", getAllVideos);
 videoRouter.get("/videos/:idOrSlug", getVideoByIdOrSlug);
-videoRouter.put("/videos/:id", upload, updateVideo);
+videoRouter.put("/videos/:id", upload.single("video"), updateVideo);
 videoRouter.delete("/videos/:id", deleteVideo);
 
 export default videoRouter;
+
 
 
 
