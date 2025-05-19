@@ -11,32 +11,35 @@ const WatchCourse = () => {
   const [courseTitle, setCourseTitle] = useState("");
   const [modules, setModules] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const [videoError, setVideoError] = useState(false);
-  const [videoLoading, setVideoLoading] = useState(false);
   const [completedVideos, setCompletedVideos] = useState(new Set());
   const [quiz, setQuiz] = useState(null);
   const [userAnswers, setUserAnswers] = useState({});
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const [score, setScore] = useState(null);
+  const [score, setScore] = useState(0);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  const videoRef = useRef();
+  const videoRef = useRef(null);
 
   useEffect(() => {
     if (!hasCourseAccess(slug)) {
-      console.log("Access denied. Redirecting to login.");
       navigate("/login");
       return;
     }
 
-    const fetchCourseData = async () => {
+    const fetchCourseAndQuiz = async () => {
       try {
         const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
         const course = courseRes.data;
+
         setCourseTitle(course.title || "");
 
-        if (course.modules?.length > 0) {
+        if (!course || !course.modules) {
+          setModules([]);
+        } else {
           setModules(course.modules);
+        }
+
+        if (course.modules?.length > 0) {
           const firstModule = course.modules[0];
           if (firstModule.videos?.length > 0) {
             setSelectedVideo(firstModule.videos[0]);
@@ -52,12 +55,16 @@ const WatchCourse = () => {
       }
     };
 
-    fetchCourseData();
+    fetchCourseAndQuiz();
   }, [slug, hasCourseAccess, navigate]);
 
   const markVideoComplete = (videoId) => {
     setCompletedVideos((prev) => new Set(prev).add(videoId));
   };
+
+  const allVideos = modules.flatMap((m) => m.videos || []);
+  const allCompleted =
+    allVideos.length > 0 && allVideos.every((v) => completedVideos.has(v._id));
 
   const handleSubmitQuiz = () => {
     let total = 0;
@@ -70,149 +77,181 @@ const WatchCourse = () => {
     setSubmitted(true);
   };
 
-  const onVideoLoadStart = () => {
-    setVideoLoading(true);
-    setVideoError(false);
-  };
-
-  const onVideoLoadedData = () => {
-    setVideoLoading(false);
-  };
-
-  const onVideoError = (e) => {
-    console.error("Video failed to load:", e);
-    setVideoLoading(false);
-    setVideoError(true);
-  };
-
-  if (!courseTitle) return <div className="p-4 text-center">Loading course...</div>;
-
   return (
-    <div className="flex flex-col md:flex-row gap-4 p-4">
-      <div className="flex-1">
-        <h2 className="text-2xl font-bold mb-4">{courseTitle}</h2>
-
-        {selectedVideo ? (
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold mb-2">{selectedVideo.title}</h3>
-            <video
-              ref={videoRef}
-              key={selectedVideo.videoUrl}
-              controls
-              onEnded={() => markVideoComplete(selectedVideo._id)}
-              onLoadStart={onVideoLoadStart}
-              onLoadedData={onVideoLoadedData}
-              onError={onVideoError}
-              className="w-full max-h-[400px] rounded shadow"
-            >
-              <source src={selectedVideo.videoUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            {videoLoading && <p>Loading video...</p>}
-            {videoError && <p className="text-red-500">Failed to load video.</p>}
-          </div>
-        ) : (
-          <p>Select a video to start watching.</p>
-        )}
-
-        {quiz && (
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold mb-2">Quiz</h3>
-            {!submitted ? (
-              <div>
-                <p className="mb-4">{quiz.questions[currentQuestionIndex].question}</p>
-                <ul className="mb-4">
-                  {quiz.questions[currentQuestionIndex].options.map((opt, idx) => (
-                    <li key={idx}>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="radio"
-                          name={`q-${currentQuestionIndex}`}
-                          value={opt}
-                          checked={userAnswers[currentQuestionIndex] === opt}
-                          onChange={() =>
-                            setUserAnswers((prev) => ({
-                              ...prev,
-                              [currentQuestionIndex]: opt,
-                            }))
-                          }
-                        />
-                        {opt}
-                      </label>
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex justify-between">
-                  <button
-                    className="bg-gray-200 px-4 py-2 rounded"
-                    onClick={() => setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))}
-                    disabled={currentQuestionIndex === 0}
-                  >
-                    Previous
-                  </button>
-                  {currentQuestionIndex < quiz.questions.length - 1 ? (
-                    <button
-                      className="bg-blue-500 text-white px-4 py-2 rounded"
-                      onClick={() =>
-                        setCurrentQuestionIndex((prev) =>
-                          Math.min(prev + 1, quiz.questions.length - 1)
-                        )
-                      }
-                    >
-                      Next
-                    </button>
-                  ) : (
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded"
-                      onClick={handleSubmitQuiz}
-                    >
-                      Submit Quiz
-                    </button>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div>
-                <p className="text-lg font-bold">
-                  Your Score: {score} / {quiz.questions.length}
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+    <div className="min-h-screen bg-gray-50 pt-32 pb-12">
+      {/* Course Title */}
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <h1 className="text-4xl font-bold text-center text-blue-700">
+          {courseTitle}
+        </h1>
       </div>
 
-      <div className="w-full md:w-64 border-l border-gray-300 pl-4">
-        <h4 className="text-lg font-semibold mb-2">Course Modules</h4>
-        {modules.map((mod) => (
-          <div key={mod._id} className="mb-4">
-            <p className="font-semibold">{mod.title}</p>
-            <ul>
-              {mod.videos.map((video) => (
-                <li key={video._id} className="text-sm">
-                  <button
-                    onClick={() => {
-                      setSelectedVideo(video);
-                      if (videoRef.current) videoRef.current.load();
-                      setVideoError(false);
-                      setVideoLoading(false);
-                    }}
-                    className={`text-left w-full px-2 py-1 rounded ${
-                      selectedVideo?._id === video._id
-                        ? "bg-blue-100"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
-                    {video.title}
-                    {completedVideos.has(video._id) && (
-                      <span className="text-green-500 ml-2">✓</span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
+        {/* Sidebar */}
+        <aside className="md:w-1/3 bg-white rounded-2xl shadow-lg p-5 overflow-y-auto max-h-[75vh] border border-gray-100">
+          <h2 className="text-2xl font-bold mb-4 text-blue-700 border-b pb-2">
+            Modules
+          </h2>
+          {modules.length === 0 ? (
+            <p className="text-gray-500">No modules found.</p>
+          ) : (
+            modules.map((module) => (
+              <div key={module._id} className="mb-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 pl-2 border-l-4 border-blue-600">
+                  {module.title}
+                </h3>
+                {module.videos?.length > 0 ? (
+                  <ul className="space-y-1">
+                    {module.videos.map((video) => (
+                      <li key={video._id}>
+                        <button
+                          onClick={() => {
+                            setSelectedVideo(video);
+                            if (videoRef.current) videoRef.current.load();
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition duration-200 ${
+                            selectedVideo && selectedVideo._id === video._id
+                              ? "bg-blue-600 text-white font-semibold"
+                              : "text-gray-700 hover:bg-blue-100"
+                          }`}
+                        >
+                          {video.title}
+                          {completedVideos.has(video._id) && (
+                            <span className="ml-2 text-green-600 font-bold">
+                              ✓
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400 italic ml-4">
+                    No videos available
+                  </p>
+                )}
+              </div>
+            ))
+          )}
+        </aside>
+
+        {/* Main Content */}
+        <main className="md:w-2/3 bg-white rounded-2xl shadow-lg p-5 flex flex-col border border-gray-100">
+          {selectedVideo && !allCompleted && (
+            <>
+              <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+                {selectedVideo.title}
+              </h2>
+              <video
+                ref={videoRef}
+                controls
+                controlsList="nodownload noremoteplayback"
+                disablePictureInPicture
+                onContextMenu={(e) => e.preventDefault()}
+                onEnded={() => markVideoComplete(selectedVideo._id)}
+                className="w-full rounded-lg shadow-md aspect-video"
+                src={selectedVideo.videoUrl}
+              />
+              <p className="mt-2 text-sm text-gray-600">
+                Watch all videos to unlock the quiz.
+              </p>
+            </>
+          )}
+
+          {allCompleted && quiz && (
+            <div className="quiz-section mt-6">
+              <h2 className="text-2xl font-bold mb-6 text-gray-900">
+                Course Quiz
+              </h2>
+              {quiz.questions?.length > 0 ? (
+                <>
+                  <div className="mb-5 p-4 border rounded shadow-sm">
+                    <p className="font-semibold mb-2">
+                      {currentQuestionIndex + 1}.{" "}
+                      {quiz.questions[currentQuestionIndex].question}
+                    </p>
+                    <div className="space-y-2">
+                      {quiz.questions[currentQuestionIndex].options?.map(
+                        (opt, idx) => (
+                          <label key={idx} className="block">
+                            <input
+                              type="radio"
+                              name={`question-${currentQuestionIndex}`}
+                              value={opt}
+                              disabled={submitted}
+                              checked={
+                                userAnswers[currentQuestionIndex] === opt
+                              }
+                              onChange={() =>
+                                setUserAnswers((prev) => ({
+                                  ...prev,
+                                  [currentQuestionIndex]: opt,
+                                }))
+                              }
+                              className="mr-2"
+                            />
+                            {opt}
+                          </label>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Navigation Buttons */}
+                  <div className="flex justify-between mt-4">
+                    <button
+                      onClick={() =>
+                        setCurrentQuestionIndex((i) => Math.max(i - 1, 0))
+                      }
+                      disabled={currentQuestionIndex === 0}
+                      className={`px-4 py-2 rounded-lg ${
+                        currentQuestionIndex === 0
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-[rgb(0,104,80)] text-white hover:bg-green-700"
+                      }`}
+                    >
+                      Previous
+                    </button>
+
+                    {currentQuestionIndex < quiz.questions.length - 1 ? (
+                      <button
+                        onClick={() =>
+                          setCurrentQuestionIndex((i) =>
+                            Math.min(i + 1, quiz.questions.length - 1)
+                          )
+                        }
+                        className="bg-[rgb(0,104,80)] text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                      >
+                        Next
+                      </button>
+                    ) : !submitted ? (
+                      <button
+                        onClick={handleSubmitQuiz}
+                        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+                      >
+                        Submit Quiz
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {submitted && (
+                    <p className="mt-4 text-lg font-semibold text-green-600 text-center">
+                      You scored {score} out of {quiz.questions.length}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p>No quiz questions available.</p>
+              )}
+            </div>
+          )}
+
+          {!selectedVideo && !allCompleted && (
+            <p className="text-center text-gray-500 py-20">
+              Select a video to start watching
+            </p>
+          )}
+        </main>
       </div>
     </div>
   );
