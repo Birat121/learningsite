@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/authContext";
-import Loader from "../components/Loader";
-import Error from "../components/Error";
 
 const WatchCourse = () => {
   const { slug } = useParams();
@@ -33,11 +31,8 @@ const WatchCourse = () => {
 
     const fetchCourseData = async () => {
       try {
-        const courseRes = await axiosInstance.get(
-          `/courses/course/slug/${slug}`
-        );
+        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
         const course = courseRes.data;
-        console.log("Fetched course:", course);
         setCourseTitle(course.title || "");
 
         if (course.modules?.length > 0) {
@@ -45,13 +40,11 @@ const WatchCourse = () => {
           const firstModule = course.modules[0];
           if (firstModule.videos?.length > 0) {
             setSelectedVideo(firstModule.videos[0]);
-            console.log("Selected first video:", firstModule.videos[0]);
           }
         }
 
         if (course._id) {
           const quizRes = await axiosInstance.get(`/quiz/course/${course._id}`);
-          console.log("Fetched quiz:", quizRes.data);
           setQuiz(quizRes.data);
         }
       } catch (err) {
@@ -63,34 +56,26 @@ const WatchCourse = () => {
   }, [slug, hasCourseAccess, navigate]);
 
   const markVideoComplete = (videoId) => {
-    console.log(`Marking video as completed: ${videoId}`);
     setCompletedVideos((prev) => new Set(prev).add(videoId));
   };
 
   const handleSubmitQuiz = () => {
     let total = 0;
     quiz.questions.forEach((q, index) => {
-      console.log(`Q${index + 1}:`, {
-        selected: userAnswers[index],
-        correct: q.correctAnswer,
-      });
       if (userAnswers[index] === q.correctAnswer) {
         total++;
       }
     });
     setScore(total);
     setSubmitted(true);
-    console.log(`Quiz submitted. Score: ${total}/${quiz.questions.length}`);
   };
 
   const onVideoLoadStart = () => {
-    console.log("Video loading started...");
     setVideoLoading(true);
     setVideoError(false);
   };
 
   const onVideoLoadedData = () => {
-    console.log("Video loaded successfully.");
     setVideoLoading(false);
   };
 
@@ -100,7 +85,7 @@ const WatchCourse = () => {
     setVideoError(true);
   };
 
-  if (!courseTitle) return <Loader />;
+  if (!courseTitle) return <div className="p-4 text-center">Loading course...</div>;
 
   return (
     <div className="flex flex-col md:flex-row gap-4 p-4">
@@ -109,9 +94,7 @@ const WatchCourse = () => {
 
         {selectedVideo ? (
           <div className="mb-4">
-            <h3 className="text-xl font-semibold mb-2">
-              {selectedVideo.title}
-            </h3>
+            <h3 className="text-xl font-semibold mb-2">{selectedVideo.title}</h3>
             <video
               ref={videoRef}
               key={selectedVideo.videoUrl}
@@ -126,7 +109,7 @@ const WatchCourse = () => {
               Your browser does not support the video tag.
             </video>
             {videoLoading && <p>Loading video...</p>}
-            {videoError && <Error message="Failed to load video." />}
+            {videoError && <p className="text-red-500">Failed to load video.</p>}
           </div>
         ) : (
           <p>Select a video to start watching.</p>
@@ -137,43 +120,32 @@ const WatchCourse = () => {
             <h3 className="text-xl font-semibold mb-2">Quiz</h3>
             {!submitted ? (
               <div>
-                <p className="mb-4">
-                  {quiz.questions[currentQuestionIndex].question}
-                </p>
+                <p className="mb-4">{quiz.questions[currentQuestionIndex].question}</p>
                 <ul className="mb-4">
-                  {quiz.questions[currentQuestionIndex].options.map(
-                    (opt, idx) => (
-                      <li key={idx}>
-                        <label className="flex items-center gap-2">
-                          <input
-                            type="radio"
-                            name={`q-${currentQuestionIndex}`}
-                            value={opt}
-                            checked={userAnswers[currentQuestionIndex] === opt}
-                            onChange={() => {
-                              console.log(
-                                `Answer selected for question ${
-                                  currentQuestionIndex + 1
-                                }: ${opt}`
-                              );
-                              setUserAnswers((prev) => ({
-                                ...prev,
-                                [currentQuestionIndex]: opt,
-                              }));
-                            }}
-                          />
-                          {opt}
-                        </label>
-                      </li>
-                    )
-                  )}
+                  {quiz.questions[currentQuestionIndex].options.map((opt, idx) => (
+                    <li key={idx}>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={`q-${currentQuestionIndex}`}
+                          value={opt}
+                          checked={userAnswers[currentQuestionIndex] === opt}
+                          onChange={() =>
+                            setUserAnswers((prev) => ({
+                              ...prev,
+                              [currentQuestionIndex]: opt,
+                            }))
+                          }
+                        />
+                        {opt}
+                      </label>
+                    </li>
+                  ))}
                 </ul>
                 <div className="flex justify-between">
                   <button
                     className="bg-gray-200 px-4 py-2 rounded"
-                    onClick={() =>
-                      setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))
-                    }
+                    onClick={() => setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0))}
                     disabled={currentQuestionIndex === 0}
                   >
                     Previous
@@ -224,7 +196,6 @@ const WatchCourse = () => {
                       if (videoRef.current) videoRef.current.load();
                       setVideoError(false);
                       setVideoLoading(false);
-                      console.log("Video selected:", video);
                     }}
                     className={`text-left w-full px-2 py-1 rounded ${
                       selectedVideo?._id === video._id
