@@ -112,7 +112,7 @@ const AddModulesPage = () => {
           videoFormData.append("title", video.title.trim());
           videoFormData.append("module", moduleRes._id);
 
-          await axiosInstance.post("/videos", videoFormData, {
+          await axiosInstance.post("/videos/videos", videoFormData, {
             headers: {
               "Content-Type": "multipart/form-data",
             },

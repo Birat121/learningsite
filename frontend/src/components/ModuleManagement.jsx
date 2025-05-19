@@ -91,7 +91,7 @@ const ModuleVideoManagementPage = () => {
         const form = new FormData();
         form.append("title", formData.title.trim());
         if (videoFile) {
-          form.append("videoFile", videoFile);
+          form.append("video", videoFile);
         }
         await axiosInstance.put(`/videos/videos/${editItem.data._id}`, form, {
           headers: {
@@ -155,7 +155,9 @@ const ModuleVideoManagementPage = () => {
       {modules.map((module) => (
         <div key={module._id} className="bg-white rounded-lg shadow p-4 mb-6">
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-xl font-semibold text-gray-800">{module.title}</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              {module.title}
+            </h2>
             <div>
               <button
                 onClick={() => openEditModal("module", module)}
@@ -173,7 +175,9 @@ const ModuleVideoManagementPage = () => {
           </div>
 
           {module.videos.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No videos in this module.</p>
+            <p className="text-sm text-gray-500 italic">
+              No videos in this module.
+            </p>
           ) : (
             <ul className="space-y-3">
               {module.videos.map((video) => (
@@ -299,4 +303,3 @@ const ModuleVideoManagementPage = () => {
 };
 
 export default ModuleVideoManagementPage;
-
