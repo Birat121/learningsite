@@ -12,23 +12,26 @@ import {
 
 const videoRouter = express.Router();
 
-// Disk storage for large video files
+// Multer disk storage for video uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = "uploads/videos";
+    // Ensure directory exists
     fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    const uniqueName = `${Date.now()}-${file.originalname}`;
-    cb(null, uniqueName);
+    // Sanitize filename to avoid weird characters
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, "-");
+    cb(null, `${timestamp}-${baseName}${ext}`);
   },
 });
 
-const upload = multer({ storage }).fields([
-  { name: "video", maxCount: 1 },
-]);
+const upload = multer({ storage }).fields([{ name: "video", maxCount: 1 }]);
 
+// Routes
 videoRouter.post("/videos", upload, createVideo);
 videoRouter.get("/videos", getAllVideos);
 videoRouter.get("/videos/:idOrSlug", getVideoByIdOrSlug);
@@ -36,6 +39,3 @@ videoRouter.put("/videos/:id", upload, updateVideo);
 videoRouter.delete("/videos/:id", deleteVideo);
 
 export default videoRouter;
-
-
-

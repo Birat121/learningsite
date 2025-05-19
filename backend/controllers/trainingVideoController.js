@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import Module from "../models/Module.js";
 import fs from "fs";
 
-// Helper function to upload large video using stream + Promise
+// Upload video to Cloudinary (small or large)
 export const uploadVideo = async (filePath) => {
   const { size } = fs.statSync(filePath); // size in bytes
 
@@ -30,16 +30,23 @@ export const createVideo = async (req, res) => {
     const videoFile = req.files?.video?.[0];
 
     if (!videoFile) {
+      console.error("❌ createVideo: No video file provided");
       return res.status(400).json({ error: "Video file is required" });
+    }
+
+    const foundModule = await Module.findById(module);
+    if (!foundModule) {
+      console.error(`❌ createVideo: Module not found with id: ${module}`);
+      return res.status(404).json({ error: "Module not found" });
     }
 
     const filePath = videoFile.path;
 
-    // Upload large video with stream helper
+    // Upload to Cloudinary
     const result = await uploadVideo(filePath);
 
-    // Delete local file after upload
-    fs.unlinkSync(filePath);
+    // Delete local file safely
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
     const video = new Video({
       title,
@@ -51,12 +58,17 @@ export const createVideo = async (req, res) => {
     await video.save();
 
     await Module.findByIdAndUpdate(module, {
-      $push: { videos: video._id },
+      $addToSet: { videos: video._id },
     });
 
     res.status(201).json(video);
   } catch (error) {
     console.error("❌ Video upload failed:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    }
     res.status(500).json({ error: error.message });
   }
 };
@@ -71,13 +83,14 @@ export const getAllVideos = async (req, res) => {
     const videos = await Video.find(filter)
       .populate("module")
       .sort({ createdAt: -1 });
+
     res.json(videos);
   } catch (error) {
+    console.error("❌ getAllVideos failed:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// Get single video by ID or slug
 // Get single video by ID or slug
 export const getVideoByIdOrSlug = async (req, res) => {
   try {
@@ -91,17 +104,18 @@ export const getVideoByIdOrSlug = async (req, res) => {
     }
 
     if (!video) {
+      console.error(`❌ getVideoByIdOrSlug: Video not found with idOrSlug: ${idOrSlug}`);
       return res.status(404).json({ error: "Video not found" });
     }
 
     res.json(video);
   } catch (error) {
-    console.error("Get video error:", error);
+    console.error("❌ Get video error:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
-// Update video details and optionally replace video file
+// Update video details (title, module, or file)
 export const updateVideo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -109,33 +123,58 @@ export const updateVideo = async (req, res) => {
     const videoFile = req.files?.video?.[0];
 
     const video = await Video.findById(id);
-    if (!video) return res.status(404).json({ error: "Video not found" });
+    if (!video) {
+      console.error(`❌ updateVideo: Video not found with id: ${id}`);
+      return res.status(404).json({ error: "Video not found" });
+    }
 
     if (videoFile) {
-      // Delete previous video from Cloudinary
+      // Delete old Cloudinary video
       await cloudinary.uploader.destroy(video.videoPublicId, {
         resource_type: "video",
       });
 
-      // Upload new video file stream to Cloudinary
       const filePath = videoFile.path;
-      // const result = await uploadLargeVideo(filePath);
       const result = await uploadVideo(filePath);
 
-      // Delete local temp file after upload
-      fs.unlinkSync(filePath);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
       video.videoUrl = result.secure_url;
       video.videoPublicId = result.public_id;
     }
 
     if (title) video.title = title;
-    if (module) video.module = mongoose.Types.ObjectId(module);
+
+    if (module && video.module.toString() !== module) {
+      const foundModule = await Module.findById(module);
+      if (!foundModule) {
+        console.error(`❌ updateVideo: New module not found with id: ${module}`);
+        return res.status(404).json({ error: "New module not found" });
+      }
+
+      // Remove from old module, add to new
+      await Module.findByIdAndUpdate(video.module, {
+        $pull: { videos: video._id },
+      });
+
+      await Module.findByIdAndUpdate(module, {
+        $addToSet: { videos: video._id },
+      });
+
+      video.module = new mongoose.Types.ObjectId(module);
+    }
 
     await video.save();
-    res.json(video);
+
+    const updated = await Video.findById(video._id).populate("module");
+    res.json(updated);
   } catch (error) {
     console.error("❌ Video update failed:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    }
     res.status(500).json({ error: error.message });
   }
 };
@@ -145,15 +184,29 @@ export const deleteVideo = async (req, res) => {
   try {
     const { id } = req.params;
     const video = await Video.findById(id);
-    if (!video) return res.status(404).json({ error: "Video not found" });
+    if (!video) {
+      console.error(`❌ deleteVideo: Video not found with id: ${id}`);
+      return res.status(404).json({ error: "Video not found" });
+    }
 
     await cloudinary.uploader.destroy(video.videoPublicId, {
       resource_type: "video",
     });
+
+    await Module.findByIdAndUpdate(video.module, {
+      $pull: { videos: video._id },
+    });
+
     await Video.findByIdAndDelete(id);
 
     res.json({ message: "Video deleted successfully" });
   } catch (error) {
+    console.error("❌ Video deletion failed:", error);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+      console.error("Response status:", error.response.status);
+      console.error("Response headers:", error.response.headers);
+    }
     res.status(500).json({ error: error.message });
   }
 };
