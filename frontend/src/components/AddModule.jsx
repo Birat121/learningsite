@@ -45,7 +45,7 @@ const AddModulesPage = () => {
           {
             id: uuidv4(),
             title: "",
-            videoUrl: "", // <-- changed here
+            videoFile: null, // <-- file instead of videoUrl
           },
         ],
       },
@@ -108,10 +108,15 @@ const AddModulesPage = () => {
         );
 
         for (const video of module.videos) {
-          await axiosInstance.post("/videos/videos", {
-            title: video.title.trim(),
-            module: moduleRes._id,
-            videoUrl: video.videoUrl.trim(), // <-- sending URL instead of file
+          const videoFormData = new FormData();
+          videoFormData.append("file", video.videoFile);
+          videoFormData.append("title", video.title.trim());
+          videoFormData.append("module", moduleRes._id);
+
+          await axiosInstance.post("/videos/upload", videoFormData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           });
         }
       }
@@ -223,11 +228,15 @@ const AddModulesPage = () => {
                       Video URL <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="url"
-                      placeholder="https://example.com/video.mp4"
-                      value={video.videoUrl}
+                      type="file"
+                      accept="video/*"
                       onChange={(e) =>
-                        handleVideoChange(mIdx, vIdx, "videoUrl", e.target.value)
+                        handleVideoChange(
+                          mIdx,
+                          vIdx,
+                          "videoFile",
+                          e.target.files[0]
+                        )
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                       required
