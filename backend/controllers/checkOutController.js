@@ -37,14 +37,12 @@ export const handleCoursePayment = async (req, res) => {
 
     const amountInFils = Math.round(course.price * 100); // AED to fils
 
+    // Pass courseId directly here (not inside metadata)
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
       currency: "AED",
       email: customer_email,
-      metadata: {
-        userEmail: customer_email,
-        courseId,
-      },
+      courseId, // <- here is the fix
     });
 
     await Enrollment.create({
