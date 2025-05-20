@@ -207,7 +207,7 @@ export const getEnrolledCourses = async (req, res) => {
 
     const enrollments = await Enrollment.find({
       user: userId,
-      status: 'completed', // Only completed enrollments
+      status: { $in: ['completed', 'pending'] }, // Include completed and pending
     }).populate("course");
 
     const courses = enrollments
@@ -220,6 +220,7 @@ export const getEnrolledCourses = async (req, res) => {
     res.status(500).json({ message: "Server error while fetching enrolled courses" });
   }
 };
+
 
 
 // Check if a user is enrolled in a course
