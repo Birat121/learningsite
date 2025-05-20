@@ -17,6 +17,7 @@ import youtubeRouter from "./routes/youtubeRoute.js";
 import courseRouter from "./routes/courseRoute.js";
 import moduleRouter from "./routes/moduleRoute.js";
 import vimeoRouter from "./routes/vimeoRoute.js";
+import MongoStore from "connect-mongo";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -54,6 +55,16 @@ app.use(
     secret: process.env.SESSION_SECRET || "secretkey",
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: "sessions", // Optional: default is "sessions"
+      ttl: 14 * 24 * 60 * 60, // Optional: session expiry in seconds (14 days)
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // send over HTTPS only in production
+    },
   })
 );
 

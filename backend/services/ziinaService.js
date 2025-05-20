@@ -26,7 +26,7 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       confirmation_method: 'automatic',
       success_url: SUCCESS_URL,
       cancel_url: CANCEL_URL,
-      test: true,
+      test: false,
       metadata,
     };
 
