@@ -12,6 +12,8 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 let webhookInitialized = false;
 
+const expiryInMs = Date.now() + 3600 * 1000; 
+
 export async function createPaymentIntent({ amount, currency, email, courseId }) {
   try {
     const operation_id = uuidv4();
@@ -25,7 +27,7 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       failure_url: CANCEL_URL,
       test: true,
       transaction_source: "directApi",
-      expiry: Math.floor(Date.now() / 1000 + 3600).toString(),
+      expiry: expiryInMs,
       metadata: {
         courseId,
         userEmail: email,
