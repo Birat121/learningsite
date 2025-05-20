@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://learningsite-lsgy.onrender.com/api", // Your backend URL
+  baseURL: "https://dubai-rea-lstate.onrender.com/api", // Your backend URL
   withCredentials: true, // Needed for cookies/session-based auth
 });
 

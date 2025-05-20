@@ -73,7 +73,7 @@ const AuthPage = () => {
 
   const handleGoogleLogin = () => {
     window.location.href =
-      "https://learningsite-lsgy.onrender.com/api/auth/google";
+      "https://dubai-rea-lstate.onrender.com/api/auth/google";
   };
 
   return (
