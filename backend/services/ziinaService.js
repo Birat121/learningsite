@@ -25,7 +25,7 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       failure_url: CANCEL_URL,
       test: true,
       transaction_source: "directApi",
-      expiry: Date.now() + 1000 * 60 * 10, // 10 minutes from now
+      expiry: Math.floor(Date.now() / 1000 + 3600).toString(),
       metadata: {
         courseId,
         userEmail: email,
