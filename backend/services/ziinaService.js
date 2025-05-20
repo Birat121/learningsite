@@ -19,7 +19,8 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
     const operation_id = uuidv4();
 
     // Set expiry to 1 hour from now (or any duration you want)
-    const expiry = Date.now() + 60 * 60 * 1000;
+    const expiry = Date.now() + 60 * 60 * 1000; // 1 hour from now in milliseconds
+
 
     const paymentPayload = {
       amount,
@@ -30,7 +31,8 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       failure_url: CANCEL_URL,
       test: true,
       transaction_source: "directApi",
-      expiry: (Math.floor(expiry / 1000)).toString(),
+      expiry: expiry.toString(),
+
 
       metadata: {
         courseId,
