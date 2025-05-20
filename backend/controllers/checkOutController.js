@@ -21,14 +21,19 @@ export const handleCoursePayment = async (req, res) => {
     if (!course) return res.status(404).json({ error: 'Course not found' });
     if (isNaN(course.price)) return res.status(400).json({ error: 'Invalid course price' });
 
-    // Prevent duplicate enrollments
+    // Allow retry if previous enrollment is not completed
     const existing = await Enrollment.findOne({
       user: req.user._id,
       course: course._id,
-      status: { $in: ['pending', 'completed'] },
     });
+
     if (existing) {
-      return res.status(400).json({ error: 'Already enrolled or payment in progress' });
+      if (existing.status === 'completed') {
+        return res.status(400).json({ error: 'You have already enrolled in this course.' });
+      }
+
+      // Delete failed or pending enrollment to allow retry
+      await Enrollment.deleteOne({ _id: existing._id });
     }
 
     const amountInFils = Math.round(course.price * 100);
@@ -69,6 +74,7 @@ export const handleCoursePayment = async (req, res) => {
     });
   }
 };
+
 
 
 export const handleZiinaWebhook = async (req, res) => {
@@ -116,11 +122,6 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(400).send('Invalid webhook payload');
     }
 
-    if (!['succeeded', 'completed'].includes(status)) {
-      console.warn(`Webhook ignored: Payment ${paymentIntentId} has status '${status}'`);
-      return res.status(200).send('Ignored non-successful payment');
-    }
-
     const user = await User.findOne({ email: userEmail });
     if (!user) {
       console.error('User not found:', userEmail);
@@ -139,27 +140,44 @@ export const handleZiinaWebhook = async (req, res) => {
       paymentIntentId,
     });
 
-    if (existingEnrollment) {
-      if (existingEnrollment.status !== 'completed') {
-        existingEnrollment.status = 'completed';
-        await existingEnrollment.save();
-        console.log('✅ Enrollment updated to completed for:', userEmail);
+    // ✅ Handle successful payments
+    if (['succeeded', 'completed'].includes(status)) {
+      if (existingEnrollment) {
+        if (existingEnrollment.status !== 'completed') {
+          existingEnrollment.status = 'completed';
+          await existingEnrollment.save();
+          console.log('✅ Enrollment updated to completed for:', userEmail);
+        } else {
+          console.log('Enrollment already marked as completed.');
+        }
       } else {
-        console.log('Enrollment already marked as completed.');
+        await Enrollment.create({
+          user: user._id,
+          course: course._id,
+          paymentIntentId,
+          status: 'completed',
+        });
+        console.log('✅ Enrollment created via webhook for:', userEmail);
       }
       return res.status(200).send('Enrollment updated');
     }
 
-    // Fallback if enrollment wasn’t created at intent stage
-    await Enrollment.create({
-      user: user._id,
-      course: course._id,
-      paymentIntentId,
-      status: 'completed',
-    });
+    // ❌ Handle failed/cancelled payments
+    const failedStatuses = ['failed', 'cancelled', 'expired', 'rejected'];
+    if (failedStatuses.includes(status)) {
+      if (existingEnrollment && existingEnrollment.status !== 'completed') {
+        existingEnrollment.status = 'failed';
+        await existingEnrollment.save();
+        console.warn('❌ Enrollment marked as failed for:', userEmail);
+      } else {
+        console.warn('No pending enrollment to mark as failed, or already completed.');
+      }
+      return res.status(200).send('Marked enrollment as failed');
+    }
 
-    console.log('✅ Enrollment created via webhook for:', userEmail);
-    res.status(201).send('Enrollment recorded');
+    // Unknown or other status
+    console.log(`⚠️ Webhook received with unhandled status: '${status}'`);
+    res.status(200).send('Unhandled status received');
 
   } catch (error) {
     console.error('Webhook processing error:', error);
