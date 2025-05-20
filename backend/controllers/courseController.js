@@ -205,7 +205,10 @@ export const getEnrolledCourses = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const enrollments = await Enrollment.find({ user: userId }).populate("course");
+    const enrollments = await Enrollment.find({
+      user: userId,
+      status: 'completed', // Only completed enrollments
+    }).populate("course");
 
     const courses = enrollments
       .map((enrollment) => enrollment.course)
@@ -218,7 +221,10 @@ export const getEnrolledCourses = async (req, res) => {
   }
 };
 
+
 // Check if a user is enrolled in a course
+
+
 export const checkEnrollmentStatus = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -236,7 +242,11 @@ export const checkEnrollmentStatus = async (req, res) => {
       return res.status(404).json({ enrolled: false, error: "Course not found" });
     }
 
-    const isEnrolled = await Enrollment.exists({ user: userId, course: course._id });
+    const isEnrolled = await Enrollment.exists({
+      user: userId,
+      course: course._id,
+      status: 'completed', // Only allow access if payment was completed
+    });
 
     return res.status(200).json({ enrolled: Boolean(isEnrolled) });
   } catch (error) {

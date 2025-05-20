@@ -1,13 +1,14 @@
 import { createPaymentIntent } from '../services/ziinaService.js';
 import Course from '../models/course.js';
 import User from '../models/userModel.js';
-import Enrollment from '../models/paymentModel.js'; // Your enrollment/payment schema
+import Enrollment from '../models/paymentModel.js';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 
 dotenv.config();
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
+// Payment intent creation (on client request)
 export const handleCoursePayment = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -16,10 +17,19 @@ export const handleCoursePayment = async (req, res) => {
     if (!courseId) return res.status(400).json({ error: 'Missing courseId' });
     if (!customer_email) return res.status(400).json({ error: 'Missing customer email' });
 
-    console.log('Initiating payment for email:', customer_email);
-
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ error: 'Course not found' });
+    if (isNaN(course.price)) return res.status(400).json({ error: 'Invalid course price' });
+
+    // Prevent duplicate enrollments
+    const existing = await Enrollment.findOne({
+      user: req.user._id,
+      course: course._id,
+      status: { $in: ['pending', 'completed'] },
+    });
+    if (existing) {
+      return res.status(400).json({ error: 'Already enrolled or payment in progress' });
+    }
 
     const amountInFils = Math.round(course.price * 100);
 
@@ -33,8 +43,6 @@ export const handleCoursePayment = async (req, res) => {
       },
     });
 
-    console.log("Ziina payment response:", paymentData);
-
     await Enrollment.create({
       user: req.user._id,
       course: course._id,
@@ -43,7 +51,6 @@ export const handleCoursePayment = async (req, res) => {
     });
 
     const redirectUrl = paymentData.redirect_url || paymentData.confirmation_url;
-
     if (!redirectUrl) {
       console.error('Redirect URL missing in Ziina response:', paymentData);
       return res.status(500).json({ error: 'Ziina did not return a redirect URL.' });
@@ -63,18 +70,14 @@ export const handleCoursePayment = async (req, res) => {
   }
 };
 
+
 export const handleZiinaWebhook = async (req, res) => {
   try {
-    // Allowed IP addresses
     const allowedIps = ['3.29.184.186', '3.29.190.95', '20.233.47.127'];
-
-    // Get IP address
-    const ip =
-      req.headers['x-forwarded-for']?.split(',').shift() || req.socket?.remoteAddress;
+    const rawIp = req.headers['x-forwarded-for']?.split(',').shift() || req.socket?.remoteAddress;
+    const ip = rawIp.replace('::ffff:', '');
 
     console.log('Webhook received from IP:', ip);
-
-    // Check if the incoming IP is allowed
     if (!allowedIps.includes(ip)) {
       console.warn('❌ Webhook rejected — invalid IP:', ip);
       return res.status(403).send('Forbidden');
@@ -83,7 +86,10 @@ export const handleZiinaWebhook = async (req, res) => {
     const rawBody = JSON.stringify(req.body);
     const signature = req.headers['x-hmac-signature'];
 
-    // Compute HMAC from the raw body and the secret key
+    if (!signature || typeof signature !== 'string' || !/^[a-f0-9]+$/i.test(signature)) {
+      return res.status(400).send('Malformed or missing signature');
+    }
+
     const computedHmac = crypto
       .createHmac('sha256', ZIINA_SECRET_KEY)
       .update(rawBody)
@@ -91,19 +97,15 @@ export const handleZiinaWebhook = async (req, res) => {
 
     const incomingSig = Buffer.from(signature, 'hex');
 
-    // Compare the signatures securely
     if (
       incomingSig.length !== computedHmac.length ||
       !crypto.timingSafeEqual(incomingSig, computedHmac)
     ) {
-      console.error('Invalid signature', { receivedSignature: signature });
+      console.error('Invalid HMAC signature', { receivedSignature: signature });
       return res.status(400).send('Invalid signature');
     }
 
-    // Handle the webhook event
     const event = req.body;
-    console.log('Webhook event received:', event);
-
     const status = event?.data?.status;
     const paymentIntentId = event?.data?.id;
     const userEmail = event?.data?.metadata?.userEmail;
@@ -115,8 +117,8 @@ export const handleZiinaWebhook = async (req, res) => {
     }
 
     if (!['succeeded', 'completed'].includes(status)) {
-      console.warn('Ignoring non-successful payment status:', status);
-      return res.status(400).send('Payment not successful');
+      console.warn(`Webhook ignored: Payment ${paymentIntentId} has status '${status}'`);
+      return res.status(200).send('Ignored non-successful payment');
     }
 
     const user = await User.findOne({ email: userEmail });
@@ -141,14 +143,14 @@ export const handleZiinaWebhook = async (req, res) => {
       if (existingEnrollment.status !== 'completed') {
         existingEnrollment.status = 'completed';
         await existingEnrollment.save();
-        console.log('Updated enrollment to completed for:', userEmail);
+        console.log('✅ Enrollment updated to completed for:', userEmail);
       } else {
         console.log('Enrollment already marked as completed.');
       }
       return res.status(200).send('Enrollment updated');
     }
 
-    // Fallback if enrollment wasn't created at intent stage (rare case)
+    // Fallback if enrollment wasn’t created at intent stage
     await Enrollment.create({
       user: user._id,
       course: course._id,
@@ -156,7 +158,7 @@ export const handleZiinaWebhook = async (req, res) => {
       status: 'completed',
     });
 
-    console.log('Enrollment created via webhook:', userEmail);
+    console.log('✅ Enrollment created via webhook for:', userEmail);
     res.status(201).send('Enrollment recorded');
 
   } catch (error) {
