@@ -8,7 +8,6 @@ import dotenv from "dotenv";
 dotenv.config();
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
-// 1️⃣ Create Payment Intent
 export const handleCoursePayment = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -34,7 +33,7 @@ export const handleCoursePayment = async (req, res) => {
       await Enrollment.deleteOne({ _id: existing._id });
     }
 
-    const amountInFils = Math.round(course.price * 100); // Convert AED to fils
+    const amountInFils = Math.round(course.price * 100);
 
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
@@ -51,68 +50,40 @@ export const handleCoursePayment = async (req, res) => {
     });
 
     return res.json({
-      paymentUrl: paymentData.redirect_url || paymentData.confirmation_url,
+      paymentUrl: paymentData.redirect_url,
       paymentIntentId: paymentData.id,
     });
   } catch (err) {
-    console.error("❌ Payment error:", err);
-    res.status(500).json({
-      error: "Payment intent creation failed",
-      details: err.response?.data || err.message,
-    });
+    console.error("❌ handleCoursePayment error:", err);
+    res.status(500).json({ error: "Payment failed", details: err.message });
   }
 };
 
-// 2️⃣ Handle Webhook
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
-    const rawIp =
-      req.headers["x-forwarded-for"]?.split(",").shift() ||
-      req.socket?.remoteAddress;
+    const rawIp = req.headers["x-forwarded-for"]?.split(",").shift() || req.socket?.remoteAddress;
     const ip = rawIp?.replace("::ffff:", "");
 
-    console.log("🔔 Webhook received from:", ip);
+    console.log("🔔 Webhook from IP:", ip);
 
     if (!allowedIps.includes(ip)) {
-      console.warn("❌ Invalid IP:", ip);
       return res.status(403).send("Forbidden");
     }
 
     const rawBody = JSON.stringify(req.body);
     const signature = req.headers["x-hmac-signature"];
 
-    if (!signature || typeof signature !== "string") {
-      return res.status(400).send("Invalid signature");
-    }
-
-    const computedHmac = crypto
-      .createHmac("sha256", ZIINA_SECRET_KEY)
-      .update(rawBody)
-      .digest();
+    const hmac = crypto.createHmac("sha256", ZIINA_SECRET_KEY).update(rawBody).digest();
     const incomingSig = Buffer.from(signature, "hex");
 
-    if (
-      incomingSig.length !== computedHmac.length ||
-      !crypto.timingSafeEqual(incomingSig, computedHmac)
-    ) {
-      console.error("❌ Invalid HMAC signature");
+    if (!crypto.timingSafeEqual(hmac, incomingSig)) {
       return res.status(400).send("Invalid signature");
     }
 
     const event = req.body;
-    const status = event?.data?.status;
-    const paymentIntentId = event?.data?.id;
-    const metadata = event?.data?.metadata || {};
-    const userEmail = metadata.userEmail;
-    const courseId = metadata.courseId;
-
-    console.log("📩 Webhook Data:", {
-      status,
-      paymentIntentId,
-      userEmail,
-      courseId,
-    });
+    const { id: paymentIntentId, status, metadata } = event?.data || {};
+    const { userEmail, courseId } = metadata;
 
     if (!userEmail || !courseId || !paymentIntentId) {
       return res.status(400).send("Missing metadata");
@@ -121,7 +92,6 @@ export const handleZiinaWebhook = async (req, res) => {
     const user = await User.findOne({ email: userEmail });
     const course = await Course.findById(courseId);
     if (!user || !course) {
-      console.error("❌ User or course not found");
       return res.status(404).send("User or Course not found");
     }
 
@@ -133,13 +103,8 @@ export const handleZiinaWebhook = async (req, res) => {
 
     if (["completed", "succeeded", "authorized"].includes(status)) {
       if (enrollment) {
-        if (enrollment.status !== "completed") {
-          enrollment.status = "completed";
-          await enrollment.save();
-          console.log("✅ Enrollment updated to completed");
-        } else {
-          console.log("✅ Enrollment already completed");
-        }
+        enrollment.status = "completed";
+        await enrollment.save();
       } else {
         await Enrollment.create({
           user: user._id,
@@ -147,24 +112,21 @@ export const handleZiinaWebhook = async (req, res) => {
           paymentIntentId,
           status: "completed",
         });
-        console.log("✅ New enrollment created");
       }
-      return res.status(200).send("Enrollment recorded");
+      return res.status(200).send("Enrollment completed");
     }
 
-    if (["failed", "cancelled", "expired", "rejected"].includes(status)) {
-      if (enrollment && enrollment.status !== "completed") {
+    if (["failed", "cancelled", "expired"].includes(status)) {
+      if (enrollment) {
         enrollment.status = "failed";
         await enrollment.save();
-        console.warn("❌ Enrollment marked as failed");
       }
-      return res.status(200).send("Payment failed, enrollment updated");
+      return res.status(200).send("Payment failed");
     }
 
-    console.log("⚠️ Unhandled payment status:", status);
     return res.status(200).send("Unhandled status");
-  } catch (error) {
-    console.error("❌ Webhook processing error:", error);
+  } catch (err) {
+    console.error("❌ Webhook error:", err);
     res.status(500).send("Internal Server Error");
   }
 };
