@@ -9,6 +9,8 @@ const WatchCourse = () => {
   const navigate = useNavigate();
   const { hasCourseAccess } = useAuth();
 
+  const [selectedModuleId, setSelectedModuleId] = useState(null);
+
   const [courseTitle, setCourseTitle] = useState("");
   const [modules, setModules] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -31,13 +33,18 @@ const WatchCourse = () => {
 
     const fetchCourseAndQuiz = async () => {
       try {
-        const courseRes = await axiosInstance.get(`/courses/course/slug/${slug}`);
+        const courseRes = await axiosInstance.get(
+          `/courses/course/slug/${slug}`
+        );
         const course = courseRes.data;
 
         setCourseTitle(course.title || "");
         setModules(course.modules || []);
 
-        if (course.modules?.length > 0 && course.modules[0].videos?.length > 0) {
+        if (
+          course.modules?.length > 0 &&
+          course.modules[0].videos?.length > 0
+        ) {
           setSelectedVideo(course.modules[0].videos[0]);
         }
 
@@ -55,43 +62,45 @@ const WatchCourse = () => {
 
   // Vimeo Player setup when selectedVideo changes
   useEffect(() => {
-    if (!selectedVideo || !iframeRef.current) return;
+    if (!selectedVideo || !iframeRef.current || !selectedModuleId) return;
 
-    // Clean up previous player instance
     if (playerRef.current) {
       playerRef.current.unload().catch(() => {});
       playerRef.current = null;
     }
 
-    // Initialize new Vimeo Player
     playerRef.current = new Player(iframeRef.current);
 
-    // Listen for video end event
     playerRef.current.on("ended", () => {
-      markVideoComplete(selectedVideo._id);
+      markVideoComplete(selectedVideo._id, selectedModuleId);
     });
 
-    // Optional: listen for errors
     playerRef.current.on("error", (error) => {
       console.error("Vimeo Player error:", error);
     });
 
-    // Cleanup on unmount or video change
     return () => {
       if (playerRef.current) {
         playerRef.current.unload().catch(() => {});
         playerRef.current = null;
       }
     };
-  }, [selectedVideo]);
+  }, [selectedVideo, selectedModuleId]);
 
-  const markVideoComplete = (videoId) => {
-    setCompletedVideos((prev) => new Set(prev).add(videoId));
+  const markVideoComplete = (videoId, moduleId) => {
+    setCompletedVideos((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(`${moduleId}-${videoId}`);
+      return newSet;
+    });
   };
 
   const allVideos = modules.flatMap((m) => m.videos || []);
-  const allCompleted =
-    allVideos.length > 0 && allVideos.every((v) => completedVideos.has(v._id));
+  const allCompleted = modules.every((mod) =>
+    (mod.videos || []).every((vid) =>
+      completedVideos.has(`${mod._id}-${vid._id}`)
+    )
+  );
 
   const handleSubmitQuiz = () => {
     let total = 0;
@@ -132,15 +141,20 @@ const WatchCourse = () => {
                         <button
                           onClick={() => {
                             setSelectedVideo(video);
+                            setSelectedModuleId(module._id); // ✅ important!
                           }}
                           className={`w-full text-left px-3 py-2 rounded-lg transition duration-200 ${
-                            selectedVideo && selectedVideo._id === video._id
+                            selectedVideo &&
+                            selectedVideo._id === video._id &&
+                            selectedModuleId === module._id
                               ? "bg-blue-600 text-white font-semibold"
                               : "text-gray-700 hover:bg-blue-100"
                           }`}
                         >
                           {video.title}
-                          {completedVideos.has(video._id) && (
+                          {completedVideos.has(
+                            `${module._id}-${video._id}`
+                          ) && (
                             <span className="ml-2 text-green-600 font-bold">
                               ✓
                             </span>
@@ -150,7 +164,9 @@ const WatchCourse = () => {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-gray-400 italic ml-4">No videos available</p>
+                  <p className="text-gray-400 italic ml-4">
+                    No videos available
+                  </p>
                 )}
               </div>
             ))
@@ -202,7 +218,8 @@ const WatchCourse = () => {
                   {!submitted ? (
                     <>
                       <p className="mb-4 font-semibold text-gray-700">
-                        Question {currentQuestionIndex + 1} of {quiz.questions.length}
+                        Question {currentQuestionIndex + 1} of{" "}
+                        {quiz.questions.length}
                       </p>
 
                       <div className="mb-4">
@@ -221,7 +238,9 @@ const WatchCourse = () => {
                                   type="radio"
                                   name={`question-${currentQuestionIndex}`}
                                   value={index}
-                                  checked={userAnswers[currentQuestionIndex] == index}
+                                  checked={
+                                    userAnswers[currentQuestionIndex] == index
+                                  }
                                   onChange={() =>
                                     setUserAnswers({
                                       ...userAnswers,
@@ -255,7 +274,9 @@ const WatchCourse = () => {
                                 Math.min(i + 1, quiz.questions.length - 1)
                               )
                             }
-                            disabled={userAnswers[currentQuestionIndex] === undefined}
+                            disabled={
+                              userAnswers[currentQuestionIndex] === undefined
+                            }
                             className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
                           >
                             Next
@@ -263,7 +284,9 @@ const WatchCourse = () => {
                         ) : (
                           <button
                             onClick={handleSubmitQuiz}
-                            disabled={userAnswers[currentQuestionIndex] === undefined}
+                            disabled={
+                              userAnswers[currentQuestionIndex] === undefined
+                            }
                             className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
                           >
                             Submit Quiz

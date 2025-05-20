@@ -51,6 +51,8 @@ const Courses = () => {
     axiosInstance
       .get("/courses/course")
       .then((response) => {
+        const staticCourses = getStaticCourses();
+
         let fetchedCourses = [];
         if (Array.isArray(response.data) && response.data.length > 0) {
           fetchedCourses = response.data.map((course) => ({
@@ -62,20 +64,37 @@ const Courses = () => {
           }));
         }
 
-        const staticCourses = getStaticCourses();
+        let finalCourses = [];
 
-        if (fetchedCourses.length < 6) {
-          const fetchedTitles = new Set(fetchedCourses.map((c) => c.title));
-          const remainingStatic = staticCourses.filter(
-            (sc) => !fetchedTitles.has(sc.title)
-          );
-          fetchedCourses = [
-            ...fetchedCourses,
-            ...remainingStatic.slice(0, 6 - fetchedCourses.length),
-          ];
+        if (fetchedCourses.length > 0) {
+          // Replace only the first static course
+          finalCourses = [fetchedCourses[0], ...staticCourses.slice(1)];
+
+          // Fill up to 6 courses if more fetched are available
+          let i = 1;
+          while (finalCourses.length < 6 && i < fetchedCourses.length) {
+            // Avoid duplicate titles
+            const isDuplicate = finalCourses.some(
+              (c) => c.title === fetchedCourses[i].title
+            );
+            if (!isDuplicate) {
+              finalCourses.push(fetchedCourses[i]);
+            }
+            i++;
+          }
+
+          // If still less than 6, add more static courses (without duplicates)
+          const usedTitles = new Set(finalCourses.map((c) => c.title));
+          staticCourses.forEach((sc) => {
+            if (finalCourses.length < 6 && !usedTitles.has(sc.title)) {
+              finalCourses.push(sc);
+            }
+          });
+        } else {
+          finalCourses = staticCourses;
         }
 
-        setCourses(fetchedCourses);
+        setCourses(finalCourses);
       })
       .catch((err) => {
         console.error("Failed to fetch courses:", err);
