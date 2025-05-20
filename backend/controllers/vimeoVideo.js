@@ -22,7 +22,8 @@ export const createVideo = async (req, res) => {
     const vimeoId = extractVimeoId(videoUrl);
     if (!vimeoId) return res.status(400).json({ error: "Invalid Vimeo URL" });
 
-    const embedUrl = `https://player.vimeo.com/video/${vimeoId}`;
+   const embedUrl = `https://player.vimeo.com/video/${vimeoId}?title=0&byline=0&portrait=0&badge=0`;
+
 
     // Create and save video
     const video = new Video({
