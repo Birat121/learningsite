@@ -9,7 +9,7 @@ const ModuleVideoManagementPage = () => {
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editItem, setEditItem] = useState(null); // { type: "module" | "video", data: {} }
-  const [formData, setFormData] = useState({ title: "" });
+  const [formData, setFormData] = useState({ title: "", vimeoUrl: "" });
   const [previewUrl, setPreviewUrl] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -39,15 +39,18 @@ const ModuleVideoManagementPage = () => {
 
   const openEditModal = (type, data) => {
     setEditItem({ type, data });
-    setFormData({ title: data.title || "" });
-    setPreviewUrl(type === "video" ? data.videoUrl || null : null);
+    setFormData({ 
+      title: data.title || "", 
+      vimeoUrl: data.videoUrl && !data.videoUrl.startsWith("blob:") ? data.videoUrl : "" 
+    });
+    setPreviewUrl(null);
     setVideoFile(null);
   };
 
   const closeEditModal = () => {
     if (saving) return;
     setEditItem(null);
-    setFormData({ title: "" });
+    setFormData({ title: "", vimeoUrl: "" });
     setPreviewUrl(null);
     setVideoFile(null);
   };
@@ -62,6 +65,7 @@ const ModuleVideoManagementPage = () => {
     if (file) {
       setVideoFile(file);
       setPreviewUrl(URL.createObjectURL(file));
+      setFormData((f) => ({ ...f, vimeoUrl: "" })); // clear Vimeo URL if file chosen
     } else {
       setVideoFile(null);
       setPreviewUrl(null);
@@ -73,8 +77,13 @@ const ModuleVideoManagementPage = () => {
       toast.error("Title is required");
       return;
     }
-    if (editItem.type === "video" && !videoFile && !previewUrl) {
-      toast.error("Video file is required");
+
+    if (
+      editItem.type === "video" &&
+      !videoFile &&
+      !formData.vimeoUrl.trim()
+    ) {
+      toast.error("Either upload a video file or provide a Vimeo URL");
       return;
     }
 
@@ -87,17 +96,23 @@ const ModuleVideoManagementPage = () => {
         });
         toast.success("Module updated");
       } else {
-        // For videos, upload file via FormData
-        const form = new FormData();
-        form.append("title", formData.title.trim());
+        // Update video: either file upload or URL
         if (videoFile) {
+          const form = new FormData();
+          form.append("title", formData.title.trim());
           form.append("video", videoFile);
+          await axiosInstance.put(`/vimeo/update/${editItem.data._id}`, form, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+        } else {
+          // Save Vimeo URL only (assuming backend accepts this)
+          await axiosInstance.put(`/videos/videos/${editItem.data._id}`, {
+            title: formData.title.trim(),
+            videoUrl: formData.vimeoUrl.trim(),
+          });
         }
-        await axiosInstance.put(`/videos/videos/${editItem.data._id}`, form, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
         toast.success("Video updated");
       }
 
@@ -187,14 +202,20 @@ const ModuleVideoManagementPage = () => {
                 >
                   <div>
                     <p className="font-medium">{video.title}</p>
-                    <a
-                      href={video.videoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-blue-500 text-sm hover:underline"
-                    >
-                      Watch
-                    </a>
+                    {video.videoUrl && video.videoUrl.startsWith("http") ? (
+                      <a
+                        href={video.videoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-500 text-sm hover:underline"
+                      >
+                        Watch
+                      </a>
+                    ) : (
+                      <span className="text-gray-400 text-sm italic">
+                        No video URL
+                      </span>
+                    )}
                   </div>
                   <div>
                     <button
@@ -248,7 +269,19 @@ const ModuleVideoManagementPage = () => {
               {editItem.type === "video" && (
                 <>
                   <label className="block">
-                    Upload Video File
+                    Vimeo Embed URL (e.g. https://player.vimeo.com/video/123456789)
+                    <input
+                      type="url"
+                      name="vimeoUrl"
+                      value={formData.vimeoUrl}
+                      onChange={handleChange}
+                      placeholder="Paste Vimeo embed URL here"
+                      className="w-full mt-1 border px-3 py-2 rounded"
+                    />
+                  </label>
+
+                  <label className="block mt-4">
+                    Or Upload Video File
                     <input
                       type="file"
                       accept="video/*"
@@ -259,7 +292,7 @@ const ModuleVideoManagementPage = () => {
 
                   {previewUrl && (
                     <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-1">Preview:</p>
+                      <p className="text-sm text-gray-500 mb-1">Preview (Uploaded Video):</p>
                       <video
                         controls
                         src={previewUrl}
@@ -267,33 +300,39 @@ const ModuleVideoManagementPage = () => {
                       />
                     </div>
                   )}
+
+                  {!previewUrl && formData.vimeoUrl && (
+                    <div className="mt-4 aspect-w-16 aspect-h-9">
+                      <p className="text-sm text-gray-500 mb-1">Vimeo Video Preview:</p>
+                      <iframe
+                        src={formData.vimeoUrl}
+                        frameBorder="0"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowFullScreen
+                        title="Vimeo video preview"
+                        className="w-full h-64 rounded border"
+                      />
+                    </div>
+                  )}
                 </>
               )}
+            </div>
 
-              <div className="flex justify-end space-x-3 mt-6">
-                <button
-                  onClick={closeEditModal}
-                  disabled={saving}
-                  className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={saveEdit}
-                  disabled={
-                    saving ||
-                    !formData.title.trim() ||
-                    (editItem.type === "video" && !videoFile && !previewUrl)
-                  }
-                  className={`px-4 py-2 rounded text-white ${
-                    saving
-                      ? "bg-blue-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {saving ? "Saving..." : "Save"}
-                </button>
-              </div>
+            <div className="mt-6 flex justify-end space-x-4">
+              <button
+                onClick={closeEditModal}
+                disabled={saving}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEdit}
+                disabled={saving}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
             </div>
           </div>
         </div>

@@ -8,7 +8,7 @@ import {
   getVideoByIdOrSlug,
   updateVideo,
   deleteVideo,
-} from "../controllers/trainingVideoController.js";
+} from "../controllers/vimeoVideo.js";
 
 const videoRouter = express.Router();
 
@@ -29,7 +29,12 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage }).fields([{ name: "video", maxCount: 1 }]);
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 * 1024, // 5 GB
+  },
+}).fields([{ name: "video", maxCount: 1 }]);
 
 // Routes
 videoRouter.post("/videos", upload, createVideo);

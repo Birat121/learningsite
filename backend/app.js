@@ -16,6 +16,7 @@ import introRouter from "./routes/introRoute.js";
 import youtubeRouter from "./routes/youtubeRoute.js";
 import courseRouter from "./routes/courseRoute.js";
 import moduleRouter from "./routes/moduleRoute.js";
+import vimeoRouter from "./routes/vimeoRoute.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -72,6 +73,7 @@ app.use("/api/intro", introRouter);
 app.use("/api/youtube", youtubeRouter);
 app.use("/api/courses", courseRouter);
 app.use("/api/modules", moduleRouter);
+app.use("/api/vimeo", vimeoRouter);
 
 // Test route
 app.get("/", (req, res) => {

@@ -16,14 +16,12 @@ const AddModulesPage = () => {
         {
           id: uuidv4(),
           title: "",
-          videoFile: null,
+          videoUrl: "", // Change: from videoFile to videoUrl
         },
       ],
     },
   ]);
   const [loading, setLoading] = useState(false);
-  // Progress state: { videoId: percentage }
-  const [uploadProgress, setUploadProgress] = useState({});
 
   const handleModuleChange = (index, field, value) => {
     const updatedModules = [...modules];
@@ -47,7 +45,7 @@ const AddModulesPage = () => {
           {
             id: uuidv4(),
             title: "",
-            videoFile: null,
+            videoUrl: "",
           },
         ],
       },
@@ -65,7 +63,7 @@ const AddModulesPage = () => {
     updatedModules[moduleIndex].videos.push({
       id: uuidv4(),
       title: "",
-      videoFile: null,
+      videoUrl: "",
     });
     setModules(updatedModules);
   };
@@ -76,13 +74,18 @@ const AddModulesPage = () => {
     setModules(updatedModules);
   };
 
+  const isValidVimeoUrl = (url) => {
+    // Simple Vimeo URL validation (adjust regex if needed)
+    return /^https?:\/\/(www\.)?vimeo\.com\/\d+/.test(url.trim());
+  };
+
   const areModulesValid = () => {
     if (!modules.length) return false;
     return modules.every((module) => {
       if (!module.title.trim()) return false;
       if (!module.videos.length) return false;
       return module.videos.every(
-        (video) => video.title.trim() && video.videoFile
+        (video) => video.title.trim() && isValidVimeoUrl(video.videoUrl)
       );
     });
   };
@@ -90,86 +93,46 @@ const AddModulesPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!areModulesValid()) {
-      toast.error("Please fill all required module and video fields.");
+      toast.error("Please fill all required module and video fields with valid Vimeo URLs.");
       return;
     }
     setLoading(true);
-    const toastId = toast.loading("Uploading modules and videos...");
+    const toastId = toast.loading("Saving modules and videos...");
 
     try {
       for (const module of modules) {
-        const { data: moduleRes } = await axiosInstance.post(
-          "/modules/module",
-          {
-            title: module.title.trim(),
-            course: courseId,
-          }
-        );
+        const { data: moduleRes } = await axiosInstance.post("/modules/module", {
+          title: module.title.trim(),
+          course: courseId,
+        });
 
         for (const video of module.videos) {
-          const videoFormData = new FormData();
-          videoFormData.append("video", video.videoFile);
-          videoFormData.append("title", video.title.trim());
-          videoFormData.append("module", moduleRes._id);
-
-          await axiosInstance.post("/videos/videos", videoFormData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setUploadProgress((prev) => ({
-                ...prev,
-                [video.id]: percentCompleted,
-              }));
-            },
+          await axiosInstance.post("/vimeo/create", {
+            title: video.title.trim(),
+            videoUrl: video.videoUrl.trim(),
+            module: moduleRes._id,
           });
-
-          // Reset progress for this video after upload completes
-          setUploadProgress((prev) => ({
-            ...prev,
-            [video.id]: 0,
-          }));
         }
       }
 
-      toast.success("✅ Modules and videos added!", { id: toastId });
+      toast.success("✅ Modules and videos saved!", { id: toastId });
       navigate("/admin/dashboard/list");
     } catch (err) {
-      console.error("❌ Upload failed:", err);
-
-      if (err.response) {
-        console.error("Status:", err.response.status);
-        console.error("Headers:", err.response.headers);
-        console.error("Data:", err.response.data);
-      } else if (err.request) {
-        console.error("No response received:", err.request);
-      } else {
-        console.error("Error message:", err.message);
-      }
-
-      toast.error("❌ Upload failed. Check console for details.", {
-        id: toastId,
-      });
+      console.error("❌ Save failed:", err);
+      toast.error("❌ Save failed. Check console for details.", { id: toastId });
     } finally {
       setLoading(false);
-      setUploadProgress({});
     }
   };
 
   return (
     <div className="max-w-5xl mx-auto mt-8 p-8 border rounded-lg shadow bg-white min-h-[calc(100vh-100px)] overflow-y-auto">
       <h2 className="text-3xl font-bold mb-6 text-green-700 text-center">
-        Add Modules & Videos to Course
+        Add Modules & Vimeo Videos to Course
       </h2>
       <form onSubmit={handleSubmit} className="space-y-8">
         {modules.map((module, mIdx) => (
-          <div
-            key={module.id}
-            className="border p-6 rounded-md shadow-sm bg-gray-50"
-          >
+          <div key={module.id} className="border p-6 rounded-md shadow-sm bg-gray-50">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-green-800">
                 Module {mIdx + 1}
@@ -195,9 +158,7 @@ const AddModulesPage = () => {
                 type="text"
                 placeholder="Module Title"
                 value={module.title}
-                onChange={(e) =>
-                  handleModuleChange(mIdx, "title", e.target.value)
-                }
+                onChange={(e) => handleModuleChange(mIdx, "title", e.target.value)}
                 className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                 required
                 disabled={loading}
@@ -244,39 +205,20 @@ const AddModulesPage = () => {
 
                   <div>
                     <label className="block font-medium mb-1">
-                      Upload Video File <span className="text-red-500">*</span>
+                      Vimeo Video URL <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="file"
-                      accept="video/*"
+                      type="url"
+                      placeholder="https://vimeo.com/123456789"
+                      value={video.videoUrl}
                       onChange={(e) =>
-                        handleVideoChange(
-                          mIdx,
-                          vIdx,
-                          "videoFile",
-                          e.target.files[0]
-                        )
+                        handleVideoChange(mIdx, vIdx, "videoUrl", e.target.value)
                       }
                       className="w-full p-2 border rounded-md focus:ring-2 focus:ring-green-500"
                       required
                       disabled={loading}
                     />
                   </div>
-
-                  {/* Progress bar */}
-                  {uploadProgress[video.id] > 0 && (
-                    <div className="mt-2 w-full bg-gray-200 rounded-full h-4">
-                      <div
-                        className="bg-green-600 h-4 rounded-full transition-all"
-                        style={{ width: `${uploadProgress[video.id]}%` }}
-                      ></div>
-                    </div>
-                  )}
-                  {uploadProgress[video.id] > 0 && (
-                    <p className="text-sm text-green-700 mt-1">
-                      Uploading: {uploadProgress[video.id]}%
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
@@ -306,7 +248,7 @@ const AddModulesPage = () => {
           disabled={loading}
           className="block w-full py-4 bg-green-800 text-white rounded mt-6 font-bold hover:bg-green-900 disabled:opacity-60"
         >
-          {loading ? "Uploading..." : "Save Modules & Videos"}
+          {loading ? "Saving..." : "Save Modules & Videos"}
         </button>
       </form>
     </div>
@@ -314,3 +256,4 @@ const AddModulesPage = () => {
 };
 
 export default AddModulesPage;
+

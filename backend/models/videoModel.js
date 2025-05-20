@@ -4,8 +4,8 @@ import slugify from "slugify";
 const videoSchema = new mongoose.Schema({
   title: { type: String, required: true },
   slug: { type: String, unique: true },
-  videoUrl: { type: String, required: true },
-  videoPublicId: { type: String, required: true },
+  videoUrl: { type: String, required: true }, // Vimeo embed URL
+  vimeoId: { type: String, required: true },  // Vimeo video ID
   module: { type: mongoose.Schema.Types.ObjectId, ref: "Module", required: true },
 }, { timestamps: true });
 
@@ -26,3 +26,4 @@ videoSchema.pre("save", async function (next) {
 
 const Video = mongoose.model("Video", videoSchema);
 export default Video;
+
