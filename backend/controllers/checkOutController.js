@@ -8,22 +8,18 @@ import dotenv from "dotenv";
 dotenv.config();
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
-// Payment intent creation (on client request)
+// CREATE PAYMENT INTENT
 export const handleCoursePayment = async (req, res) => {
   try {
     const { courseId } = req.body;
     const customer_email = req.user?.email;
 
     if (!courseId) return res.status(400).json({ error: "Missing courseId" });
-    if (!customer_email)
-      return res.status(400).json({ error: "Missing customer email" });
+    if (!customer_email) return res.status(400).json({ error: "Missing customer email" });
 
     const course = await Course.findById(courseId);
     if (!course) return res.status(404).json({ error: "Course not found" });
-    if (isNaN(course.price))
-      return res.status(400).json({ error: "Invalid course price" });
 
-    // Allow retry if previous enrollment is not completed
     const existing = await Enrollment.findOne({
       user: req.user._id,
       course: course._id,
@@ -31,13 +27,9 @@ export const handleCoursePayment = async (req, res) => {
 
     if (existing) {
       if (existing.status === "completed") {
-        return res
-          .status(400)
-          .json({ error: "You have already enrolled in this course." });
+        return res.status(400).json({ error: "You are already enrolled." });
       }
-
-      // Delete failed or pending enrollment to allow retry
-      await Enrollment.deleteOne({ _id: existing._id });
+      await Enrollment.deleteOne({ _id: existing._id }); // remove old pending/failed
     }
 
     const amountInFils = Math.round(course.price * 100);
@@ -46,7 +38,7 @@ export const handleCoursePayment = async (req, res) => {
       amount: amountInFils,
       currency: "AED",
       email: customer_email,
-      courseId: courseId, // pass courseId directly here
+      courseId,
     });
 
     await Enrollment.create({
@@ -56,17 +48,8 @@ export const handleCoursePayment = async (req, res) => {
       status: "pending",
     });
 
-    const redirectUrl =
-      paymentData.redirect_url || paymentData.confirmation_url;
-    if (!redirectUrl) {
-      console.error("Redirect URL missing in Ziina response:", paymentData);
-      return res
-        .status(500)
-        .json({ error: "Ziina did not return a redirect URL." });
-    }
-
     res.json({
-      paymentUrl: redirectUrl,
+      paymentUrl: paymentData.redirect_url || paymentData.confirmation_url,
       payment_intent_id: paymentData.id,
     });
   } catch (err) {
@@ -78,67 +61,55 @@ export const handleCoursePayment = async (req, res) => {
   }
 };
 
+// HANDLE WEBHOOK
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
-    const rawIp =
-      req.headers["x-forwarded-for"]?.split(",").shift() ||
-      req.socket?.remoteAddress;
+    const rawIp = req.headers["x-forwarded-for"]?.split(",").shift() || req.socket?.remoteAddress;
     const ip = rawIp.replace("::ffff:", "");
 
-    console.log("Webhook received from IP:", ip);
+    console.log("📬 Webhook received from IP:", ip);
     if (!allowedIps.includes(ip)) {
-      console.warn("❌ Webhook rejected — invalid IP:", ip);
+      console.warn("❌ Invalid IP:", ip);
       return res.status(403).send("Forbidden");
     }
 
-    const rawBody = JSON.stringify(req.body);
+    const rawBody = req.body.toString(); // raw body is a buffer
     const signature = req.headers["x-hmac-signature"];
+    const parsed = JSON.parse(rawBody);
 
-    if (
-      !signature ||
-      typeof signature !== "string" ||
-      !/^[a-f0-9]+$/i.test(signature)
-    ) {
-      return res.status(400).send("Malformed or missing signature");
+    if (!signature || typeof signature !== "string") {
+      return res.status(400).send("Missing signature");
     }
 
-    const computedHmac = crypto
-      .createHmac("sha256", ZIINA_SECRET_KEY)
-      .update(rawBody)
-      .digest();
-
+    const computedHmac = crypto.createHmac("sha256", ZIINA_SECRET_KEY).update(rawBody).digest();
     const incomingSig = Buffer.from(signature, "hex");
 
     if (
       incomingSig.length !== computedHmac.length ||
       !crypto.timingSafeEqual(incomingSig, computedHmac)
     ) {
-      console.error("Invalid HMAC signature", { receivedSignature: signature });
+      console.error("❌ Invalid HMAC signature");
       return res.status(400).send("Invalid signature");
     }
 
-    const event = req.body;
-    const status = event?.data?.status;
-    const paymentIntentId = event?.data?.id;
-    const userEmail = event?.data?.metadata?.userEmail;
-    const courseId = event?.data?.metadata?.courseId;
+    const status = parsed?.data?.status;
+    const paymentIntentId = parsed?.data?.id;
+    const metadata = parsed?.data?.metadata || {};
+    const userEmail = metadata.userEmail;
+    const courseId = metadata.courseId;
+
+    console.log("📦 Webhook Data:", { status, userEmail, courseId });
 
     if (!userEmail || !courseId || !paymentIntentId) {
-      console.error("Missing metadata or payment ID");
-      return res.status(400).send("Invalid webhook payload");
+      return res.status(400).send("Missing metadata");
     }
 
     const user = await User.findOne({ email: userEmail });
-    if (!user) {
-      console.error("User not found:", userEmail);
-      return res.status(404).send("User not found");
-    }
-
     const course = await Course.findById(courseId);
-    if (!course) {
-      console.error("Course not found:", courseId);
-      return res.status(404).send("Course not found");
+    if (!user || !course) {
+      console.error("❌ User or course not found");
+      return res.status(404).send("User or course not found");
     }
 
     const existingEnrollment = await Enrollment.findOne({
@@ -147,15 +118,15 @@ export const handleZiinaWebhook = async (req, res) => {
       paymentIntentId,
     });
 
-    // ✅ Handle successful payments
-    if (["succeeded", "completed"].includes(status)) {
+    const completedStatuses = ["succeeded", "completed", "authorized"];
+    const failedStatuses = ["failed", "cancelled", "expired", "rejected"];
+
+    if (completedStatuses.includes(status)) {
       if (existingEnrollment) {
         if (existingEnrollment.status !== "completed") {
           existingEnrollment.status = "completed";
           await existingEnrollment.save();
-          console.log("✅ Enrollment updated to completed for:", userEmail);
-        } else {
-          console.log("Enrollment already marked as completed.");
+          console.log("✅ Enrollment marked as completed for", userEmail);
         }
       } else {
         await Enrollment.create({
@@ -164,31 +135,24 @@ export const handleZiinaWebhook = async (req, res) => {
           paymentIntentId,
           status: "completed",
         });
-        console.log("✅ Enrollment created via webhook for:", userEmail);
+        console.log("✅ New enrollment completed for", userEmail);
       }
       return res.status(200).send("Enrollment updated");
     }
 
-    // ❌ Handle failed/cancelled payments
-    const failedStatuses = ["failed", "cancelled", "expired", "rejected"];
     if (failedStatuses.includes(status)) {
       if (existingEnrollment && existingEnrollment.status !== "completed") {
         existingEnrollment.status = "failed";
         await existingEnrollment.save();
-        console.warn("❌ Enrollment marked as failed for:", userEmail);
-      } else {
-        console.warn(
-          "No pending enrollment to mark as failed, or already completed."
-        );
+        console.warn("❌ Enrollment marked as failed for", userEmail);
       }
       return res.status(200).send("Marked enrollment as failed");
     }
 
-    // Unknown or other status
-    console.log(`⚠️ Webhook received with unhandled status: '${status}'`);
-    res.status(200).send("Unhandled status received");
+    console.log("⚠️ Unhandled status:", status);
+    res.status(200).send("Unhandled status");
   } catch (error) {
-    console.error("Webhook processing error:", error);
-    res.status(500).send("Internal Server Error");
+    console.error("Webhook error:", error);
+    res.status(500).send("Server error");
   }
 };
