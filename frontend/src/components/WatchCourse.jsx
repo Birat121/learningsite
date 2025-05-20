@@ -116,14 +116,14 @@ const WatchCourse = () => {
   return (
     <div className="min-h-screen bg-gray-50 pt-32 pb-12">
       <div className="max-w-6xl mx-auto px-4 mb-8 mt-8">
-        <h1 className="text-4xl font-bold text-center text-blue-700">
+        <h1 className="text-4xl font-bold text-center text-[rgb(0,104,80)]">
           {courseTitle}
         </h1>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row gap-8">
         <aside className="md:w-1/3 bg-white rounded-2xl shadow-lg p-5 overflow-y-auto max-h-[75vh] border border-gray-100">
-          <h2 className="text-2xl font-bold mb-4 text-blue-700 border-b pb-2">
+          <h2 className="text-2xl font-bold mb-4 text-[rgb(0,104,80)] border-b pb-2">
             Modules
           </h2>
           {modules.length === 0 ? (
@@ -147,7 +147,7 @@ const WatchCourse = () => {
                             selectedVideo &&
                             selectedVideo._id === video._id &&
                             selectedModuleId === module._id
-                              ? "bg-blue-600 text-white font-semibold"
+                              ? "bg-[rgb(0,104,80] text-white font-semibold"
                               : "text-gray-700 hover:bg-blue-100"
                           }`}
                         >
