@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
 
-// ✅ 1. Create payment intent
+// 1️⃣ Create Payment Intent
 export const handleCoursePayment = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -23,7 +23,6 @@ export const handleCoursePayment = async (req, res) => {
       return res.status(400).json({ error: "Invalid course or price" });
     }
 
-    // Check for existing enrollment
     const existing = await Enrollment.findOne({
       user: req.user._id,
       course: course._id,
@@ -32,17 +31,16 @@ export const handleCoursePayment = async (req, res) => {
     if (existing && existing.status === "completed") {
       return res.status(400).json({ error: "Already enrolled in this course" });
     } else if (existing) {
-      await Enrollment.deleteOne({ _id: existing._id }); // Remove pending/failed
+      await Enrollment.deleteOne({ _id: existing._id });
     }
 
-    const amountInFils = Math.round(course.price * 100); // AED to fils
+    const amountInFils = Math.round(course.price * 100); // Convert AED to fils
 
-    // Pass courseId directly here (not inside metadata)
     const paymentData = await createPaymentIntent({
       amount: amountInFils,
       currency: "AED",
       email: customer_email,
-      courseId, // <- here is the fix
+      courseId,
     });
 
     await Enrollment.create({
@@ -65,14 +63,14 @@ export const handleCoursePayment = async (req, res) => {
   }
 };
 
-// ✅ 2. Handle webhook from Ziina
+// 2️⃣ Handle Webhook
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
     const rawIp =
       req.headers["x-forwarded-for"]?.split(",").shift() ||
       req.socket?.remoteAddress;
-    const ip = rawIp.replace("::ffff:", "");
+    const ip = rawIp?.replace("::ffff:", "");
 
     console.log("🔔 Webhook received from:", ip);
 
@@ -154,7 +152,6 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(200).send("Enrollment recorded");
     }
 
-    // Handle failed payments
     if (["failed", "cancelled", "expired", "rejected"].includes(status)) {
       if (enrollment && enrollment.status !== "completed") {
         enrollment.status = "failed";

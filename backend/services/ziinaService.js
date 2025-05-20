@@ -9,15 +9,10 @@ const SUCCESS_URL = process.env.SUCCESS_URL;
 const CANCEL_URL = process.env.CANCEL_URL;
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
-let webhookInitialized = false; // ensures webhook is not created repeatedly
+let webhookInitialized = false;
 
 export async function createPaymentIntent({ amount, currency, email, courseId }) {
   try {
-    const metadata = {
-      courseId,
-      userEmail: email,
-    };
-
     const paymentPayload = {
       amount,
       currency_code: currency,
@@ -27,7 +22,10 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       success_url: SUCCESS_URL,
       cancel_url: CANCEL_URL,
       test: true,
-      metadata,
+      metadata: {
+        courseId,
+        userEmail: email,
+      },
     };
 
     console.log('Creating payment intent with:', paymentPayload);
@@ -46,7 +44,6 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
     const paymentIntentData = paymentIntentResponse.data;
     console.log('✅ Payment intent created:', paymentIntentData);
 
-    // Optional: Setup webhook only once per runtime
     if (!webhookInitialized) {
       await setupWebhook();
       webhookInitialized = true;
