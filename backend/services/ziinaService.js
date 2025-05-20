@@ -48,9 +48,9 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
     }
 
     return response.data;
-  } catch (error) {
-    console.error("❌ Ziina payment intent error:", error.message);
-    throw error;
+  } catch (err) {
+  console.error('❌ Ziina payment intent error:', err.response?.data || err.message);
+    throw err;
   }
 }
 
