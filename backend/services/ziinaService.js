@@ -18,6 +18,9 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
   try {
     const operation_id = uuidv4();
 
+    // Set expiry to 1 hour from now (or any duration you want)
+    const expiry = Date.now() + 60 * 60 * 1000;
+
     const paymentPayload = {
       amount,
       currency_code: currency,
@@ -52,10 +55,11 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
 
     return response.data;
   } catch (err) {
-  console.error('❌ Ziina payment intent error:', err.response?.data || err.message);
+    console.error('❌ Ziina payment intent error:', err.response?.data || err.message);
     throw err;
   }
 }
+
 
 async function setupWebhook() {
   try {
