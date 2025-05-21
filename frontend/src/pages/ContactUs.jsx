@@ -64,7 +64,7 @@ const ContactPage = () => {
           name="description"
           content="Book your free consultation with Kirren and explore real estate opportunities in Dubai. Let's start your property journey together."
         />
-        <link rel="canonical" href="https://koffeewithkirren.netlify.app/contact" />
+        <link rel="canonical" href="https://koffeewithkirren.com/contact" />
       </Helmet>
 
       <section className="pt-24 pb-12 px-6 mt-20 bg-white text-gray-800 mb-4 min-h-screen flex items-center justify-center">
