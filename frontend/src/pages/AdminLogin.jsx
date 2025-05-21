@@ -13,25 +13,31 @@ const AdminLogin = () => {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const response = await axiosInstance.post("/auth/admin", formData, {
-        withCredentials: true,
-      });
+  // Show a loading toast and keep a reference to dismiss it later
+  const loadingToastId = toast.loading("Logging in... Please wait");
 
-      localStorage.setItem("adminToken", response.data.token);
+  try {
+    const response = await axiosInstance.post("/auth/admin", formData, {
+      withCredentials: true,
+    });
 
-      toast.success("Admin login successful!");
-      navigate("/admin/dashboard");
-    } catch (err) {
-      const message = err.response?.data?.message || "Login failed";
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    localStorage.setItem("adminToken", response.data.token);
+
+    toast.success("Admin login successful!");
+    navigate("/admin/dashboard");
+  } catch (err) {
+    const message = err.response?.data?.message || "Login failed";
+    toast.error(message);
+  } finally {
+    // Dismiss the loading toast
+    toast.dismiss(loadingToastId);
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-gray-200 px-4">

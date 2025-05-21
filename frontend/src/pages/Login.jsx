@@ -37,6 +37,7 @@ const AuthPage = () => {
     }
 
     setLoading(true);
+    const loadingToast = toast.loading(isSignIn ? "Logging in..." : "Creating account...");
 
     try {
       const url = isSignIn ? "/auth/login" : "/auth/register";
@@ -48,21 +49,20 @@ const AuthPage = () => {
         withCredentials: true,
       });
 
+      toast.dismiss(loadingToast);
       toast.success(
         isSignIn ? "Logged in successfully!" : "Account created successfully!"
       );
 
       if (isSignIn) {
-        // Await login to ensure user state and token are set before navigating
         await login(res.data.token, res.data.user);
-        navigate("/enrolledCOurse"); // Fix spelling here if needed
+        navigate("/enrolledCourse");
       } else {
-        // After register, switch to sign-in mode and clear form
         setIsSignIn(true);
         setFormData({ name: "", email: "", password: "" });
       }
     } catch (err) {
-      console.error(err);
+      toast.dismiss(loadingToast);
       const message = err.response?.data?.message || "Something went wrong.";
       setError(message);
       toast.error(message);
@@ -72,8 +72,7 @@ const AuthPage = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href =
-      "https://dubai-rea-lstate.onrender.com/api/auth/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
   };
 
   return (
@@ -158,24 +157,6 @@ const AuthPage = () => {
                 className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300"
               />
             </div>
-
-            {isSignIn && (
-              <div className="flex items-center justify-between">
-                <label className="flex items-center text-sm text-gray-900">
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                  />
-                  <span className="ml-2">Remember me</span>
-                </label>
-                <a
-                  href="#"
-                  className="text-sm text-blue-600 hover:text-blue-500 font-medium"
-                >
-                  Forgot your password?
-                </a>
-              </div>
-            )}
 
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>

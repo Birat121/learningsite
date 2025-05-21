@@ -12,11 +12,19 @@ const AdminPage = () => {
   const isActive = (path) => location.pathname === `/admin/dashboard/${path}`;
 
   const handleLogout = async () => {
+  const toastId = toast.loading("Logging out... Please wait");
+
+  try {
     await axiosInstance.post("/auth/admin/logout", {}, { withCredentials: true });
     localStorage.removeItem("adminToken");
-    navigate("/admin/login");
     toast.success("Logged out successfully!");
-  };
+    navigate("/admin/login");
+  } catch (error) {
+    toast.error("Logout failed. Please try again.");
+  } finally {
+    toast.dismiss(toastId);
+  }
+};
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
