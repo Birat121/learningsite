@@ -5,35 +5,31 @@ import { v4 as uuidv4 } from "uuid";
 dotenv.config();
 
 const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
+const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
 const ZIINA_API_URL = process.env.ZIINA_API_URL;
-const SUCCESS_URL = process.env.SUCCESS_URL;
-const CANCEL_URL = process.env.CANCEL_URL;
+const SUCCESS_URL = process.env.SUCCESS_URL;  // Make sure this includes {PAYMENT_INTENT_ID}
+const CANCEL_URL = process.env.CANCEL_URL;    // Make sure this includes {PAYMENT_INTENT_ID}
 const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 let webhookInitialized = false;
-
-
 
 export async function createPaymentIntent({ amount, currency, email, courseId }) {
   try {
     const operation_id = uuidv4();
 
-    // Set expiry to 1 hour from now (or any duration you want)
-    const expiry = Date.now() + 60 * 60 * 1000; // 1 hour from now in milliseconds
-
+    // Set expiry to 1 hour from now
+    const expiry = Date.now() + 60 * 60 * 1000; // 1 hour in ms
 
     const paymentPayload = {
-      amount,
+      amount: Math.round(amount * 100), // Multiply here: amount in fils (e.g., 100 AED -> 10000)
       currency_code: currency,
       message: `Payment for course`,
-      success_url: SUCCESS_URL,
-      cancel_url: CANCEL_URL,
+      success_url: SUCCESS_URL,  // Should contain {PAYMENT_INTENT_ID} to be replaced by API
+      cancel_url: CANCEL_URL,    // Same here
       failure_url: CANCEL_URL,
-      test: true,
+      test: true,  // Set to false in production
       transaction_source: "directApi",
       expiry: expiry.toString(),
-
-
       metadata: {
         courseId,
         userEmail: email,
@@ -62,12 +58,11 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
   }
 }
 
-
 async function setupWebhook() {
   try {
     const res = await axios.post(
       `${ZIINA_API_URL}/webhook`,
-      { url: WEBHOOK_URL, secret: ZIINA_SECRET_KEY },
+      { url: WEBHOOK_URL, secret: ZIINA_WEBHOOK_SECRET },
       {
         headers: {
           Authorization: `Bearer ${ZIINA_SECRET_KEY}`,
@@ -84,3 +79,4 @@ async function setupWebhook() {
     }
   }
 }
+

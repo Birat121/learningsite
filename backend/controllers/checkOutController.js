@@ -6,7 +6,7 @@ import crypto from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
-const ZIINA_SECRET_KEY = process.env.ZIINA_SECRET_KEY;
+const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
 
 export const handleCoursePayment = async (req, res) => {
   try {
@@ -33,10 +33,9 @@ export const handleCoursePayment = async (req, res) => {
       await Enrollment.deleteOne({ _id: existing._id });
     }
 
-    const amountInFils = Math.round(course.price * 100);
-
+    // Pass raw price; conversion to fils done inside createPaymentIntent
     const paymentData = await createPaymentIntent({
-      amount: amountInFils,
+      amount: course.price,
       currency: "AED",
       email: customer_email,
       courseId,
@@ -62,8 +61,8 @@ export const handleCoursePayment = async (req, res) => {
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
-    const rawIp = req.headers["x-forwarded-for"]?.split(",").shift() || req.socket?.remoteAddress;
-    const ip = rawIp?.replace("::ffff:", "");
+    const rawIp = req.headers["x-forwarded-for"]?.split(",").shift() || req.connection?.remoteAddress;
+    const ip = rawIp?.replace("::ffff:", "").trim();
 
     console.log("🔔 Webhook from IP:", ip);
 
@@ -74,7 +73,7 @@ export const handleZiinaWebhook = async (req, res) => {
     const rawBody = JSON.stringify(req.body);
     const signature = req.headers["x-hmac-signature"];
 
-    const hmac = crypto.createHmac("sha256", ZIINA_SECRET_KEY).update(rawBody).digest();
+    const hmac = crypto.createHmac("sha256", ZIINA_WEBHOOK_SECRET).update(rawBody).digest();
     const incomingSig = Buffer.from(signature, "hex");
 
     if (!crypto.timingSafeEqual(hmac, incomingSig)) {
@@ -83,7 +82,7 @@ export const handleZiinaWebhook = async (req, res) => {
 
     const event = req.body;
     const { id: paymentIntentId, status, metadata } = event?.data || {};
-    const { userEmail, courseId } = metadata;
+    const { userEmail, courseId } = metadata || {};
 
     if (!userEmail || !courseId || !paymentIntentId) {
       return res.status(400).send("Missing metadata");
