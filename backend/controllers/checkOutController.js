@@ -68,7 +68,6 @@ export const handleCoursePayment = async (req, res) => {
 
 export const handleZiinaWebhook = async (req, res) => {
   try {
-    // IP Whitelist check
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
     const rawIp = req.headers["x-forwarded-for"]?.split(",").shift() || req.connection?.remoteAddress;
     const ip = rawIp?.replace("::ffff:", "").trim();
@@ -79,7 +78,6 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(403).send("Forbidden");
     }
 
-    // HMAC signature verification
     const rawBody = req.body.toString("utf8");
     const signature = req.headers["x-hmac-signature"];
 
@@ -96,20 +94,19 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(400).send("Invalid signature");
     }
 
-    // Parse event payload
     const event = JSON.parse(rawBody);
-    console.log("📦 Webhook received:", JSON.stringify(event, null, 2));
-
     const { id: paymentIntentId, status, metadata } = event?.data || {};
-    if (!metadata) {
-      return res.status(400).send("Missing metadata");
-    }
 
-    const { userEmail, courseId } = metadata;
+    console.log("📦 Webhook event:", JSON.stringify(event, null, 2));
+    console.log("🔍 PaymentIntent ID:", paymentIntentId);
+    console.log("🔍 Status received:", status);
+    console.log("🔍 Metadata received:", metadata);
+
+    const { userEmail, courseId } = metadata || {};
 
     if (!userEmail || !courseId || !paymentIntentId) {
-      console.error("⚠️ Missing required metadata:", { userEmail, courseId, paymentIntentId });
-      return res.status(400).send("Missing metadata");
+      console.error("⚠️ Missing metadata or paymentIntentId:", { userEmail, courseId, paymentIntentId });
+      return res.status(400).send("Missing metadata or paymentIntentId");
     }
 
     const user = await User.findOne({ email: userEmail });
@@ -120,39 +117,41 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(404).send("User or Course not found");
     }
 
-    // Map Ziina status to internal status
-    const statusMap = {
-      completed: "completed",
-      succeeded: "completed",
-      authorized: "completed",
-      failed: "failed",
-      cancelled: "failed",
-      expired: "failed",
-    };
+    // Define your completed payment statuses
+    const successfulStatuses = ["completed", "succeeded", "authorized", "captured"];
+    const failedStatuses = ["failed", "cancelled", "expired"];
 
-    const enrollmentStatus = statusMap[status] || "pending";
+    const enrollmentStatus = successfulStatuses.includes(status)
+      ? "completed"
+      : failedStatuses.includes(status)
+      ? "failed"
+      : "pending";
 
-    // Upsert enrollment
+    if (enrollmentStatus === "pending") {
+      console.warn("⚠️ Payment is still pending. No access will be granted yet.");
+    }
+
     const enrollment = await Enrollment.findOneAndUpdate(
       {
         user: user._id,
         course: course._id,
+        paymentIntentId,
       },
       {
         $set: {
           status: enrollmentStatus,
           enrolledAt: new Date(),
+        },
+        $setOnInsert: {
+          user: user._id,
+          course: course._id,
           paymentIntentId,
         },
       },
-      {
-        upsert: true,
-        new: true,
-      }
+      { upsert: true, new: true }
     );
 
-    console.log("✅ Enrollment upserted:", enrollment);
-
+    console.log(`✅ Enrollment saved with status: ${enrollmentStatus}`);
     return res.status(200).send(`Enrollment ${enrollmentStatus}`);
   } catch (err) {
     console.error("❌ Webhook processing error:", err);
