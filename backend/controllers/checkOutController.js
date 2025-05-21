@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
 
+// 🎯 INITIATE PAYMENT
 export const handleCoursePayment = async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -33,9 +34,8 @@ export const handleCoursePayment = async (req, res) => {
       await Enrollment.deleteOne({ _id: existing._id });
     }
 
-    // Pass raw price; conversion to fils done inside createPaymentIntent
     const paymentData = await createPaymentIntent({
-      amount: course.price,
+      amount: course.price, // raw AED, backend converts to fils
       currency: "AED",
       email: customer_email,
       courseId,
@@ -58,6 +58,7 @@ export const handleCoursePayment = async (req, res) => {
   }
 };
 
+// 🔔 HANDLE WEBHOOK
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
@@ -65,22 +66,22 @@ export const handleZiinaWebhook = async (req, res) => {
     const ip = rawIp?.replace("::ffff:", "").trim();
 
     console.log("🔔 Webhook from IP:", ip);
-
     if (!allowedIps.includes(ip)) {
       return res.status(403).send("Forbidden");
     }
 
-    const rawBody = JSON.stringify(req.body);
+    const rawBody = req.body.toString("utf8");
     const signature = req.headers["x-hmac-signature"];
-
     const hmac = crypto.createHmac("sha256", ZIINA_WEBHOOK_SECRET).update(rawBody).digest();
     const incomingSig = Buffer.from(signature, "hex");
 
-    if (!crypto.timingSafeEqual(hmac, incomingSig)) {
+    if (!signature || !crypto.timingSafeEqual(hmac, incomingSig)) {
       return res.status(400).send("Invalid signature");
     }
 
-    const event = req.body;
+    const event = JSON.parse(rawBody);
+    console.log("📦 Webhook received:", JSON.stringify(event, null, 2));
+
     const { id: paymentIntentId, status, metadata } = event?.data || {};
     const { userEmail, courseId } = metadata || {};
 
