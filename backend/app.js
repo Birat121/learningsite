@@ -35,7 +35,7 @@ const __dirname = path.dirname(__filename);
 // CORS config
 app.use(
   cors({
-    origin: "https://koffeewithkirren.netlify.app/",
+    origin: "https://koffeewithkirren.netlify.app",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
