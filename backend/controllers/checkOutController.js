@@ -61,11 +61,6 @@ export const handleCoursePayment = async (req, res) => {
 // 🔔 HANDLE WEBHOOK
 
 
-
-
-
-
-
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];

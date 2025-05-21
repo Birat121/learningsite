@@ -46,6 +46,8 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       },
     });
 
+    console.log("✅ Payment intent created:", response.data);
+
     if (!webhookInitialized) {
       await setupWebhook();
       webhookInitialized = true;
