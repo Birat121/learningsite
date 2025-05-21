@@ -61,6 +61,7 @@ export const handleCoursePayment = async (req, res) => {
 // 🔔 HANDLE WEBHOOK
 
 
+
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
@@ -112,7 +113,6 @@ export const handleZiinaWebhook = async (req, res) => {
       return res.status(404).send("User or Course not found");
     }
 
-    // Define your completed payment statuses
     const successfulStatuses = ["completed", "succeeded", "authorized", "captured"];
     const failedStatuses = ["failed", "cancelled", "expired"];
 
@@ -145,6 +145,18 @@ export const handleZiinaWebhook = async (req, res) => {
       },
       { upsert: true, new: true }
     );
+
+    // ✅ Unlock course for user if payment is completed
+    if (enrollmentStatus === "completed") {
+      const alreadyEnrolled = user.enrolledCourses.includes(course._id);
+      if (!alreadyEnrolled) {
+        user.enrolledCourses.push(course._id);
+        await user.save();
+        console.log(`✅ Course "${course.title}" unlocked for ${user.email}`);
+      } else {
+        console.log(`ℹ️ User already enrolled in course "${course.title}"`);
+      }
+    }
 
     console.log(`✅ Enrollment saved with status: ${enrollmentStatus}`);
     return res.status(200).send(`Enrollment ${enrollmentStatus}`);
