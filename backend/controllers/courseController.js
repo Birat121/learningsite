@@ -207,7 +207,7 @@ export const getEnrolledCourses = async (req, res) => {
 
     const enrollments = await Enrollment.find({
       user: userId,
-      status: { $in: ['completed', 'pending'] }, // Include completed and pending
+      status: { $in: ['completed'] }, // Include completed 
     }).populate("course");
 
     const courses = enrollments
