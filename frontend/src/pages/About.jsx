@@ -115,10 +115,6 @@ const About = () => {
                 establishing a solid understanding of mortgage products and
                 financing strategies, which is invaluable when working with
                 international clients navigating different financial systems.
-                Over 16 years, I refined my skills at a UK housing association,
-                gaining invaluable experience in managing the entire sales
-                process, working closely with developers, and leading a part of
-                the sales team.
               </p>
               <p className="text-lg text-gray-700 leading-relaxed">
                 Over 16 years, I refined my skills at a UK housing association,
