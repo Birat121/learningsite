@@ -171,7 +171,7 @@ const Courses = () => {
           name="keywords"
           content="real estate courses, property training, real estate licensing, real estate investment, online property course, AED"
         />
-        <link rel="canonical" href="https://koffeewithkirren.com/courses" />
+        <link rel="canonical" href="https://koffeewithkirren.netlify.app/courses" />
       </Helmet>
 
       <div className="max-w-7xl mx-auto">

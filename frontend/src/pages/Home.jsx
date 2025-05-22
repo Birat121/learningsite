@@ -26,7 +26,7 @@ const Home = () => {
         />
 
         {/* Canonical URL */}
-        <link rel="canonical" href="https://koffeewithkirren.com/" />
+        <link rel="canonical" href="https://koffeewithkirren.netlify.app/" />
       </Helmet>
     <Hero />
     <Introduction/>

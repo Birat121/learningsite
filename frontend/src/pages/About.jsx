@@ -5,7 +5,7 @@ import kirren1 from "../assets/kirren1.jpg";
 import kirren2 from "../assets/family.jpg"; // I'll use this after the first paragraph
 import kirren3 from "../assets/malawai.jpg";
 import kirren4 from "../assets/koffe8.jpeg";
-import kirren5 from "../assets/koffe9.jpg";
+import kirren5 from "../assets/koffe10.jpg";
 
 // Animation variants
 const fadeInUp = {
@@ -26,7 +26,7 @@ const About = () => {
           name="keywords"
           content="real estate mentor, real estate education, property buying and selling, real estate strategies"
         />
-        <link rel="canonical" href="https://koffeewithkirren.com/about" />
+        <link rel="canonical" href="https://koffeewithkirren.netlify.app/about" />
       </Helmet>
 
       <section className="bg-gray-100 py-20 px-6 md:px-24 mt-20">

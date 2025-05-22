@@ -84,7 +84,7 @@ const ReasonsToChooseDubaiRealEstate = () => {
           name="description"
           content="Discover the top reasons to invest in Dubai's booming real estate market. Explore infrastructure, ROI, safety, Golden Visa, and more."
         />
-        <link rel="canonical" href="https://koffeewithkirren.com/why-dubai-real-estate" />
+        <link rel="canonical" href="https://koffeewithkirren.netlify.app/why-dubai-real-estate" />
       </Helmet>
 
       <div className="max-w-6xl mx-auto text-center space-y-12 sm:space-y-16">
