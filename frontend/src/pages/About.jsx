@@ -5,7 +5,8 @@ import kirren1 from "../assets/kirren1.jpg";
 import kirren2 from "../assets/family.jpg"; // I'll use this after the first paragraph
 import kirren3 from "../assets/malawai.jpg";
 import kirren4 from "../assets/koffe8.jpeg";
-import kirren5 from "../assets/koffe10.jpg";
+import kirren5 from "../assets/koffe9.jpg";
+import kirren6 from "../assets/koffe10.jpg";
 
 // Animation variants
 const fadeInUp = {
@@ -163,7 +164,7 @@ const About = () => {
             className="flex flex-col md:flex-row items-center gap-10 md:gap-16"
           >
             <img
-              src={kirren4}
+              src={kirren6}
               alt="Dubai off-plan property expert"
               className="w-full max-w-md rounded-xl shadow-lg object-cover"
             />
