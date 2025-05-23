@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
 
 const Introduction = () => {
   const [content, setContent] = useState(null);
@@ -9,10 +9,10 @@ const Introduction = () => {
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await axiosInstance.get('intro/intro');
+        const res = await axiosInstance.get("intro/intro");
         setContent(res.data);
       } catch (error) {
-        console.error('Failed to fetch introduction content:', error);
+        console.error("Failed to fetch introduction content:", error);
       }
     };
 
@@ -32,18 +32,21 @@ const Introduction = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-10">
         {/* Left Side Image */}
         <div className="w-full md:w-1/2 flex justify-center">
-          {imageLoaded ? (
+          <div className="w-full md:w-1/2 flex justify-center relative">
+            {!imageLoaded && (
+              <div className="absolute w-full max-w-md sm:max-w-lg md:max-w-full h-[250px] sm:h-[300px] bg-gray-200 animate-pulse rounded-md" />
+            )}
             <img
               src={content.image}
               alt="Introduction"
               onLoad={() => setImageLoaded(true)}
-              className="w-full max-w-md sm:max-w-lg md:max-w-full h-auto object-cover rounded-md"
+              className={`w-full max-w-md sm:max-w-lg md:max-w-full h-auto object-cover rounded-md transition-opacity duration-300 ${
+                imageLoaded ? "opacity-100" : "opacity-0"
+              }`}
               loading="eager"
               decoding="async"
             />
-          ) : (
-            <div className="w-full max-w-md sm:max-w-lg md:max-w-full h-[250px] sm:h-[300px] bg-gray-200 animate-pulse rounded-md" />
-          )}
+          </div>
         </div>
 
         {/* Right Side Text */}
@@ -79,4 +82,3 @@ const Introduction = () => {
 };
 
 export default Introduction;
-
