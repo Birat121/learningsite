@@ -33,19 +33,19 @@ const Introduction = () => {
         {/* Left Side Image */}
         <div className="w-full md:w-1/2 flex justify-center">
           <div className="w-full md:w-1/2 flex justify-center relative">
-            {!imageLoaded && (
-              <div className="absolute w-full max-w-md sm:max-w-lg md:max-w-full h-[250px] sm:h-[300px] bg-gray-200 animate-pulse rounded-md" />
-            )}
-            <img
-              src={content.image}
-              alt="Introduction"
-              onLoad={() => setImageLoaded(true)}
-              className={`w-full max-w-md sm:max-w-lg md:max-w-full h-auto object-cover rounded-md transition-opacity duration-300 ${
-                imageLoaded ? "opacity-100" : "opacity-0"
-              }`}
-              loading="eager"
-              decoding="async"
-            />
+            <div className="w-full md:w-1/2 flex justify-center">
+  <img
+    src={content.image}
+    alt="Introduction"
+    onLoad={() => setImageLoaded(true)}
+    className={`w-full h-auto object-cover rounded-md transition-opacity duration-300 ${
+      imageLoaded ? 'opacity-100' : 'opacity-0'
+    }`}
+    loading="eager"
+    decoding="async"
+  />
+</div>
+
           </div>
         </div>
 
