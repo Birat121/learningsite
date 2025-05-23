@@ -2,7 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet";
 import { motion } from "framer-motion";
 import kirren1 from "../assets/kirren1.jpg";
-import kirren2 from "../assets/family.jpg"; // I'll use this after the first paragraph
+import kirren2 from "../assets/family.jpg";
 import kirren3 from "../assets/malawai.jpg";
 import kirren4 from "../assets/koffe8.jpeg";
 import kirren5 from "../assets/koffe9.jpg";
@@ -33,38 +33,33 @@ const About = () => {
       <section className="bg-gray-100 py-20 px-6 md:px-24 mt-20">
         <div className="max-w-7xl mx-auto space-y-24">
           {/* Why Choose Me */}
-         <motion.div
-  variants={fadeInUp}
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true }}
-  className="max-w-3xl mx-auto text-center"
->
-  <h2 className="text-4xl sm:text-5xl font-bold text-green-900 mb-6">
-    Why Choose Me?
-  </h2>
+          <motion.div
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="max-w-3xl mx-auto text-center"
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-green-900 mb-6">
+              Why Choose Me?
+            </h2>
 
-  {/* Container for paragraph and image — swaps order on mobile */}
-  <div className="flex flex-col-reverse md:flex-col items-center">
-    {/* Paragraph */}
-    <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mt-6 md:mt-0 max-w-full">
-      My deep understanding of the real estate market is the foundation
-      of the value I bring to my clients, both local and international.
-      With over 26 years of experience, I offer comprehensive expertise
-      across all facets of the industry.
-    </p>
-
-    {/* Image */}
-    <div className="max-w-full w-full max-w-md mx-auto rounded-lg shadow-md overflow-hidden mt-8 md:mt-12">
-      <img
-        src={kirren1}
-        alt="Representative of Kirren's experience"
-        className="w-full h-auto object-cover"
-      />
-    </div>
-  </div>
-</motion.div>
-
+            <div className="flex flex-col-reverse md:flex-col items-center">
+              <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mt-6 md:mt-0 max-w-full">
+                My deep understanding of the real estate market is the foundation
+                of the value I bring to my clients, both local and international.
+                With over 26 years of experience, I offer comprehensive expertise
+                across all facets of the industry.
+              </p>
+              <div className="max-w-full w-full max-w-md mx-auto rounded-lg shadow-md overflow-hidden mt-8 md:mt-12">
+                <img
+                  src={kirren1}
+                  alt="Representative of Kirren's experience"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </div>
+          </motion.div>
 
           {/* A Diverse Background */}
           <motion.div
@@ -79,7 +74,7 @@ const About = () => {
               alt="UK background and cultural heritage"
               className="w-full max-w-md rounded-xl shadow-lg object-cover"
             />
-            <div className="text-left space-y-4 max-w-xl">
+            <div className="text-center md:text-left space-y-4 max-w-xl">
               <p className="text-lg text-gray-700 leading-relaxed">
                 Born and raised in the UK with Punjabi heritage, I bring a
                 unique cultural perspective and a strong work ethic to my
@@ -110,7 +105,7 @@ const About = () => {
               alt="Mortgage and early career"
               className="w-full max-w-md rounded-xl shadow-lg object-cover"
             />
-            <div className="text-left space-y-4 max-w-xl">
+            <div className="text-center md:text-left space-y-4 max-w-xl">
               <p className="text-lg text-gray-700 leading-relaxed">
                 Early in my career, I studied for the CeMAP qualification,
                 establishing a solid understanding of mortgage products and
@@ -134,7 +129,6 @@ const About = () => {
             viewport={{ once: true }}
             className="flex flex-col md:flex-row-reverse items-center gap-10 md:gap-16 px-4 md:px-12"
           >
-            {/* Image */}
             <div className="w-full md:w-1/2 max-w-sm rounded-xl overflow-hidden shadow-lg">
               <img
                 src={kirren3}
@@ -142,9 +136,7 @@ const About = () => {
                 className="w-full h-64 object-cover object-center rounded-xl"
               />
             </div>
-
-            {/* Text */}
-            <div className="text-left space-y-4 max-w-xl">
+            <div className="text-center md:text-left space-y-4 max-w-xl">
               <p className="text-lg text-gray-700 leading-relaxed">
                 One of the most formative experiences of my life was
                 volunteering in Malawi, where I helped build homes for orphans.
@@ -168,7 +160,7 @@ const About = () => {
               alt="Dubai off-plan property expert"
               className="w-full max-w-md rounded-xl shadow-lg object-cover"
             />
-            <div className="text-left space-y-4 max-w-xl">
+            <div className="text-center md:text-left space-y-4 max-w-xl">
               <p className="text-lg text-gray-700 leading-relaxed">
                 I now specialize in Dubai's off-plan market, working extensively
                 with international investors. As a RERA-licensed professional, I
