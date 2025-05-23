@@ -6,7 +6,7 @@ import kirren2 from "../assets/family.jpg";
 import kirren3 from "../assets/malawai.jpg";
 import kirren4 from "../assets/koffe8.jpeg";
 import kirren5 from "../assets/koffe9.jpg";
-import kirren6 from "../assets/koffe10.jpg";
+import kirren6 from "../assets/kirren12.jpeg";
 
 // Animation variants
 const fadeInUp = {
