@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-  
+   from: `"Notifier" <${process.env.SMTP_USER}>`,
     to,
     subject,
     text,
