@@ -13,7 +13,7 @@ const OAuthHandler = () => {
 
     if (token) {
       login(token);
-      navigate("/enrolledCOurse");
+      navigate("/courses");
     } else {
       navigate("/login");
     }

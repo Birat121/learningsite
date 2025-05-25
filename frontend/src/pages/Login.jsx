@@ -56,7 +56,7 @@ const AuthPage = () => {
 
       if (isSignIn) {
         await login(res.data.token, res.data.user);
-        navigate("/enrolledCourse");
+        navigate("/courses");
       } else {
         setIsSignIn(true);
         setFormData({ name: "", email: "", password: "" });
