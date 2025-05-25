@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 dotenv.config();
 const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
 
-// 🎯 INITIATE PAYMENT
+
 // 🎯 INITIATE PAYMENT
 export const handleCoursePayment = async (req, res) => {
   try {
@@ -21,7 +21,7 @@ export const handleCoursePayment = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized. User not found." });
     }
 
-    const userId = req.user._id;
+    
     const { courseId } = req.body;
     const email = req.user.email;
 
@@ -41,7 +41,7 @@ export const handleCoursePayment = async (req, res) => {
 
     // Check existing enrollment
     const existing = await Enrollment.findOne({
-      user: userId,
+      user: req.user._id,
       course: course._id,
     });
 
@@ -65,7 +65,7 @@ export const handleCoursePayment = async (req, res) => {
 
     // Save enrollment with status 'pending'
     await Enrollment.create({
-      user: userId,
+      user: req.user._id,
       course: course._id,
       paymentIntentId: paymentIntent.id,
       status: "pending",
