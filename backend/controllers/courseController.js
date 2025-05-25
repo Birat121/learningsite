@@ -201,25 +201,29 @@ export const getModulesByCourseId = async (req, res) => {
 
 
 // Get enrolled courses for a user
+
+
 export const getEnrolledCourses = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const enrollments = await Enrollment.find({
-      user: userId,
-      status: { $in: ['completed'] }, // Include completed 
-    }).populate("course");
+    const user = await User.findById(userId).populate("enrolledCourses");
 
-    const courses = enrollments
-      .map((enrollment) => enrollment.course)
-      .filter((course) => course !== null);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const courses = user.enrolledCourses || [];
 
     res.status(200).json({ courses });
   } catch (error) {
     console.error("Fetching enrolled courses failed:", error);
-    res.status(500).json({ message: "Server error while fetching enrolled courses" });
+    res
+      .status(500)
+      .json({ message: "Server error while fetching enrolled courses" });
   }
 };
+
 
 
 
