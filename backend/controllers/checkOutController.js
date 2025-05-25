@@ -9,19 +9,15 @@ import mongoose from "mongoose";
 dotenv.config();
 const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
 
-
 // 🎯 INITIATE PAYMENT
 export const handleCoursePayment = async (req, res) => {
   try {
-    // Defensive logging
     console.log("req.user:", req.user);
-
-    // Defensive checks
     if (!req.user || !req.user._id) {
       return res.status(401).json({ error: "Unauthorized. User not found." });
     }
 
-    
+    const userId = req.user._id.toString();
     const { courseId } = req.body;
     const email = req.user.email;
 
@@ -29,7 +25,6 @@ export const handleCoursePayment = async (req, res) => {
       return res.status(400).json({ error: "Missing courseId or email" });
     }
 
-    // Validate courseId
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res.status(400).json({ error: "Invalid courseId" });
     }
@@ -39,9 +34,8 @@ export const handleCoursePayment = async (req, res) => {
       return res.status(400).json({ error: "Invalid course or price" });
     }
 
-    // Check existing enrollment
     const existing = await Enrollment.findOne({
-      user: req.user._id,
+      user: userId,
       course: course._id,
     });
 
@@ -55,7 +49,6 @@ export const handleCoursePayment = async (req, res) => {
       await Enrollment.deleteOne({ _id: existing._id });
     }
 
-    // Create payment intent via Ziina
     const paymentIntent = await createPaymentIntent({
       amount: course.price,
       currency: "AED",
@@ -63,9 +56,15 @@ export const handleCoursePayment = async (req, res) => {
       courseId,
     });
 
-    // Save enrollment with status 'pending'
+    console.log("Enrollment data to create:", {
+      user: userId,
+      course: course._id,
+      paymentIntentId: paymentIntent.id,
+      status: "pending",
+    });
+
     await Enrollment.create({
-      user: req.user._id,
+      user: userId,
       course: course._id,
       paymentIntentId: paymentIntent.id,
       status: "pending",
