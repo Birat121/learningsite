@@ -115,8 +115,7 @@ const About = () => {
               <p className="text-lg text-gray-700 leading-relaxed">
                 Over 16 years, I refined my skills at a UK housing association,
                 gaining invaluable experience in managing the entire sales
-                process, working closely with developers, and leading a sales
-                team.
+                process, working closely with developers, and leading a part of the sales team.
               </p>
             </div>
           </motion.div>
