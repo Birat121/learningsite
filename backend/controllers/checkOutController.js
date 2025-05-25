@@ -4,6 +4,7 @@ import User from "../models/userModel.js";
 import Enrollment from "../models/paymentModel.js";
 import crypto from "crypto";
 import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
