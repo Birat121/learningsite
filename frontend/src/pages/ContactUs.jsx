@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
-import { Helmet } from 'react-helmet';
-import emailjs from '@emailjs/browser';
+import React, { useState, useRef } from "react";
+import { Helmet } from "react-helmet";
+import emailjs from "@emailjs/browser";
 
 const ContactPage = () => {
   const [success, setSuccess] = useState("");
@@ -59,23 +59,31 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contact - Free Real Estate Consultation | Koffee With Kirren</title>
+        <title>
+          Contact - Free Real Estate Consultation | Koffee With Kirren
+        </title>
         <meta
           name="description"
           content="Book your free consultation with Kirren and explore real estate opportunities in Dubai. Let's start your property journey together."
         />
-        <link rel="canonical" href="https://koffeewithkirren.netlify.app/contact" />
+        <link
+          rel="canonical"
+          href="https://koffeewithkirren.netlify.app/contact"
+        />
       </Helmet>
 
       <section className="pt-24 pb-12 px-6 mt-20 bg-white text-gray-800 mb-4 min-h-screen flex items-center justify-center">
         <div className="max-w-4xl w-full space-y-12">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-green-900 mb-4">Get Your Free Consultation</h1>
+            <h1 className="text-4xl font-bold text-green-900 mb-4">
+              Get Your Free Consultation
+            </h1>
             <p className="text-base text-gray-600 max-w-2xl mx-auto">
-              Ready to discover the best real estate opportunities in Dubai? I invite you to take the
-              first step by requesting a free consultation with me. Whether you are looking to
-              invest, buy, or simply learn more about the dynamic real estate market in Dubai, I’m
-              here to guide you every step of the way.
+              Ready to discover the best real estate opportunities in Dubai? I
+              invite you to take the first step by requesting a free
+              consultation with me. Whether you are looking to invest, buy, or
+              simply learn more about the dynamic real estate market in Dubai,
+              I’m here to guide you every step of the way.
             </p>
           </div>
 
@@ -87,7 +95,9 @@ const ContactPage = () => {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">First Name</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    First Name
+                  </label>
                   <input
                     type="text"
                     name="first_name"
@@ -97,7 +107,9 @@ const ContactPage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
                   <input
                     type="text"
                     name="last_name"
@@ -109,7 +121,9 @@ const ContactPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Email
+                </label>
                 <input
                   type="email"
                   name="user_email"
@@ -120,17 +134,24 @@ const ContactPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Phone (including country code)</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone (including country code)
+                </label>
                 <input
-                  type="text"
+                  type="tel"
                   name="phone"
-                  placeholder="xxx-xxx-xxxx"
+                  required
+                  placeholder="+971-555-555555"
+                  pattern="^\+\d{1,4}[-\s]?\d{6,14}$"
+                  title="Please include your country code (e.g., +971-555-555555)"
                   className="w-full mt-1 border border-gray-300 px-4 py-3 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Message</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Message
+                </label>
                 <textarea
                   name="message"
                   rows="4"
@@ -141,7 +162,9 @@ const ContactPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Query Type</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Query Type
+                </label>
                 <select
                   name="query_type"
                   className="w-full mt-1 border border-gray-300 px-4 py-3 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
@@ -157,7 +180,9 @@ const ContactPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`bg-[rgb(0,104,80)] text-white font-semibold px-6 py-3 rounded-full text-base transition-all duration-300 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                className={`bg-[rgb(0,104,80)] text-white font-semibold px-6 py-3 rounded-full text-base transition-all duration-300 ${
+                  loading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 {loading ? "Sending..." : "Submit"}
               </button>
@@ -170,5 +195,3 @@ const ContactPage = () => {
 };
 
 export default ContactPage;
-
-

@@ -37,7 +37,9 @@ const AuthPage = () => {
     }
 
     setLoading(true);
-    const loadingToast = toast.loading(isSignIn ? "Logging in..." : "Creating account...");
+    const loadingToast = toast.loading(
+      isSignIn ? "Logging in..." : "Creating account..."
+    );
 
     try {
       const url = isSignIn ? "/auth/login" : "/auth/register";
@@ -54,13 +56,8 @@ const AuthPage = () => {
         isSignIn ? "Logged in successfully!" : "Account created successfully!"
       );
 
-      if (isSignIn) {
-        await login(res.data.token, res.data.user);
-        navigate("/courses");
-      } else {
-        setIsSignIn(true);
-        setFormData({ name: "", email: "", password: "" });
-      }
+      await login(res.data.token, res.data.user);
+      navigate("/courses");
     } catch (err) {
       toast.dismiss(loadingToast);
       const message = err.response?.data?.message || "Something went wrong.";

@@ -39,13 +39,13 @@ const Introduction = () => {
           src={content.image}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
-          className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
+          className="w-[95%] sm:w-[90%] md:w-[100%] lg:w-[80%] h-auto object-cover rounded-md"
           style={{ display: imageLoaded ? "block" : "none" }}
           loading="eager"
           decoding="async"
         />
         {!imageLoaded && (
-          <div className="w-[85%] sm:w-[80%] md:w-[100%] lg:w-[80%] h-[300px] bg-gray-200 animate-pulse rounded-md" />
+          <div className="w-[95%] sm:w-[90%] md:w-[100%] lg:w-[80%] h-[300px] bg-gray-200 animate-pulse rounded-md" />
         )}
       </div>
 
