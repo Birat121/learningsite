@@ -9,12 +9,13 @@ dotenv.config();
 const ZIINA_WEBHOOK_SECRET = process.env.ZIINA_WEBHOOK_SECRET;
 
 // 🎯 INITIATE PAYMENT
+// 🎯 INITIATE PAYMENT
 export const handleCoursePayment = async (req, res) => {
   try {
     const { courseId } = req.body;
-    const customer_email = req.user?.email;
+    const email = req.user?.email;
 
-    if (!courseId || !customer_email) {
+    if (!courseId || !email) {
       return res.status(400).json({ error: "Missing courseId or email" });
     }
 
@@ -28,110 +29,102 @@ export const handleCoursePayment = async (req, res) => {
       course: course._id,
     });
 
-    if (existing && existing.status === "completed") {
-      return res.status(400).json({ error: "Already enrolled in this course" });
-    } else if (existing) {
+    if (existing?.status === "completed") {
+      return res
+        .status(409)
+        .json({ error: "You are already enrolled in this course." });
+    }
+
+    if (existing) {
       await Enrollment.deleteOne({ _id: existing._id });
     }
 
-    const paymentData = await createPaymentIntent({
-      amount: course.price, // raw AED, backend converts to fils
+    const paymentIntent = await createPaymentIntent({
+      amount: course.price,
       currency: "AED",
-      email: customer_email,
+      email,
       courseId,
     });
 
     await Enrollment.create({
       user: req.user._id,
       course: course._id,
-      paymentIntentId: paymentData.id,
+      paymentIntentId: paymentIntent.id,
       status: "pending",
     });
 
-    return res.json({
-      paymentUrl: paymentData.redirect_url,
-      paymentIntentId: paymentData.id,
+    res.json({
+      paymentUrl: paymentIntent.redirect_url,
+      paymentIntentId: paymentIntent.id,
     });
   } catch (err) {
-    console.error("❌ handleCoursePayment error:", err);
-    res.status(500).json({ error: "Payment failed", details: err.message });
+    console.error("❌ Payment intent creation error:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to create payment", details: err.message });
   }
 };
 
 // 🔔 HANDLE WEBHOOK
 
-
-
 export const handleZiinaWebhook = async (req, res) => {
   try {
     const allowedIps = ["3.29.184.186", "3.29.190.95", "20.233.47.127"];
-    const rawIp = req.headers["x-forwarded-for"]?.split(",").shift() || req.connection?.remoteAddress;
-    const ip = rawIp?.replace("::ffff:", "").trim();
+    const ip = (
+      req.headers["x-forwarded-for"] ||
+      req.connection?.remoteAddress ||
+      ""
+    )
+      .split(",")[0]
+      .replace("::ffff:", "")
+      .trim();
 
-    console.log("🔔 Webhook from IP:", ip);
     if (!allowedIps.includes(ip)) {
-      console.warn("⛔ Blocked IP:", ip);
-      return res.status(403).send("Forbidden");
+      return res.status(403).send("Forbidden: IP not allowed");
     }
 
     const rawBody = req.body.toString("utf8");
     const signature = req.headers["x-hmac-signature"];
+    const hmac = crypto
+      .createHmac("sha256", ZIINA_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest();
+    const incomingSig = Buffer.from(signature || "", "hex");
 
-    if (!signature) {
-      console.warn("❌ Missing signature");
-      return res.status(400).send("Missing signature");
-    }
-
-    const hmac = crypto.createHmac("sha256", ZIINA_WEBHOOK_SECRET).update(rawBody).digest();
-    const incomingSig = Buffer.from(signature, "hex");
-
-    if (!crypto.timingSafeEqual(hmac, incomingSig)) {
-      console.warn("❌ Signature mismatch");
+    if (!signature || !crypto.timingSafeEqual(hmac, incomingSig)) {
       return res.status(400).send("Invalid signature");
     }
 
     const event = JSON.parse(rawBody);
     const { id: paymentIntentId, status, metadata } = event?.data || {};
 
-    console.log("📦 Webhook event:", JSON.stringify(event, null, 2));
-    console.log("🔍 PaymentIntent ID:", paymentIntentId);
-    console.log("🔍 Status received:", status);
-    console.log("🔍 Metadata received:", metadata);
-
     const { userEmail, courseId } = metadata || {};
-
     if (!userEmail || !courseId || !paymentIntentId) {
-      console.error("⚠️ Missing metadata or paymentIntentId:", { userEmail, courseId, paymentIntentId });
-      return res.status(400).send("Missing metadata or paymentIntentId");
+      return res.status(400).send("Missing metadata");
     }
 
     const user = await User.findOne({ email: userEmail });
     const course = await Course.findById(courseId);
-
     if (!user || !course) {
-      console.error("🚫 User or Course not found:", { userEmail, courseId });
       return res.status(404).send("User or Course not found");
     }
 
-    const successfulStatuses = ["completed", "succeeded", "authorized", "captured"];
+    const successStatuses = [
+      "completed",
+      "succeeded",
+      "authorized",
+      "captured",
+    ];
     const failedStatuses = ["failed", "cancelled", "expired"];
 
-    const enrollmentStatus = successfulStatuses.includes(status)
+    const enrollmentStatus = successStatuses.includes(status)
       ? "completed"
       : failedStatuses.includes(status)
       ? "failed"
       : "pending";
 
-    if (enrollmentStatus === "pending") {
-      console.warn("⚠️ Payment is still pending. No access will be granted yet.");
-    }
-
     const enrollment = await Enrollment.findOneAndUpdate(
-      {
-        user: user._id,
-        course: course._id,
-        paymentIntentId,
-      },
+      { user: user._id, course: course._id, paymentIntentId },
       {
         $set: {
           status: enrollmentStatus,
@@ -146,22 +139,20 @@ export const handleZiinaWebhook = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // ✅ Unlock course for user if payment is completed
     if (enrollmentStatus === "completed") {
       const alreadyEnrolled = user.enrolledCourses.includes(course._id);
       if (!alreadyEnrolled) {
         user.enrolledCourses.push(course._id);
         await user.save();
-        console.log(`✅ Course "${course.title}" unlocked for ${user.email}`);
-      } else {
-        console.log(`ℹ️ User already enrolled in course "${course.title}"`);
+        console.log(
+          `✅ Access granted for course: ${course.title} to ${user.email}`
+        );
       }
     }
 
-    console.log(`✅ Enrollment saved with status: ${enrollmentStatus}`);
     return res.status(200).send(`Enrollment ${enrollmentStatus}`);
   } catch (err) {
-    console.error("❌ Webhook processing error:", err);
-    return res.status(500).send("Internal Server Error");
+    console.error("❌ Webhook error:", err);
+    return res.status(500).send("Server error");
   }
 };

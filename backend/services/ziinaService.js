@@ -13,40 +13,44 @@ const WEBHOOK_URL = process.env.WEBHOOK_URL;
 
 let webhookInitialized = false;
 
-export async function createPaymentIntent({ amount, currency, email, courseId }) {
+import Enrollment from "../models/paymentModel.js";
+
+export async function createPaymentIntent({ amount, currency, email, userId, courseId }) {
   try {
     const operation_id = uuidv4();
+    const expiry = Date.now() + 60 * 60 * 1000;
 
-    // Set expiry to 1 hour from now
-    const expiry = Date.now() + 60 * 60 * 1000; // 1 hour in ms
+    const successUrl = SUCCESS_URL.replace("{PAYMENT_INTENT_ID}", operation_id);
+    const cancelUrl = CANCEL_URL.replace("{PAYMENT_INTENT_ID}", operation_id);
 
-    const paymentPayload = {
-      amount: Math.round(amount * 100), // Multiply here: amount in fils (e.g., 100 AED -> 10000)
+    const payload = {
+      amount: Math.round(amount * 100),
       currency_code: currency,
       message: `Payment for course`,
-      success_url: SUCCESS_URL,  // Should contain {PAYMENT_INTENT_ID} to be replaced by API
-      cancel_url: CANCEL_URL,    // Same here
-      failure_url: CANCEL_URL,
-      
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      failure_url: cancelUrl,
       transaction_source: "directApi",
       expiry: expiry.toString(),
-      metadata: {
-        courseId,
-        userEmail: email,
-      },
       operation_id,
     };
 
-    console.log("🟢 Creating payment intent:", paymentPayload);
-
-    const response = await axios.post(`${ZIINA_API_URL}/payment_intent`, paymentPayload, {
+    const response = await axios.post(`${ZIINA_API_URL}/payment_intent`, payload, {
       headers: {
         Authorization: `Bearer ${ZIINA_SECRET_KEY}`,
         "Content-Type": "application/json",
       },
     });
 
-    console.log("✅ Payment intent created:", response.data);
+    const { id: paymentIntentId, status } = response.data;
+
+    // 🔄 Save enrollment record
+    await Enrollment.create({
+      user: userId,
+      course: courseId,
+      paymentIntentId,
+      status: "pending",
+    });
 
     if (!webhookInitialized) {
       await setupWebhook();
@@ -55,7 +59,7 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
 
     return response.data;
   } catch (err) {
-    console.error('❌ Ziina payment intent error:', err.response?.data || err.message);
+    console.error("❌ Ziina error:", err.response?.data || err.message);
     throw err;
   }
 }
