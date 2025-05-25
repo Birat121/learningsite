@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import CustomError from "../utils/customeError.js";
+import sendEmail from "../utils/email.js";
 
 // Register Function
 export const register = async (req, res, next) => {
@@ -9,17 +10,24 @@ export const register = async (req, res, next) => {
     const { name, email, password } = req.body;
     const user = await User.findOne({ email });
     if (user) throw new CustomError("User already exists", 400);
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hashedPassword });
-    
+
     await newUser.save();
+
+    // Send email to admin
+    const adminEmail = "biratbudhathoki79@gmail.com"; // Replace with real admin email
+    const subject = "New User Registration";
+    const message = `A new user has registered:\n\nName: ${name}\nEmail: ${email}`;
+
+    await sendEmail(adminEmail, subject, message);
+
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     next(error);
   }
 };
-
 // Login Function
 export const login = async (req, res, next) => {
   try {
