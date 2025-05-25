@@ -33,9 +33,9 @@ passport.use(
         console.log("🎉 New Google user saved:", newUser.email);
 
         // Send admin notification email
-        const adminEmail = "biratbudhathoki79@gmail.com"; // Replace with actual admin email
+        const adminEmail = "sales@koffeewithkirren.com"; // Replace with actual admin email
         const subject = "🚀 New User Registered via Google";
-        const message = `Hello Admin,
+        const message = `Hello Kirren,
 
 A new user just signed up using Google:
 

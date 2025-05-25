@@ -15,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-   from: `"KoffeewithKirren" <${process.env.SMTP_USER}>`,
+   from: `"Registration Notification" `,
     to,
     subject,
     text,

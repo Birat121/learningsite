@@ -17,18 +17,17 @@ export const register = async (req, res, next) => {
     await newUser.save();
 
     // Send email to admin
-    const adminEmail = "biratbudhathoki79@gmail.com";
+    const adminEmail = "sales@koffeewithkirren.com";
     const subject = "🚀 New User Registration Notification";
     const message = `
-Hello Admin,
+Hello Kirren,
 
 A new user has just registered on the platform. Here are the details:
 
 👤 Name: ${name}
 📧 Email: ${email}
 
-Best regards,
-The KoffeewithKirren
+
 `;
 
     await sendEmail(adminEmail, subject, message);
