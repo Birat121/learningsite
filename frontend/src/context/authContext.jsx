@@ -23,7 +23,8 @@ export const AuthProvider = ({ children }) => {
     } else {
       // fetch user info if not passed
       try {
-        const res = await axiosInstance.get("/auth/user", { withCredentials: true });
+        const res = await axiosInstance.get("/auth/user");
+
         setUser(res.data.user);
       } catch (error) {
         console.error("Failed to fetch user after login:", error);
@@ -51,7 +52,9 @@ export const AuthProvider = ({ children }) => {
   // Fetch current logged-in user
   const fetchUser = async () => {
     try {
-      const response = await axiosInstance.get("/auth/user", { withCredentials: true });
+      const response = await axiosInstance.get("/auth/user", {
+        withCredentials: true,
+      });
       setUser(response.data.user);
     } catch (error) {
       if (error.response?.status === 401) {
