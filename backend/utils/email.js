@@ -1,4 +1,7 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com", // your SMTP server
@@ -12,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
-   from: `"Notifier" <${process.env.SMTP_USER}>`,
+   from: `"KoffeewithKirren" <${process.env.SMTP_USER}>`,
     to,
     subject,
     text,

@@ -17,9 +17,19 @@ export const register = async (req, res, next) => {
     await newUser.save();
 
     // Send email to admin
-    const adminEmail = "biratbudhathoki79@gmail.com"; // Replace with real admin email
-    const subject = "New User Registration";
-    const message = `A new user has registered:\n\nName: ${name}\nEmail: ${email}`;
+    const adminEmail = "biratbudhathoki79@gmail.com";
+    const subject = "🚀 New User Registration Notification";
+    const message = `
+Hello Admin,
+
+A new user has just registered on the platform. Here are the details:
+
+👤 Name: ${name}
+📧 Email: ${email}
+
+Best regards,
+The KoffeewithKirren
+`;
 
     await sendEmail(adminEmail, subject, message);
 
@@ -28,6 +38,7 @@ export const register = async (req, res, next) => {
     next(error);
   }
 };
+
 // Login Function
 export const login = async (req, res, next) => {
   try {
@@ -50,7 +61,6 @@ export const login = async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
-    
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -65,8 +75,6 @@ export const login = async (req, res, next) => {
   }
 };
 
-
-
 export const logout = async (req, res) => {
   try {
     res.clearCookie("token");
@@ -74,8 +82,7 @@ export const logout = async (req, res) => {
   } catch (error) {
     next(error);
   }
-};  
-
+};
 
 export const getCurrentUser = async (req, res, next) => {
   try {
@@ -106,43 +113,47 @@ export const updateUser = async (req, res) => {
   }
 };
 
-
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Validate input fields
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     // Verify admin credentials
-    if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+    if (
+      email !== process.env.ADMIN_EMAIL ||
+      password !== process.env.ADMIN_PASSWORD
+    ) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     // Generate JWT token
     const payload = { email }; // Include relevant information in the token payload
     const token = jwt.sign(payload, process.env.ADMIN_JWT_SECRET, {
-      expiresIn: '3d', // Token validity for 3 days
+      expiresIn: "3d", // Token validity for 3 days
     });
 
     // Cookie options
     const options = {
       expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
       httpOnly: true, // Prevents client-side JS access
-      secure: process.env.NODE_ENV === 'production', // Only secure in production
-      sameSite: 'strict', // Prevent CSRF
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: "strict", // Prevent CSRF
     };
 
     // Send response
     res
       .status(200)
-      .cookie('token', token, options)
-      .json({ message: 'Login successful', token }); // Optionally return the token for client-side use
+      .cookie("token", token, options)
+      .json({ message: "Login successful", token }); // Optionally return the token for client-side use
   } catch (error) {
-    console.error('Admin login error:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error("Admin login error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
@@ -155,6 +166,8 @@ export const adminLogout = async (req, res) => {
     });
     res.status(200).json({ message: "Admin logged out successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Failed to logout admin", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to logout admin", error: error.message });
   }
 };
