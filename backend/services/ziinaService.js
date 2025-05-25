@@ -33,6 +33,7 @@ export async function createPaymentIntent({ amount, currency, email, userId, cou
       transaction_source: "directApi",
       expiry: expiry.toString(),
       operation_id,
+      test:true,
     };
 
     const response = await axios.post(`${ZIINA_API_URL}/payment_intent`, payload, {
