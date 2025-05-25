@@ -19,10 +19,12 @@ export const createCourse = async (req, res) => {
 
     // Upload thumbnail to Cloudinary
     const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream({ resource_type: "image" }, (err, image) => {
-        if (err) reject(err);
-        else resolve(image);
-      }).end(req.files.thumbnail[0].buffer);
+      cloudinary.uploader
+        .upload_stream({ resource_type: "image" }, (err, image) => {
+          if (err) reject(err);
+          else resolve(image);
+        })
+        .end(req.files.thumbnail[0].buffer);
     });
 
     // 1. Create course without modules yet
@@ -54,12 +56,14 @@ export const createCourse = async (req, res) => {
     }
 
     // 3. Update course with module IDs
-    course.modules = savedModules.map(m => m._id);
+    course.modules = savedModules.map((m) => m._id);
     await course.save();
 
     res.status(201).json({ course, modules: savedModules });
   } catch (error) {
-    res.status(500).json({ error: "Failed to create course: " + error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to create course: " + error.message });
   }
 };
 
@@ -81,20 +85,21 @@ export const getAllCourses = async (req, res) => {
 
     res.json(courses);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch courses: " + error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch courses: " + error.message });
   }
 };
 
 // Get single course by slug
 export const getCourseBySlug = async (req, res) => {
   try {
-    const course = await Course.findOne({ slug: req.params.slug })
-      .populate({
-        path: "modules",
-        populate: {
-          path: "videos",
-        },
-      });
+    const course = await Course.findOne({ slug: req.params.slug }).populate({
+      path: "modules",
+      populate: {
+        path: "videos",
+      },
+    });
 
     if (!course) return res.status(404).json({ error: "Course not found" });
     res.json(course);
@@ -179,7 +184,6 @@ export const deleteCourse = async (req, res) => {
   }
 };
 
-
 export const getModulesByCourseId = async (req, res) => {
   try {
     const course = await Course.findById(req.params.courseId).populate({
@@ -195,25 +199,25 @@ export const getModulesByCourseId = async (req, res) => {
 
     res.json(course.modules);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch modules: " + error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch modules: " + error.message });
   }
 };
 
-
 // Get enrolled courses for a user
-
-
 export const getEnrolledCourses = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await User.findById(userId).populate("enrolledCourses");
+    const enrollments = await Enrollment.find({
+      user: userId,
+      status: { $in: ["completed", "pending"] }, // Temporarily allow pending
+    }).populate("course");
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const courses = user.enrolledCourses || [];
+    const courses = enrollments
+      .map((enrollment) => enrollment.course)
+      .filter((course) => course !== null);
 
     res.status(200).json({ courses });
   } catch (error) {
@@ -224,11 +228,7 @@ export const getEnrolledCourses = async (req, res) => {
   }
 };
 
-
-
-
 // Check if a user is enrolled in a course
-
 
 export const checkEnrollmentStatus = async (req, res) => {
   try {
@@ -236,7 +236,9 @@ export const checkEnrollmentStatus = async (req, res) => {
     const userId = req.user?.id;
 
     if (!slug || !userId) {
-      return res.status(400).json({ enrolled: false, error: "Missing slug or user ID" });
+      return res
+        .status(400)
+        .json({ enrolled: false, error: "Missing slug or user ID" });
     }
 
     const course = Types.ObjectId.isValid(slug)
@@ -244,18 +246,22 @@ export const checkEnrollmentStatus = async (req, res) => {
       : await Course.findOne({ slug });
 
     if (!course) {
-      return res.status(404).json({ enrolled: false, error: "Course not found" });
+      return res
+        .status(404)
+        .json({ enrolled: false, error: "Course not found" });
     }
 
     const isEnrolled = await Enrollment.exists({
       user: userId,
       course: course._id,
-      status: 'completed', // Only allow access if payment was completed
+      status: "completed", // Only allow access if payment was completed
     });
 
     return res.status(200).json({ enrolled: Boolean(isEnrolled) });
   } catch (error) {
     console.error("Error checking enrollment status:", error);
-    return res.status(500).json({ enrolled: false, error: "Internal server error" });
+    return res
+      .status(500)
+      .json({ enrolled: false, error: "Internal server error" });
   }
 };

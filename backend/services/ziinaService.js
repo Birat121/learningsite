@@ -27,7 +27,7 @@ export async function createPaymentIntent({ amount, currency, email, courseId })
       success_url: SUCCESS_URL,  // Should contain {PAYMENT_INTENT_ID} to be replaced by API
       cancel_url: CANCEL_URL,    // Same here
       failure_url: CANCEL_URL,
-      test: true,
+    
       transaction_source: "directApi",
       expiry: expiry.toString(),
       metadata: {
