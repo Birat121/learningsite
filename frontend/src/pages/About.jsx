@@ -27,7 +27,7 @@ const About = () => {
           name="keywords"
           content="real estate mentor, real estate education, property buying and selling, real estate strategies"
         />
-        <link rel="canonical" href="https://koffeewithkirren.netlify.app/about" />
+        <link rel="canonical" href="https://koffeewithkirren.com/about" />
       </Helmet>
 
       <section className="bg-gray-100 py-20 px-6 md:px-24 mt-20">

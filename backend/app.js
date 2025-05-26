@@ -45,7 +45,7 @@ app.use((req, res, next) => {
 // CORS config
 app.use(
   cors({
-    origin: "https://koffeewithkirren.netlify.app",
+    origin: "https://koffeewithkirren.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

@@ -68,7 +68,7 @@ const ContactPage = () => {
         />
         <link
           rel="canonical"
-          href="https://koffeewithkirren.netlify.app/contact"
+          href="https://koffeewithkirren.com/contact"
         />
       </Helmet>
 
