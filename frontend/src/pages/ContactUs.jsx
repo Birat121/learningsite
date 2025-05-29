@@ -26,7 +26,7 @@ const ContactPage = () => {
     try {
       // Send main email
       await emailjs.sendForm(
-        "service_wtby1jd",
+        "service_o2fqnnj",
         "template_vy6yi94",
         form,
         "ofUAIyX7aUVuSeYsO"
@@ -34,7 +34,7 @@ const ContactPage = () => {
 
       // Send auto-reply
       await emailjs.send(
-        "service_jx2m2lv",
+        "service_o2fqnnj",
         "template_nvvvrf4",
         autoReplyParams,
         "ofUAIyX7aUVuSeYsO"
