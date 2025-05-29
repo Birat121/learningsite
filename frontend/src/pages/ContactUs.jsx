@@ -26,10 +26,10 @@ const ContactPage = () => {
     try {
       // Send main email
       await emailjs.sendForm(
-        "service_jx2m2lv",
-        "template_jygv2as",
+        "service_wtby1jd",
+        "template_vy6yi94",
         form,
-        "A_NTgdITLFkCwT63H"
+        "ofUAIyX7aUVuSeYsO"
       );
 
       // Send auto-reply
@@ -37,7 +37,7 @@ const ContactPage = () => {
         "service_jx2m2lv",
         "template_nvvvrf4",
         autoReplyParams,
-        "A_NTgdITLFkCwT63H"
+        "ofUAIyX7aUVuSeYsO"
       );
 
       setSuccess("Message sent successfully!");
