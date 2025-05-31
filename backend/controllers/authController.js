@@ -68,8 +68,7 @@ We received a request to reset your password. Click the link below to set a new 
 
 If you didn’t request this, please ignore this email.
 
-Thanks,
-Your Team
+Thanks
 `;
 
     await sendEmail(user.email, "Reset Your Password", message);
