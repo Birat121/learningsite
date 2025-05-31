@@ -17,10 +17,21 @@ const ContactPage = () => {
     const form = formRef.current;
     const formData = new FormData(form);
 
+    // Combine country code and phone number
+    const fullPhone = `${formData.get("country_code")}${formData.get("phone_number")}`;
+
+    // Append hidden phone input for EmailJS
+    const phoneInput = document.createElement("input");
+    phoneInput.type = "hidden";
+    phoneInput.name = "phone";
+    phoneInput.value = fullPhone;
+    form.appendChild(phoneInput);
+
     const autoReplyParams = {
       first_name: formData.get("first_name"),
       user_email: formData.get("user_email"),
       message: formData.get("message"),
+      phone: fullPhone,
     };
 
     try {
@@ -47,8 +58,6 @@ const ContactPage = () => {
       setError("Failed to send message. Please try again later.");
     } finally {
       setLoading(false);
-
-      // Auto clear success/error messages after 5 seconds
       setTimeout(() => {
         setSuccess("");
         setError("");
@@ -66,10 +75,7 @@ const ContactPage = () => {
           name="description"
           content="Book your free consultation with Kirren and explore real estate opportunities in Dubai. Let's start your property journey together."
         />
-        <link
-          rel="canonical"
-          href="https://koffeewithkirren.com/contact"
-        />
+        <link rel="canonical" href="https://koffeewithkirren.com/contact" />
       </Helmet>
 
       <section className="pt-24 pb-12 px-6 mt-20 bg-white text-gray-800 mb-4 min-h-screen flex items-center justify-center">
@@ -135,17 +141,28 @@ const ContactPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Phone (including country code)
+                  Phone Number
                 </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  required
-                  placeholder="+971-555-555555"
-                  pattern="^\+\d{1,4}[-\s]?\d{6,14}$"
-                  title="Please include your country code (e.g., +971-555-555555)"
-                  className="w-full mt-1 border border-gray-300 px-4 py-3 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    name="country_code"
+                    required
+                    placeholder="+971"
+                    pattern="^\+\d{1,4}$"
+                    title="Country code must start with + followed by 1 to 4 digits"
+                    className="w-1/3 mt-1 border border-gray-300 px-4 py-3 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                  />
+                  <input
+                    type="tel"
+                    name="phone_number"
+                    required
+                    placeholder="555555555"
+                    pattern="^\d{6,14}$"
+                    title="Enter a valid phone number (6 to 14 digits)"
+                    className="w-2/3 mt-1 border border-gray-300 px-4 py-3 rounded-md focus:ring-2 focus:ring-yellow-400 focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div>
