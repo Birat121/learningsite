@@ -52,12 +52,19 @@ const AuthPage = () => {
       });
 
       toast.dismiss(loadingToast);
-      toast.success(
-        isSignIn ? "Logged in successfully!" : "Account created successfully!"
-      );
 
-      await login(res.data.token, res.data.user);
-      navigate("/courses");
+      if (isSignIn) {
+        // If logging in, proceed as before
+        toast.success("Logged in successfully!");
+        await login(res.data.token, res.data.user);
+        navigate("/courses");
+      } else {
+        // If registering, show message and redirect to login page
+        toast.success(
+          "Account created successfully! Please login to access the course."
+        );
+        navigate("/login");
+      }
     } catch (err) {
       toast.dismiss(loadingToast);
       const message = err.response?.data?.message || "Something went wrong.";
@@ -154,6 +161,18 @@ const AuthPage = () => {
                 className="mt-1 w-full px-3 py-2 border rounded-md text-sm border-gray-300"
               />
             </div>
+
+            {isSignIn && (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-sm text-blue-600 hover:text-blue-500"
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
 
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>

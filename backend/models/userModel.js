@@ -11,14 +11,16 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   password: {
-    type: String
+    type: String,
   },
   googleId: {
-    type: String
+    type: String,
   },
   enrolledCourses: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "Course" } // Array of course IDs
-  ]
+    { type: mongoose.Schema.Types.ObjectId, ref: "Course" }, // Array of course IDs
+  ],
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 });
 
 const User = mongoose.model("User", userSchema);

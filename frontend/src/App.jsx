@@ -35,6 +35,8 @@ import AdminIntroduction from "./components/IntroEditor";
 import PodcastVideoManager from "./components/Youtube";
 import ModuleVideoManagementPage from "./components/ModuleManagement";
 import AddModulesPage from "./components/AddModule";
+import ResetPassword from "./components/ResetPassword";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
   const location = useLocation();
@@ -60,6 +62,8 @@ function App() {
         <Route path="/oauth-success" element={<OAuthHandler />} />
         <Route path="/success/:paymentIntentId" element={<PaymentSuccess />} />
         <Route path="/cancel/:paymentIntentId" element={<PaymentCancel />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         <Route path="/blogs/:slug" element={<BlogDetail />} />
 

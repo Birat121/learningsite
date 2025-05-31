@@ -38,6 +38,75 @@ A new user has just registered on the platform. Here are the details:
   }
 };
 
+
+import crypto from "crypto";
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) throw new CustomError("User not found with this email", 404);
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+
+    await user.save();
+
+    const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    const message = `
+Hello ${user.name},
+
+We received a request to reset your password. Click the link below to set a new one:
+
+🔗 ${resetUrl}
+
+If you didn’t request this, please ignore this email.
+
+Thanks,
+Your Team
+`;
+
+    await sendEmail(user.email, "Reset Your Password", message);
+
+    res.status(200).json({ message: "Reset password email sent" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) throw new CustomError("Token is invalid or has expired", 400);
+
+    user.password = await bcrypt.hash(password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    res.status(200).json({ message: "Password has been reset successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 // Login Function
 export const login = async (req, res, next) => {
   try {

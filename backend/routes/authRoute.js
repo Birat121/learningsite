@@ -1,4 +1,4 @@
-import { register, login, logout, getCurrentUser,adminLogin,adminLogout} from "../controllers/authController.js";
+import { register, login, logout, getCurrentUser,adminLogin,adminLogout,forgotPassword,resetPassword} from "../controllers/authController.js";
 import { Router } from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
@@ -9,6 +9,8 @@ const authRouter = Router();
 
 authRouter.post("/register", registerValidation, validateRequest, register);
 authRouter.post("/login", loginValidation, validateRequest, login);
+authRouter.post("/forgot-password", forgotPassword);
+authRouter.post("/reset-password/:token", resetPassword);
 authRouter.post("/logout", logout);
 authRouter.get("/user", getCurrentUser);
 authRouter.post("/admin",adminLogin);
