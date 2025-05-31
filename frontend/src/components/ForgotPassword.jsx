@@ -20,23 +20,27 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-4 shadow-md border rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Forgot Password</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-md mx-auto mt-20 mb-20 p-6 shadow-lg border border-gray-200 rounded-lg bg-white">
+      <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">Forgot Password</h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <input
           type="email"
           placeholder="Enter your email"
           value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 border rounded"
+          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
         />
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="w-full bg-[rgb(0,104,80)] text-white py-3 rounded-md font-medium  transition"
+        >
           Send Reset Link
         </button>
       </form>
-      {message && <p className="mt-4 text-green-600">{message}</p>}
-      {error && <p className="mt-4 text-red-600">{error}</p>}
+
+      {message && <p className="mt-6 text-green-600 text-center font-medium">{message}</p>}
+      {error && <p className="mt-6 text-red-600 text-center font-medium">{error}</p>}
     </div>
   );
 };
