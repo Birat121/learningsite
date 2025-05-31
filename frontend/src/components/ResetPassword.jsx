@@ -30,7 +30,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 mb-20 p-6 shadow-lg border border-gray-200 rounded-lg bg-white">
+    <div className="max-w-md mx-auto mt-40 mb-32 p-6 shadow-lg border border-gray-200 rounded-lg bg-white">
       <h2 className="text-3xl font-semibold mb-6 text-center text-gray-800">Reset Password</h2>
       <form onSubmit={handleReset} className="space-y-5">
         <input
