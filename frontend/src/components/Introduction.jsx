@@ -49,33 +49,32 @@ const Introduction = () => {
       </div>
 
       {/* Right Side Text */}
-      <div className="w-full md:w-1/2 relative z-10 flex flex-col justify-center px-2 md:pl-12 text-center md:text-left">
-  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-[rgb(0,104,80)] text-center md:text-left">
-    {content.heading}
-  </h2>
-  <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-3 text-gray-700 text-center md:text-left">
-    {content.subheading}
-  </h3>
-  <p className="text-sm sm:text-base md:text-lg mb-2 leading-relaxed text-justify md:text-left">
-    {content.paragraph1}
-  </p>
-  <p className="text-sm sm:text-base md:text-lg mb-4 leading-relaxed text-justify md:text-left">
-    {content.paragraph2}
-  </p>
-  <div className="flex flex-col items-center md:items-start gap-2">
-    <p className="text-sm sm:text-base md:text-lg text-gray-700 font-bold text-center md:text-left">
-      Ready to level up your real estate knowledge?
-    </p>
-    <Link
-      to="/about"
-      className="flex items-center space-x-2 text-sm sm:text-base md:text-lg text-[rgb(0,104,80)] font-semibold"
-    >
-      <span>Why Choose Me?</span>
-      <span className="text-xl md:text-2xl">→</span>
-    </Link>
-  </div>
-</div>
-
+      <div className="w-full md:w-1/2 relative z-10 flex flex-col justify-center md:pl-12 text-center md:text-left">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-[rgb(0,104,80)]">
+          {content.heading}
+        </h2>
+        <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-3 text-gray-700">
+          {content.subheading}
+        </h3>
+        <p className="text-sm sm:text-base md:text-lg mb-2 leading-relaxed">
+          {content.paragraph1}
+        </p>
+        <p className="text-sm sm:text-base md:text-lg mb-4 leading-relaxed">
+          {content.paragraph2}
+        </p>
+        <div className="flex flex-col items-center md:items-start gap-2">
+          <p className="text-sm sm:text-base md:text-lg text-gray-700 font-bold">
+            Ready to level up your real estate knowledge?
+          </p>
+          <Link
+            to="/about"
+            className="flex items-center space-x-2 text-sm sm:text-base md:text-lg text-[rgb(0,104,80)] font-semibold"
+          >
+            <span>Why Choose Me?</span>
+            <span className="text-xl md:text-2xl">→</span>
+          </Link>
+        </div>
+      </div>
     </section>
   );
 };
