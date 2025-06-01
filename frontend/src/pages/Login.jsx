@@ -80,7 +80,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-28 sm:pt-32 px-4 sm:px-6 lg:px-8 ">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center pt-28 sm:pt-32 px-4 sm:px-6 lg:px-8 mb-8 ">
 
       <div className="w-full max-w-md space-y-8">
         <div>
