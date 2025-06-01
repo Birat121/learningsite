@@ -31,9 +31,9 @@ const Introduction = () => {
   return (
     <section
       id="next-section"
-      className="relative flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden"
+      className="relative flex flex-col lg:flex-row items-center justify-between px-4 sm:px-6 md:px-8 lg:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden"
     >
-      <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10 px-2">
+      <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-2 relative z-10 px-2">
         <img
           src={content.image}
           alt="Introduction"
