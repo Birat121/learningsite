@@ -49,7 +49,7 @@ const Introduction = () => {
       </div>
 
       {/* Right Side Text */}
-      <div className="w-full md:w-1/2 relative z-10 flex flex-col justify-center md:pl-12 text-center md:text-left">
+      <div className="w-full md:w-[55%] relative z-10 flex flex-col justify-center px-4 sm:px-6 md:px-8 text-center md:text-left">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-[rgb(0,104,80)]">
           {content.heading}
         </h2>
