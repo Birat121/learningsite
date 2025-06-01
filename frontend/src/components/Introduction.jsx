@@ -33,19 +33,18 @@ const Introduction = () => {
       id="next-section"
       className="relative flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-20 py-16 sm:py-20 bg-white text-gray-800 overflow-hidden"
     >
-      {/* Left Side Image */}
       <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0 relative z-10 px-2">
         <img
           src={content.image}
           alt="Introduction"
           onLoad={() => setImageLoaded(true)}
-          className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl h-auto object-cover rounded-lg shadow-md transition-all duration-300"
+          className="w-full max-w-2xl sm:max-w-3xl md:max-w-4xl h-auto object-cover rounded-lg shadow-md transition-all duration-300"
           style={{ display: imageLoaded ? "block" : "none" }}
           loading="eager"
           decoding="async"
         />
         {!imageLoaded && (
-          <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl h-[300px] bg-gray-200 animate-pulse rounded-lg" />
+          <div className="w-full max-w-2xl sm:max-w-3xl md:max-w-4xl h-[300px] bg-gray-200 animate-pulse rounded-lg" />
         )}
       </div>
 
