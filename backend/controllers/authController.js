@@ -30,7 +30,7 @@ A new user has just registered on the platform. Here are the details:
 
 `;
 
-    await sendEmail(adminEmail, subject, message);
+    await sendEmail(adminEmail, subject, message, "Registration Bot");
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
@@ -71,7 +71,7 @@ If you didn’t request this, please ignore this email.
 Thanks
 `;
 
-    await sendEmail(user.email, "Reset Your Password", message);
+    await sendEmail(user.email, "Reset Your Password", message, "Koffee With Kirren");
 
     res.status(200).json({ message: "Reset password email sent" });
   } catch (error) {

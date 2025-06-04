@@ -4,18 +4,18 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com", // your SMTP server
+  host: "smtp.gmail.com",
   port: 587,
-  secure: false, // true for 465, false for other ports
+  secure: false,
   auth: {
-    user: process.env.SMTP_USER, // your SMTP username
-    pass: process.env.SMTP_PASS, // your SMTP password
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
-export const sendEmail = async (to, subject, text) => {
+export const sendEmail = async (to, subject, text, fromName = "Your App") => {
   const mailOptions = {
-   from: `"Registration Notification" `,
+    from: `"${fromName}" <kirren@koffeewithkirren.com>`, // ✅ fixed format
     to,
     subject,
     text,
@@ -25,3 +25,4 @@ export const sendEmail = async (to, subject, text) => {
 };
 
 export default sendEmail;
+
