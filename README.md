@@ -7,7 +7,7 @@ A full-featured online learning platform built for real estate training. This ME
 ### 🎓 User Side
 - Secure **JWT-based Authentication** (Form & Google Login)
 - Browse and **enroll in real estate courses**
-- Stream **4K videos hosted on Cloudinary**
+- Stream **4K videos hosted on Vimeo**
 - Take **quizzes** after course modules
 - View and track **enrolled courses** in the dashboard
 - **Secure payment integration** using Ziina (with metadata storage and webhooks)
@@ -23,7 +23,7 @@ A full-featured online learning platform built for real estate training. This ME
 - **Frontend**: React 19, Tailwind CSS, Redux Toolkit, React Router, Axios
 - **Backend**: Node.js, Express.js, MongoDB, Mongoose
 - **Authentication**: JWT, Google OAuth
-- **Video Storage**: Cloudinary (chunked 4K+ video upload)
+- **Video Storage**: Vimeo
 - **Payment Gateway**: Ziina API with webhook integration
 - **Others**: Multer, FFmpeg (optional), React Hook Form
 
@@ -32,7 +32,7 @@ A full-featured online learning platform built for real estate training. This ME
 - **Frontend**: Vercel or Netlify  
 - **Backend**: Render / DigitalOcean App Platform  
 - **Database**: MongoDB Atlas  
-- **Video Storage**: Cloudinary  
+- **Video Storage**: Vimeo
 
 ## Deployed link with custom domain
 https://koffeewithkirren.com/
