@@ -16,16 +16,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = async (to, subject, text, fromName = "Your App") => {
+export const sendEmail = async (to, subject, message, fromName = "Your App", isHtml = false) => {
   const mailOptions = {
-    from: `"${fromName}" <support@koffeewithkirren.com>`, // ✅ fixed format
+    from: `"${fromName}" <support@koffeewithkirren.com>`,
     to,
     subject,
-    text,
   };
+
+  if (isHtml) {
+    mailOptions.html = message; // send HTML content
+  } else {
+    mailOptions.text = message; // fallback to plain text
+  }
 
   await transporter.sendMail(mailOptions);
 };
+
 
 export default sendEmail;
 
