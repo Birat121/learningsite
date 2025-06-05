@@ -72,14 +72,16 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
   <p>If you didn’t request this, please ignore this email.</p>
-  <p>Thanks</p>
+<p>Thanks</p>
+<div style="height: 40px;"></div>
+
 
   <!-- Footer Columns -->
   <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; width: 100%; box-sizing: border-box;">
 
     <!-- Column 1: Customer Care -->
     <div style="flex: 1 1 33%; min-width: 150px;">
-      <p style="font-weight: bold; font-size: 15px; margin: 0 0 10px;">Customer Care</p>
+      <p style="font-weight: bold; font-size: 18px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 15px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
       <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size:12px;">
@@ -120,7 +122,7 @@ export const forgotPassword = async (req, res, next) => {
 
   </div>
 
-  <p style="font-size: 14px; color: #777; margin-top: 20px;">
+  <p style="font-size: 14px; color: #777; margin-top: 20px; font-family: Arial,Helvetica,sans-serif;">
     This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail.
   </p>
 
