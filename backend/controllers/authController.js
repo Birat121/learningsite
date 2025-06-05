@@ -78,7 +78,7 @@ export const forgotPassword = async (req, res, next) => {
   <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px;">
 
     <!-- Column 1: Customer Care -->
-    <div style="flex: 1 1 160px; min-width: 150px;">
+    <div style="flex: 1 1 160px; min-width: 150px; margin-right: 16px;">
       <p style="font-weight: bold; font-size: 15px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 15px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
@@ -110,7 +110,7 @@ export const forgotPassword = async (req, res, next) => {
     </div>
 
     <!-- Column 3: Contact Info -->
-    <div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 10px;">
+    <div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 12px;">
       <p style="margin: 4px 0;"><strong>Address:</strong></p>
       <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
       <p style="margin: 4px 0;">Dubai, UAE</p>
