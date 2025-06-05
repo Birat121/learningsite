@@ -86,11 +86,11 @@ export const forgotPassword = async (req, res, next) => {
       <!-- Social icons in a row with spacing -->
       <div style="display: flex; gap: 10px; flex-wrap: nowrap;">
 
-        <a href="https://www.facebook.com/koffeewithkirren" target="_blank" style="display: inline-block;">
+        <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank" style="display: inline-block;">
           <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
-        <a href="https://www.youtube.com/koffeewithkirren" target="_blank" style="display: inline-block;">
+        <a href="https://www.youtube.com/@KoffeewithKirren" target="_blank" style="display: inline-block;">
           <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
@@ -102,11 +102,11 @@ export const forgotPassword = async (req, res, next) => {
           <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
-        <a href="https://www.linkedin.com/company/koffeewithkirren" target="_blank" style="display: inline-block;">
+        <a href="https://www.linkedin.com/company/koffee-with-kirren/" target="_blank" style="display: inline-block;">
           <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
-        <a href="https://www.tiktok.com/@koffeewithkirren" target="_blank" style="display: inline-block;">
+        <a href="https://www.tiktok.com/@koffeewithkirren?_t=ZN-8vagd7GohCp&_r=1" target="_blank" style="display: inline-block;">
           <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
