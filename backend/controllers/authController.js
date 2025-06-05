@@ -72,9 +72,7 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
   <p>If you didn’t request this, please ignore this email.</p>
-<p>Thanks</p>
-<div style="height: 40px;"></div>
-
+  <p style="margin-bottom: 40px;">Thanks</p>
 
   <!-- Footer Columns -->
   <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; width: 100%; box-sizing: border-box;">
@@ -84,24 +82,24 @@ export const forgotPassword = async (req, res, next) => {
       <p style="font-weight: bold; font-size: 18px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 15px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size:9px;">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size:12px;">
         <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank">
-          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-facebook-32_ynhpmi.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-facebook-32_ynhpmi.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%); width: 20px; height: 20px;" />
         </a>
         <a href="https://www.youtube.com/@KoffeewithKirren" target="_blank">
-          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-youtube-32_ffqpco.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-youtube-32_ffqpco.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%); width: 20px; height: 20px;" />
         </a>
         <a href="https://www.instagram.com/koffeewithkirren" target="_blank">
-          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135766/icons8-insta-32_lbxm7c.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135766/icons8-insta-32_lbxm7c.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%); width: 20px; height: 20px;" />
         </a>
         <a href="https://wa.me/971555547963" target="_blank">
-          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135766/icons8-whatsapp-32_hhb1y5.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135766/icons8-whatsapp-32_hhb1y5.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%); width: 20px; height: 20px;" />
         </a>
         <a href="https://www.linkedin.com/company/koffee-with-kirren/" target="_blank">
-          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-linkedin-32_lild0i.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-linkedin-32_lild0i.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%); width: 20px; height: 20px;" />
         </a>
         <a href="https://www.tiktok.com/@koffeewithkirren?_t=ZN-8vagd7GohCp&_r=1" target="_blank">
-          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-tiktok-32_bzqj5b.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-tiktok-32_bzqj5b.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%); width: 20px; height: 20px;" />
         </a>
       </div>
     </div>
@@ -127,6 +125,7 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
 </div>
+
 
 
     `;
