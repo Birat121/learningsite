@@ -84,22 +84,22 @@ export const forgotPassword = async (req, res, next) => {
 
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
         <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-facebook-32_ynhpmi.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%);" />
         </a>
         <a href="https://www.youtube.com/@KoffeewithKirren" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-youtube-32_ffqpco.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%);" />
         </a>
         <a href="https://www.instagram.com/koffeewithkirren" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135766/icons8-insta-32_lbxm7c.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%);" />
         </a>
         <a href="https://wa.me/971555547963" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135766/icons8-whatsapp-32_hhb1y5.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%);" />
         </a>
         <a href="https://www.linkedin.com/company/koffee-with-kirren/" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-linkedin-32_lild0i.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%);" />
         </a>
         <a href="https://www.tiktok.com/@koffeewithkirren?_t=ZN-8vagd7GohCp&_r=1" target="_blank">
-          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%);" />
+          <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-tiktok-32_bzqj5b.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%);" />
         </a>
       </div>
     </div>
@@ -111,20 +111,17 @@ export const forgotPassword = async (req, res, next) => {
 
 <!-- Column 3: Contact Info -->
 <div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 12px; padding-left: 16px;">
-  <p style="margin: 4px 0;"><strong>Address:</strong></p>
-  <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
-  <p style="margin: 4px 0;">Dubai, UAE</p>
-  <p style="margin: 4px 0;">📞 +971555547963</p>
-  <p style="margin: 4px 0;">📧 <a href="mailto:sales@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">sales@koffeewithkirren.com</a></p>
-  <p style="margin: 4px 0;">🌐 <a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
+<p style="margin: 4px 0;">T: +971555547963</p>
+ <p style="margin: 4px 0;">E: <a href="mailto:kirren@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">kirren@koffeewithkirren.com</a></p>
+  <p style="margin: 4px 0;"> <a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
+  <p style="margin: 4px 0;">Koffee with Kirren,DSO-</p>
+  <p style="margin: 4px 0;">IFZA,Dubai Silicon Oasis,Dubai</p>
+ 
 </div>
-
 
   </div>
 
-  <hr style="margin: 30px 0;" />
-
-  <p style="font-size: 12px; color: #777; margin-top: 20px;">
+  <p style="font-size: 14px; color: #777; margin-top: 20px;">
     This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail.
   </p>
 
