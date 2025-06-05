@@ -75,8 +75,6 @@ export const forgotPassword = async (req, res, next) => {
 
   <p>Thanks</p>
 
-  <hr style="margin: 40px 0;" />
-
   <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; gap: 24px;">
 
 
