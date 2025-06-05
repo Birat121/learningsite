@@ -123,7 +123,7 @@ export const forgotPassword = async (req, res, next) => {
 
   <hr style="margin: 30px 0;" />
 
-  <p style="font-size: 10px; color: #777; margin-top: 20px;">
+  <p style="font-size: 12px; color: #777; margin-top: 20px;">
     This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail.
   </p>
 

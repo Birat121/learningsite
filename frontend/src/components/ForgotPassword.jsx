@@ -5,17 +5,21 @@ const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // new loading state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError("");
+    setLoading(true);
 
     try {
       const { data } = await axiosInstance.post("/auth/forgot-password", { email });
       setMessage(data.message);
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,9 +37,12 @@ const ForgotPassword = () => {
         />
         <button
           type="submit"
-          className="w-full bg-[rgb(0,104,80)] text-white py-3 rounded-md font-medium  transition"
+          disabled={loading}
+          className={`w-full bg-[rgb(0,104,80)] text-white py-3 rounded-md font-medium transition ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Send Reset Link
+          {loading ? "Sending..." : "Send Reset Link"}
         </button>
       </form>
 
