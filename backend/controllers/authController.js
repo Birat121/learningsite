@@ -63,12 +63,12 @@ export const forgotPassword = async (req, res, next) => {
     const htmlMessage = `
       <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; text-align: left;">
 
-  <h2 style="color: #734F22;">Hello ${user.name},</h2>
+  <h2 style="color: #734F22; margin-top: 0;">Hello ${user.name},</h2>
 
   <p>We received a request to reset your password. Click the button below to set a new one:</p>
 
-  <p style="text-align: center; margin: 30px 0;">
-    <a href="${resetUrl}" style="padding: 12px 24px; background-color: #734F22; color: #fff; text-decoration: none; border-radius: 5px;">Reset Password</a>
+  <p style="margin: 30px 0; text-align: left;">
+    <a href="${resetUrl}" style="padding: 12px 24px; background-color: #734F22; color: #fff; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
   </p>
 
   <p>If you didn’t request this, please ignore this email.</p>
@@ -77,50 +77,50 @@ export const forgotPassword = async (req, res, next) => {
 
   <hr style="margin: 40px 0;" />
 
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; gap: 20px;">
 
     <!-- Column 1: Title + Social Media -->
-    <div style="flex: 2; min-width: 150px; margin-right: 20px;">
+    <div style="flex: 2 1 150px;">
       <p style="font-weight: bold; font-size: 16px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 16px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
-      <!-- Social icons in a row -->
-      <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: nowrap;">
+      <!-- Social icons in a row with spacing -->
+      <div style="display: flex; gap: 10px; flex-wrap: nowrap;">
 
         <a href="https://www.facebook.com/koffeewithkirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733553.png" alt="Facebook" style="display: block;" />
+          <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
         <a href="https://www.youtube.com/koffeewithkirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384059.png" alt="YouTube" style="display: block;" />
+          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
         <a href="https://www.instagram.com/koffeewithkirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111425.png" alt="Instagram" style="display: block;" />
+          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
         <a href="https://wa.me/971555547963" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733579.png" alt="WhatsApp" style="display: block;" />
+          <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
         <a href="https://www.linkedin.com/company/koffeewithkirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/174/174855.png" alt="LinkedIn" style="display: block;" />
+          <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
         <a href="https://www.tiktok.com/@koffeewithkirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046120.png" alt="TikTok" style="display: block;" />
+          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%); display: block;" />
         </a>
 
       </div>
     </div>
 
     <!-- Column 2: Logo -->
-    <div style="flex: 1; text-align: center; min-width: 120px; margin-right: 20px;">
+    <div style="flex: 1 1 120px; text-align: center;">
       <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 100px;" />
     </div>
 
     <!-- Column 3: Contact Info -->
-    <div style="flex: 2; min-width: 150px; color: #2E7D32;">
+    <div style="flex: 2 1 150px; color: #2E7D32;">
       <p style="margin: 4px 0;"><strong>Address:</strong></p>
       <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
       <p style="margin: 4px 0;">Dubai, UAE</p>
@@ -138,6 +138,7 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
 </div>
+
 
 
     `;
