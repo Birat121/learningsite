@@ -38,7 +38,6 @@ A new user has just registered on the platform. Here are the details:
   }
 };
 
-
 import crypto from "crypto";
 
 export const forgotPassword = async (req, res, next) => {
@@ -48,30 +47,89 @@ export const forgotPassword = async (req, res, next) => {
 
     if (!user) throw new CustomError("User not found with this email", 404);
 
-    // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-    const message = `
-Hello ${user.name},
+    const htmlMessage = `
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto;">
+        <h2 style="color: #734F22;">Hello ${user.name},</h2>
+        <p>We received a request to reset your password. Click the button below to set a new one:</p>
+        <p style="text-align: center; margin: 30px 0;">
+          <a href="${resetUrl}" style="padding: 12px 24px; background-color: #734F22; color: #fff; text-decoration: none; border-radius: 5px;">Reset Password</a>
+        </p>
+        <p>If you didn’t request this, please ignore this email.</p>
+        <p> Thanks </p>
 
-We received a request to reset your password. Click the link below to set a new one:
+        <hr style="margin: 40px 0;" />
 
-🔗 ${resetUrl}
+        <div style="display: flex; gap: 20px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
 
-If you didn’t request this, please ignore this email.
+        <!-- Column 1: Title + Social Media -->
+<div style="flex: 2; min-width: 150px;">
+  <p style="font-weight: bold; font-size: 16px; margin: 0 0 10px;">Customer Care</p>
+  <p style="color: #2E7D32; font-size: 16px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
+  <div style="margin-top: 10px;">
+    <a href="https://www.facebook.com/koffeewithkirren" target="_blank" style="margin: 0 5px;">
+      <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="filter: grayscale(100%) brightness(60%);" />
+    </a>
+    <a href="https://www.youtube.com/koffeewithkirren" target="_blank" style="margin: 0 5px;">
+      <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="filter: grayscale(100%) brightness(60%);" />
+    </a>
+    <a href="https://www.instagram.com/koffeewithkirren" target="_blank" style="margin: 0 5px;">
+      <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram" style="filter: grayscale(100%) brightness(60%);" />
+    </a>
+    <a href="https://wa.me/971555547963" target="_blank" style="margin: 0 5px;">
+      <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(60%);" />
+    </a>
+    <a href="https://www.linkedin.com/company/koffeewithkirren" target="_blank" style="margin: 0 5px;">
+      <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(60%);" />
+    </a>
+    <a href="https://www.tiktok.com/@koffeewithkirren" target="_blank" style="margin: 0 5px;">
+      <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="filter: grayscale(100%) brightness(60%);" />
+    </a>
+  </div>
+</div>
 
-Thanks
-`;
+<!-- Column 2: Logo -->
+<div style="flex: 1; text-align: center; min-width: 120px;">
+  <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 100px;" />
+</div>
 
-    await sendEmail(user.email, "Reset Your Password", message, "Koffee With Kirren");
+<!-- Column 3: Contact Info -->
+<div style="flex: 2; min-width: 150px; color: #2E7D32;">
+  <p style="margin: 4px 0;"><strong>Address:</strong></p>
+  <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
+  <p style="margin: 4px 0;">Dubai, UAE</p>
+  <p style="margin: 4px 0;">📞 +971555547963</p>
+  <p style="margin: 4px 0;">📧 <a href="mailto:sales@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">sales@koffeewithkirren.com</a></p>
+  <p style="margin: 4px 0;">🌐 <a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
+</div>
+
+
+        <hr style="margin: 30px 0;" />
+        <p style="font-size: 12px; color: #777;">
+          This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail.
+        </p>
+      </div>
+    `;
+
+    await sendEmail(
+      user.email,
+      "Reset Your Password",
+      htmlMessage,
+      "Koffee With Kirren",
+      true
+    );
 
     res.status(200).json({ message: "Reset password email sent" });
   } catch (error) {
@@ -104,7 +162,6 @@ export const resetPassword = async (req, res, next) => {
     next(error);
   }
 };
-
 
 // Login Function
 export const login = async (req, res, next) => {
