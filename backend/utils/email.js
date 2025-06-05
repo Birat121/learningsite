@@ -11,11 +11,14 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  tls: {
+    ciphers: "TLSv1.2",  // enforce modern TLS version
+  },
 });
 
 export const sendEmail = async (to, subject, text, fromName = "Your App") => {
   const mailOptions = {
-    from: `"${fromName}" <kirren@koffeewithkirren.com>`, // ✅ fixed format
+    from: `"${fromName}" <support@koffeewithkirren.com>`, // ✅ fixed format
     to,
     subject,
     text,
