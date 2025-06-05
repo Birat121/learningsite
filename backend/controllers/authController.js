@@ -75,14 +75,14 @@ export const forgotPassword = async (req, res, next) => {
   <p>Thanks</p>
 
   <!-- Footer Columns -->
-  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; width: 100%; box-sizing: border-box;">
 
     <!-- Column 1: Customer Care -->
-    <div style="flex: 1 1 160px; min-width: 150px; margin-right: 16px;">
+    <div style="flex: 1 1 33%; min-width: 150px;">
       <p style="font-weight: bold; font-size: 15px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 15px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size:12px;">
         <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank">
           <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-facebook-32_ynhpmi.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%);" />
         </a>
@@ -105,19 +105,18 @@ export const forgotPassword = async (req, res, next) => {
     </div>
 
     <!-- Column 2: Logo -->
-<div style="flex: 1 1 100px; min-width: 90px; text-align: center; padding: 0 16px;">
-  <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 80px;" />
-</div>
+    <div style="flex: 0 1 33%; min-width: 100px; text-align: center;">
+      <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 80px;" />
+    </div>
 
-<!-- Column 3: Contact Info -->
-<div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 12px; padding-left: 16px;">
-<p style="margin: 4px 0;">T: +971555547963</p>
- <p style="margin: 4px 0;">E: <a href="mailto:kirren@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">kirren@koffeewithkirren.com</a></p>
-  <p style="margin: 4px 0;"> <a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
-  <p style="margin: 4px 0;">Koffee with Kirren,DSO-</p>
-  <p style="margin: 4px 0;">IFZA,Dubai Silicon Oasis,Dubai</p>
- 
-</div>
+    <!-- Column 3: Contact Info -->
+    <div style="flex: 1 1 33%; min-width: 150px; color: #2E7D32; font-size: 12px;">
+      <p style="margin: 4px 0;">T: +971555547963</p>
+      <p style="margin: 4px 0;">E: <a href="mailto:kirren@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">kirren@koffeewithkirren.com</a></p>
+      <p style="margin: 4px 0;"><a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
+      <p style="margin: 4px 0;">Koffee with Kirren, DSO -</p>
+      <p style="margin: 4px 0;">IFZA, Dubai Silicon Oasis, Dubai</p>
+    </div>
 
   </div>
 
@@ -126,7 +125,6 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
 </div>
-
 
 
     `;
