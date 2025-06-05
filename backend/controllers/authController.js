@@ -72,54 +72,45 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
   <p>If you didn’t request this, please ignore this email.</p>
-
   <p>Thanks</p>
 
-  <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; gap: 24px;">
+  <!-- Footer Columns -->
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px;">
 
+    <!-- Column 1: Customer Care -->
+    <div style="flex: 1 1 160px; min-width: 150px;">
+      <p style="font-weight: bold; font-size: 15px; margin: 0 0 10px;">Customer Care</p>
+      <p style="color: #2E7D32; font-size: 15px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
-    <!-- Column 1: Title + Social Media -->
-    <div style="flex: 2 1 150px;">
-      <p style="font-weight: bold; font-size: 16px; margin: 0 0 10px;">Customer Care</p>
-      <p style="color: #2E7D32; font-size: 16px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
-
-      <!-- Social icons in a row with spacing -->
-      <div style="display: flex; gap: 10px; flex-wrap: nowrap;">
-
-        <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%); display: block;" />
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%);" />
         </a>
-
-        <a href="https://www.youtube.com/@KoffeewithKirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%); display: block;" />
+        <a href="https://www.youtube.com/@KoffeewithKirren" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="filter: grayscale(100%) brightness(70%);" />
         </a>
-
-        <a href="https://www.instagram.com/koffeewithkirren" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%); display: block;" />
+        <a href="https://www.instagram.com/koffeewithkirren" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram" style="filter: grayscale(100%) brightness(70%);" />
         </a>
-
-        <a href="https://wa.me/971555547963" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%); display: block;" />
+        <a href="https://wa.me/971555547963" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="filter: grayscale(100%) brightness(70%);" />
         </a>
-
-        <a href="https://www.linkedin.com/company/koffee-with-kirren/" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%); display: block;" />
+        <a href="https://www.linkedin.com/company/koffee-with-kirren/" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="filter: grayscale(100%) brightness(70%);" />
         </a>
-
-        <a href="https://www.tiktok.com/@koffeewithkirren?_t=ZN-8vagd7GohCp&_r=1" target="_blank" style="display: inline-block;">
-          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%); display: block;" />
+        <a href="https://www.tiktok.com/@koffeewithkirren?_t=ZN-8vagd7GohCp&_r=1" target="_blank">
+          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="filter: grayscale(100%) brightness(70%);" />
         </a>
-
       </div>
     </div>
 
     <!-- Column 2: Logo -->
-    <div style="flex: 1 1 120px; text-align: center;">
-      <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 100px;" />
+    <div style="flex: 1 1 100px; min-width: 90px; text-align: center;">
+      <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 80px;" />
     </div>
 
     <!-- Column 3: Contact Info -->
-    <div style="flex: 2 1 150px; color: #2E7D32;">
+    <div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 10px;">
       <p style="margin: 4px 0;"><strong>Address:</strong></p>
       <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
       <p style="margin: 4px 0;">Dubai, UAE</p>
@@ -132,11 +123,12 @@ export const forgotPassword = async (req, res, next) => {
 
   <hr style="margin: 30px 0;" />
 
-  <p style="font-size: 12px; color: #777; margin-top: 20px;">
+  <p style="font-size: 10px; color: #777; margin-top: 20px;">
     This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error, please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail.
   </p>
 
 </div>
+
 
 
     `;
