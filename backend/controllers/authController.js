@@ -140,7 +140,6 @@ export const forgotPassword = async (req, res, next) => {
 </div>
 
 
-
     `;
 
     await sendEmail(
