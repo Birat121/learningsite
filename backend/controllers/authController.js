@@ -84,7 +84,7 @@ export const forgotPassword = async (req, res, next) => {
       <p style="font-weight: bold; font-size: 18px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 15px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size:12px;">
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size:9px;">
         <a href="https://www.facebook.com/share/18c2MMRyJR/" target="_blank">
           <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1749135767/icons8-facebook-32_ynhpmi.png" alt="Facebook" style="filter: grayscale(100%) brightness(70%);" />
         </a>
