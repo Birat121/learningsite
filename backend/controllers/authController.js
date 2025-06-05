@@ -105,19 +105,20 @@ export const forgotPassword = async (req, res, next) => {
     </div>
 
     <!-- Column 2: Logo -->
-    <div style="flex: 1 1 100px; min-width: 90px; text-align: center;">
-      <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 80px;" />
-    </div>
+<div style="flex: 1 1 100px; min-width: 90px; text-align: center; padding: 0 16px;">
+  <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 80px;" />
+</div>
 
-    <!-- Column 3: Contact Info -->
-    <div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 12px;">
-      <p style="margin: 4px 0;"><strong>Address:</strong></p>
-      <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
-      <p style="margin: 4px 0;">Dubai, UAE</p>
-      <p style="margin: 4px 0;">📞 +971555547963</p>
-      <p style="margin: 4px 0;">📧 <a href="mailto:sales@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">sales@koffeewithkirren.com</a></p>
-      <p style="margin: 4px 0;">🌐 <a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
-    </div>
+<!-- Column 3: Contact Info -->
+<div style="flex: 1 1 160px; min-width: 150px; color: #2E7D32; font-size: 12px; padding-left: 16px;">
+  <p style="margin: 4px 0;"><strong>Address:</strong></p>
+  <p style="margin: 4px 0;">DSO-IFZA, Dubai Silicon Oasis</p>
+  <p style="margin: 4px 0;">Dubai, UAE</p>
+  <p style="margin: 4px 0;">📞 +971555547963</p>
+  <p style="margin: 4px 0;">📧 <a href="mailto:sales@koffeewithkirren.com" style="color: #2E7D32; text-decoration: none;">sales@koffeewithkirren.com</a></p>
+  <p style="margin: 4px 0;">🌐 <a href="https://www.koffeewithkirren.com" target="_blank" style="color: #2E7D32; text-decoration: none;">www.koffeewithkirren.com</a></p>
+</div>
+
 
   </div>
 
