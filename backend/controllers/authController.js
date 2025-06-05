@@ -77,36 +77,45 @@ export const forgotPassword = async (req, res, next) => {
 
   <hr style="margin: 40px 0;" />
 
-  <div style="display: flex; gap: 20px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start;">
 
     <!-- Column 1: Title + Social Media -->
-    <div style="flex: 2; min-width: 150px;">
+    <div style="flex: 2; min-width: 150px; margin-right: 20px;">
       <p style="font-weight: bold; font-size: 16px; margin: 0 0 10px;">Customer Care</p>
       <p style="color: #2E7D32; font-size: 16px; font-weight: bold; margin: 0 0 10px;">Koffee with Kirren</p>
-      <div style="margin-top: 10px;">
-        <a href="https://www.facebook.com/koffeewithkirren" target="_blank" style="margin: 0 5px; opacity: 0.6;">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733547.png" alt="Facebook" style="display: block;" />
+
+      <!-- Social icons in a row -->
+      <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: nowrap;">
+
+        <a href="https://www.facebook.com/koffeewithkirren" target="_blank" style="display: inline-block;">
+          <img src="https://cdn-icons-png.flaticon.com/24/733/733553.png" alt="Facebook" style="display: block;" />
         </a>
-        <a href="https://www.youtube.com/koffeewithkirren" target="_blank" style="margin: 0 5px; opacity: 0.6;">
-          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384060.png" alt="YouTube" style="display: block;" />
+
+        <a href="https://www.youtube.com/koffeewithkirren" target="_blank" style="display: inline-block;">
+          <img src="https://cdn-icons-png.flaticon.com/24/1384/1384059.png" alt="YouTube" style="display: block;" />
         </a>
-        <a href="https://www.instagram.com/koffeewithkirren" target="_blank" style="margin: 0 5px; opacity: 0.6;">
-          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111463.png" alt="Instagram" style="display: block;" />
+
+        <a href="https://www.instagram.com/koffeewithkirren" target="_blank" style="display: inline-block;">
+          <img src="https://cdn-icons-png.flaticon.com/24/2111/2111425.png" alt="Instagram" style="display: block;" />
         </a>
-        <a href="https://wa.me/971555547963" target="_blank" style="margin: 0 5px; opacity: 0.6;">
-          <img src="https://cdn-icons-png.flaticon.com/24/733/733585.png" alt="WhatsApp" style="display: block;" />
+
+        <a href="https://wa.me/971555547963" target="_blank" style="display: inline-block;">
+          <img src="https://cdn-icons-png.flaticon.com/24/733/733579.png" alt="WhatsApp" style="display: block;" />
         </a>
-        <a href="https://www.linkedin.com/company/koffeewithkirren" target="_blank" style="margin: 0 5px; opacity: 0.6;">
-          <img src="https://cdn-icons-png.flaticon.com/24/174/174857.png" alt="LinkedIn" style="display: block;" />
+
+        <a href="https://www.linkedin.com/company/koffeewithkirren" target="_blank" style="display: inline-block;">
+          <img src="https://cdn-icons-png.flaticon.com/24/174/174855.png" alt="LinkedIn" style="display: block;" />
         </a>
-        <a href="https://www.tiktok.com/@koffeewithkirren" target="_blank" style="margin: 0 5px; opacity: 0.6;">
-          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046121.png" alt="TikTok" style="display: block;" />
+
+        <a href="https://www.tiktok.com/@koffeewithkirren" target="_blank" style="display: inline-block;">
+          <img src="https://cdn-icons-png.flaticon.com/24/3046/3046120.png" alt="TikTok" style="display: block;" />
         </a>
+
       </div>
     </div>
 
     <!-- Column 2: Logo -->
-    <div style="flex: 1; text-align: center; min-width: 120px;">
+    <div style="flex: 1; text-align: center; min-width: 120px; margin-right: 20px;">
       <img src="https://res.cloudinary.com/dbxtn22gi/image/upload/v1748255737/logo3_hkfpws.png" alt="Koffee with Kirren Logo" style="max-width: 100px;" />
     </div>
 
@@ -129,6 +138,7 @@ export const forgotPassword = async (req, res, next) => {
   </p>
 
 </div>
+
 
     `;
 
