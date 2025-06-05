@@ -77,7 +77,8 @@ export const forgotPassword = async (req, res, next) => {
 
   <hr style="margin: 40px 0;" />
 
-  <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; gap: 20px;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: flex-start; gap: 24px;">
+
 
     <!-- Column 1: Title + Social Media -->
     <div style="flex: 2 1 150px;">
