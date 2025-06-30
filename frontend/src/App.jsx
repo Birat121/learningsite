@@ -37,6 +37,7 @@ import ModuleVideoManagementPage from "./components/ModuleManagement";
 import AddModulesPage from "./components/AddModule";
 import ResetPassword from "./components/ResetPassword";
 import ForgotPassword from "./components/ForgotPassword";
+import Privacypolicy from "./pages/Privacypolicy";
 
 function App() {
   const location = useLocation();
@@ -54,6 +55,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<ContactUs />} />
+        <Route path="/privacy-policy" element={<Privacypolicy />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/courses/:slug" element={<CourseDetails />} />
         <Route path="/why-dubai" element={<WhyUs />} />
