@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 
 const ConsultationFormModal = ({ isOpen, onClose }) => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -22,6 +23,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // disable button
 
     try {
       await emailjs.send(
@@ -59,11 +61,13 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
           investmentAmount: "",
           preferredTime: "",
         });
-        onClose();
+        setLoading(false);
+        onClose(); // close modal
       }, 5000);
     } catch (error) {
       console.error("Failed to send email:", error);
       alert("Something went wrong. Please try again later.");
+      setLoading(false); // enable button again
     }
   };
 
@@ -259,9 +263,14 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                 </p>
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  disabled={loading}
+                  className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                    loading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
                 >
-                  Submit Request
+                  {loading ? "Submitting..." : "Submit Request"}
                 </button>
               </div>
             </form>
