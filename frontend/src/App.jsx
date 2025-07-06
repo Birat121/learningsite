@@ -38,22 +38,23 @@ import AddModulesPage from "./components/AddModule";
 import ResetPassword from "./components/ResetPassword";
 import ForgotPassword from "./components/ForgotPassword";
 import Privacypolicy from "./pages/Privacypolicy";
+import Consult from "./pages/Consult";
 
 function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
+  const isNotConsultPage = !location.pathname.startsWith("/consult");
 
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <ScrollToTop />
-      {!isAdminPage && <Navbar />}
-
+      {isNotConsultPage && !isAdminPage && <Navbar />}
       <Routes>
-        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/consult" element={<Consult />} />
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/privacy-policy" element={<Privacypolicy />} />
         <Route path="/courses" element={<Courses />} />

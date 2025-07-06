@@ -17,10 +17,10 @@ const ContactPage = () => {
     const form = formRef.current;
     const formData = new FormData(form);
 
-    // Combine country code and phone number
-    const fullPhone = `${formData.get("country_code")}${formData.get("phone_number")}`;
+    const fullPhone = `${formData.get("country_code")}${formData.get(
+      "phone_number"
+    )}`;
 
-    // Append hidden phone input for EmailJS
     const phoneInput = document.createElement("input");
     phoneInput.type = "hidden";
     phoneInput.name = "phone";
@@ -35,7 +35,6 @@ const ContactPage = () => {
     };
 
     try {
-      // Send main email
       await emailjs.sendForm(
         "service_o2fqnnj",
         "template_eo2ox46",
@@ -43,7 +42,6 @@ const ContactPage = () => {
         "ofUAIyX7aUVuSeYsO"
       );
 
-      // Send auto-reply
       await emailjs.send(
         "service_o2fqnnj",
         "template_hvxw41z",
