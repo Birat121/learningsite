@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import PodcastHighlight from "../components/PodcastHighlight";
 import ConsultationFormModal from "../components/ConsultationFormModal";
+import kirren1 from "../assets/kirren1.jpg";
+import dubaiskyline from "../assets/Dubai-Skyline.jpg";
 const Consult = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +17,7 @@ const Consult = () => {
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/60 to-transparent z-10"></div>
           <img
-            src="/src/assets/Dubai-Skyline.jpg"
+            src={dubaiskyline}
             alt="Dubai Skyline"
             className="h-full w-full object-cover object-right md:object-center transform scale-100 hover:scale-105 transition-transform duration-1000 ease-out"
           />
@@ -26,7 +28,7 @@ const Consult = () => {
             <div className="flex-shrink-0 flex flex-col items-center">
               <div className="relative group">
                 <img
-                  src="/src/assets/kirren1.jpg"
+                  src={kirren1}
                   alt="Kirren"
                   className="w-48 h-48 rounded-full object-cover border-4 border-green-500/80 shadow-lg transform group-hover:scale-105 transition-transform duration-300"
                 />
