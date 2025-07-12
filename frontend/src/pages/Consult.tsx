@@ -3,6 +3,8 @@ import PodcastHighlight from "../components/PodcastHighlight";
 import ConsultationFormModal from "../components/ConsultationFormModal";
 import kirren1 from "../assets/kirren1.jpg";
 import dubaiskyline from "../assets/Dubai-Skyline.jpg";
+import { Link } from "react-router-dom";
+
 const Consult = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,7 +25,7 @@ const Consult = () => {
           />
         </div>
 
-        <div className="relative z-20 px-6 py-24 sm:px-12 lg:px-24 xl:px-32 text-white w-full max-w-6xl">
+        <div className="relative z-20 px-6 py-24 sm:px-12 lg:px-24 xl:px-32 text-white w-full max-w-7xl">
           <div className="backdrop-blur-sm bg-black/20 p-8 rounded-2xl border border-white/10 shadow-2xl flex flex-col lg:flex-row gap-8">
             <div className="flex-shrink-0 flex flex-col items-center">
               <div className="relative group">
@@ -35,7 +37,7 @@ const Consult = () => {
                 <div className="absolute inset-0 rounded-full border-4 border-transparent group-hover:border-white/30 transition-all duration-300"></div>
               </div>
               <div className="mt-4 text-center">
-                <h3 className="text-2xl font-bold text-white">Kirren</h3>
+                <h3 className="text-2xl font-bold text-white">Kirren Aujla</h3>
                 <p className="text-green-400 font-medium">Real Estate Expert</p>
                 <div>
                   <div className="flex justify-center space-x-3 mt-3 items-center">
@@ -158,21 +160,24 @@ const Consult = () => {
             <div className="flex-1">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                 <span className="bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
-                  Expert Dubai Property
+                  Your Expert Guide to Profitable Dubai Property Investments
                 </span>
                 <br />
-                <span className="text-white">Investment Guidance</span>
+                <span className="text-white">Free Consultation</span>
               </h1>
 
               <div className="border-l-4 border-green-500 pl-4 mb-8">
                 <p className="text-lg sm:text-xl font-light leading-relaxed text-gray-100 opacity-90">
                   Leverage 26+ years of real estate expertise to identify
-                  high-yield properties in Dubai's dynamic market. Get clear,
-                  actionable insights tailored for serious investors.
+                  high-yield properties and navigate the Dubai market with
+                  confidence. My approach cuts through the noise, providing
+                  clear, actionable insights for serious investors. Direct,
+                  one-on-one time with Kirren – not a sales pitch, only guidance
+                  and an informal Koffee with Kirren.
                 </p>
               </div>
 
-              <div className="space-y-4 mb-8">
+              {/* <div className="space-y-4 mb-8">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 mt-1">
                     <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
@@ -233,35 +238,42 @@ const Consult = () => {
                     Personalized market analysis
                   </p>
                 </div>
+              </div> */}
+              <div className="flex flex-col sm:flex-row items-center gap-5">
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
+                  className="max-sm:w-full cursor-pointer relative overflow-hidden group flex items-center justify-center px-8 py-4 text-lg font-medium tracking-wide text-gray-900 bg-gradient-to-r from-green-400 to-green-600 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <span className="relative z-10 flex items-center">
+                    Book Free Consultation
+                    <svg
+                      className={`ml-3 w-5 h-5 transition-transform duration-300 ${
+                        isHovered ? "translate-x-1" : ""
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                </button>
+                <Link
+                  to="/"
+                  className="max-sm:w-full text-center py-3.5 px-5 rounded-xl border-2 border-solid border-green-600 hover:bg-green-600 duration-150"
+                >
+                  Visit Our Website
+                </Link>
               </div>
-
-              <button
-                onClick={() => setIsModalOpen(true)}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className="cursor-pointer relative overflow-hidden group flex items-center justify-center px-8 py-4 text-lg font-medium tracking-wide text-gray-900 bg-gradient-to-r from-green-400 to-green-600 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <span className="relative z-10 flex items-center">
-                  Book Free Consultation
-                  <svg
-                    className={`ml-3 w-5 h-5 transition-transform duration-300 ${
-                      isHovered ? "translate-x-1" : ""
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17 8l4 4m0 0l-4 4m4-4H3"
-                    ></path>
-                  </svg>
-                </span>
-                <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              </button>
             </div>
           </div>
         </div>
