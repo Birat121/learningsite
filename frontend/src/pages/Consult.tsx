@@ -4,7 +4,7 @@ import ConsultationFormModal from "../components/ConsultationFormModal";
 import kirren1 from "../assets/kirren1.jpg";
 import dubaiskyline from "../assets/Dubai-Skyline.jpg";
 import { Link } from "react-router-dom";
-
+import logoLight from "../assets/darklogo.webp";
 const Consult = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,19 +32,21 @@ const Consult = () => {
                 <img
                   src={kirren1}
                   alt="Kirren"
-                  className="w-48 h-48 rounded-full object-cover border-4 border-green-500/80 shadow-lg transform group-hover:scale-105 transition-transform duration-300"
+                  className="w-48 h-48 rounded-full object-cover border-4 border-[rgb(0,104,80)] shadow-lg transform group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 rounded-full border-4 border-transparent group-hover:border-white/30 transition-all duration-300"></div>
               </div>
               <div className="mt-4 text-center">
                 <h3 className="text-2xl font-bold text-white">Kirren Aujla</h3>
-                <p className="text-green-400 font-medium">Real Estate Expert</p>
+                <p className="text-[rgb(0,104,80)]  font-medium">
+                  Real Estate Expert
+                </p>
                 <div>
                   <div className="flex justify-center space-x-3 mt-3 items-center">
                     <a
                       href="https://www.linkedin.com/company/koffee-with-kirren/"
                       target="_blank"
-                      className="text-white hover:text-green-400 transition-colors"
+                      className="text-white hover:text-[rgb(0,104,80)] transition-colors"
                     >
                       <svg
                         stroke="currentColor"
@@ -62,7 +64,7 @@ const Consult = () => {
                     <a
                       href="https://www.youtube.com/@KoffeewithKirren"
                       target="_blank"
-                      className="text-white hover:text-green-400 transition-colors"
+                      className="text-white hover:text-[rgb(0,104,80)] transition-colors"
                     >
                       <svg
                         stroke="currentColor"
@@ -78,9 +80,9 @@ const Consult = () => {
                       </svg>
                     </a>
                     <a
-                      href="https://www.youtube.com/@KoffeewithKirren"
+                      href="https://www.tiktok.com/@koffeewithkirren"
                       target="_blank"
-                      className="text-white hover:text-green-400 transition-colors"
+                      className="text-white hover:text-[rgb(0,104,80)] transition-colors"
                     >
                       <svg
                         stroke="currentColor"
@@ -96,9 +98,9 @@ const Consult = () => {
                       </svg>
                     </a>
                     <a
-                      href="https://www.youtube.com/@KoffeewithKirren"
+                      href="https://www.facebook.com/share/18c2MMRyJR/"
                       target="_blank"
-                      className="text-white hover:text-green-400 transition-colors"
+                      className="text-white hover:text-[rgb(0,104,80)] transition-colors"
                     >
                       <svg
                         className="w-5 h-5"
@@ -118,7 +120,7 @@ const Consult = () => {
                     <a
                       href="https://www.instagram.com/koffeewithkirren"
                       target="_blank"
-                      className="text-white hover:text-green-400 transition-colors"
+                      className="text-white hover:text-[rgb(0,104,80)]  transition-colors"
                     >
                       <svg
                         className="w-5 h-5"
@@ -136,7 +138,7 @@ const Consult = () => {
                     <a
                       href="https://wa.me/971555547963"
                       target="_blank"
-                      className="text-white hover:text-green-400 transition-colors"
+                      className="text-white hover:text-[rgb(0,104,80)] transition-colors"
                     >
                       <svg
                         className="w-5 h-5"
@@ -153,20 +155,27 @@ const Consult = () => {
                     </a>
                   </div>
                 </div>
+                <div className="flex items-center justify-center mt-7 lg:mt-10">
+                  <img
+                    src={logoLight}
+                    alt="Logo"
+                    className="h-24 w-24 object-contain"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Main Content */}
             <div className="flex-1">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                <span className="bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-green-400 to-[rgb(0,104,80)] bg-clip-text text-transparent">
                   Your Expert Guide to Profitable Dubai Property Investments
                 </span>
                 <br />
                 <span className="text-white">Free Consultation</span>
               </h1>
 
-              <div className="border-l-4 border-green-500 pl-4 mb-8">
+              <div className="border-l-4 border-[rgb(0,104,80)] pl-4 mb-8">
                 <p className="text-lg sm:text-xl font-light leading-relaxed text-gray-100 opacity-90">
                   Leverage 26+ years of real estate expertise to identify
                   high-yield properties and navigate the Dubai market with
@@ -244,7 +253,7 @@ const Consult = () => {
                   onClick={() => setIsModalOpen(true)}
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
-                  className="max-sm:w-full cursor-pointer relative overflow-hidden group flex items-center justify-center px-8 py-4 text-lg font-medium tracking-wide text-gray-900 bg-gradient-to-r from-green-400 to-green-600 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="max-sm:w-full cursor-pointer relative overflow-hidden group flex items-center justify-center px-8 py-4 text-lg font-medium tracking-wide text-gray-900 bg-gradient-to-r from-green-400 to-[rgb(0,104,80)] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <span className="relative z-10 flex items-center">
                     Book Free Consultation
@@ -265,11 +274,11 @@ const Consult = () => {
                       ></path>
                     </svg>
                   </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-[rgb(0,104,80)] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </button>
                 <Link
                   to="/"
-                  className="max-sm:w-full text-center py-3.5 px-5 rounded-xl border-2 border-solid border-green-600 hover:bg-green-600 duration-150"
+                  className="max-sm:w-full text-center py-3.5 px-5 rounded-xl border-2 border-solid border-[rgb(0,104,80)] hover:bg-[rgb(0,104,80)] duration-150"
                 >
                   Visit Our Website
                 </Link>

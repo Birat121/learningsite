@@ -6,7 +6,9 @@ import {
   FaYoutube,
   FaTiktok,
 } from "react-icons/fa";
+import Consult from "../pages/Consult";
 import { Link } from "react-router-dom";
+const isConsultPage = location.pathname.startsWith("/consult");
 
 const Footer = () => {
   return (
@@ -86,6 +88,14 @@ const Footer = () => {
             <FaWhatsapp />
           </a>
         </div>
+        {isConsultPage ? (
+          <div>
+            <a href="http://koffeewithkirren.com" className="text-sm">
+              koffeewithkirren.com
+            </a>
+          </div>
+        ) : null}
+
         {/* Copyright */}
         <div>
           <Link

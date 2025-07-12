@@ -4,7 +4,7 @@ import emailjs from "@emailjs/browser";
 
 const ConsultationFormModal = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
-
+  const [phoneError, setPhoneError] = useState("");
   const [formData, setFormData] = useState({
     fullName: "",
 
@@ -20,56 +20,60 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    if (name === "phone") {
+      const phoneRegex = /^\+\d{6,}$/; // Require + followed by at least 6 digits
+      if (!phoneRegex.test(value)) {
+        setPhoneError("Please include the country code (e.g., +971...)");
+      } else {
+        setPhoneError("");
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
-
       [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const phoneRegex = /^\+\d{6,}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setPhoneError("Please include the country code (e.g., +971...)");
+      return;
+    }
 
-    setLoading(true); // disable button
+    setLoading(true);
 
     try {
       await emailjs.send(
         "service_o2fqnnj",
-
-        "template_eo2ox46",
-
+        "template_3cxap73",
         {
           full_name: formData.fullName,
-
           user_email: formData.email,
-
           phone: formData.phone,
-
           investment_interest: formData.investmentInterest,
-
           investment_amount: formData.investmentAmount,
-
           preferred_time: formData.preferredTime,
         },
-
         "ofUAIyX7aUVuSeYsO"
       );
 
       await emailjs.send(
         "service_o2fqnnj",
-
-        "template_hvxw41z",
-
+        "template_omai6kb",
         {
           full_name: formData.fullName,
-
           user_email: formData.email,
+          phone: formData.phone,
+          investment_interest: formData.investmentInterest,
+          investment_amount: formData.investmentAmount,
+          preferred_time: formData.preferredTime,
         },
-
         "ofUAIyX7aUVuSeYsO"
       );
 
@@ -77,31 +81,21 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
 
       setTimeout(() => {
         setIsSubmitted(false);
-
         setFormData({
           fullName: "",
-
           email: "",
-
           phone: "",
-
           investmentInterest: "",
-
           investmentAmount: "",
-
           preferredTime: "",
         });
-
         setLoading(false);
-
-        onClose(); // close modal
+        onClose();
       }, 5000);
     } catch (error) {
       console.error("Failed to send email:", error);
-
       alert("Something went wrong. Please try again later.");
-
-      setLoading(false); // enable button again
+      setLoading(false);
     }
   };
 
@@ -223,6 +217,9 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
                   />
+                  {phoneError && (
+                    <p className="text-sm text-red-600 mt-1">{phoneError}</p>
+                  )}
                 </div>
 
                 <div>
