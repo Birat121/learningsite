@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import emailjs from "@emailjs/browser";
+import { Link } from "react-router-dom";
 
 const ConsultationFormModal = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
-      const phoneRegex = /^\+\d{6,}$/; // Require + followed by at least 6 digits
+      const phoneRegex = /^\+\d{6,}$/;
       if (!phoneRegex.test(value)) {
         setPhoneError("Please include the country code (e.g., +971...)");
       } else {
@@ -55,6 +56,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
         {
           full_name: formData.fullName,
           user_email: formData.email,
+          to_email: formData.email,
           phone: formData.phone,
           investment_interest: formData.investmentInterest,
           investment_amount: formData.investmentAmount,
@@ -69,6 +71,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
         {
           full_name: formData.fullName,
           user_email: formData.email,
+          to_email: formData.email,
           phone: formData.phone,
           investment_interest: formData.investmentInterest,
           investment_amount: formData.investmentAmount,
@@ -91,7 +94,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
         });
         setLoading(false);
         onClose();
-      }, 5000);
+      }, 10000);
     } catch (error) {
       console.error("Failed to send email:", error);
       alert("Something went wrong. Please try again later.");
@@ -134,7 +137,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
             <div className="text-center py-8">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
                 <svg
-                  className="h-6 w-6 text-green-600"
+                  className="h-6 w-6 text-[rgb(0,104,80)]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -176,7 +179,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     required
                     value={formData.fullName}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[rgb(0,104,80)] focus:border-[rgb(0,104,80)]"
                   />
                 </div>
 
@@ -195,7 +198,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[rgb(0,104,80)] focus:border-[rgb(0,104,80)]"
                   />
                 </div>
 
@@ -215,7 +218,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     placeholder="+971501234567"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[rgb(0,104,80)] focus:border-[rgb(0,104,80)]"
                   />
                   {phoneError && (
                     <p className="text-sm text-red-600 mt-1">{phoneError}</p>
@@ -236,7 +239,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     required
                     value={formData.investmentInterest}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[rgb(0,104,80)] focus:border-[rgb(0,104,80)]"
                   >
                     <option value="">Select an option</option>
 
@@ -262,7 +265,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     required
                     value={formData.investmentAmount}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[rgb(0,104,80)] focus:border-[rgb(0,104,80)]"
                   >
                     <option value="">Select an option</option>
 
@@ -288,7 +291,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
                     required
                     value={formData.preferredTime}
                     onChange={handleChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[rgb(0,104,80)] focus:border-[rgb(0,104,80)]"
                   >
                     <option value="">Select an option</option>
 
@@ -306,20 +309,20 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
               <div className="mt-6">
                 <p className="text-xs text-gray-500 mb-4">
                   By submitting, you agree to our{" "}
-                  <a href="#" className="text-green-600 hover:underline">
+                  <Link to="/privacy-policy" className="text-[rgb(0,104,80)] hover:underline">
                     Privacy Policy
-                  </a>
+                  </Link>
                   .
                 </p>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                  className={`cursor-pointer w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
                     loading
                       ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-green-600 hover:bg-green-700"
-                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500`}
+                      : "bg-[rgb(0,104,80)] hover:bg-white hover:border-[rgb(0,104,80)] hover:text-[rgb(0,104,80)]"
+                  } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[rgb(0,104,80)]`}
                 >
                   {loading ? "Submitting..." : "Submit Request"}
                 </button>

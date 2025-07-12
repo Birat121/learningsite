@@ -168,7 +168,7 @@ const Consult = () => {
             {/* Main Content */}
             <div className="flex-1">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                <span className="bg-gradient-to-r from-green-400 to-[rgb(0,104,80)] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r text-[rgb(0,104,80)] bg-clip-text [text-stroke:1px_#FFD700] [-webkit-text-stroke:1px_#FFD700]">
                   Your Expert Guide to Profitable Dubai Property Investments
                 </span>
                 <br />
@@ -253,7 +253,7 @@ const Consult = () => {
                   onClick={() => setIsModalOpen(true)}
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
-                  className="max-sm:w-full cursor-pointer relative overflow-hidden group flex items-center justify-center px-8 py-4 text-lg font-medium tracking-wide text-gray-900 bg-gradient-to-r from-green-400 to-[rgb(0,104,80)] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="max-sm:w-full cursor-pointer relative overflow-hidden group flex items-center justify-center px-8 py-4 text-lg font-medium tracking-wide text-white hover:text-[rgb(0,104,80)] bg-[rgb(0,104,80)] rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <span className="relative z-10 flex items-center">
                     Book Free Consultation
@@ -274,11 +274,11 @@ const Consult = () => {
                       ></path>
                     </svg>
                   </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-green-500 to-[rgb(0,104,80)] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 </button>
                 <Link
                   to="/"
-                  className="max-sm:w-full text-center py-3.5 px-5 rounded-xl border-2 border-solid border-[rgb(0,104,80)] hover:bg-[rgb(0,104,80)] duration-150"
+                  className="max-sm:w-full text-center py-4 px-5 rounded-xl border-2 font-medium border-solid border-[rgb(0,104,80)] hover:bg-[rgb(0,104,80)] duration-150"
                 >
                   Visit Our Website
                 </Link>

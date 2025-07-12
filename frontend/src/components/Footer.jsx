@@ -6,7 +6,7 @@ import {
   FaYoutube,
   FaTiktok,
 } from "react-icons/fa";
-import Consult from "../pages/Consult";
+
 import { Link } from "react-router-dom";
 const isConsultPage = location.pathname.startsWith("/consult");
 
