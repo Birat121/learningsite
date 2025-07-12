@@ -4,7 +4,8 @@ import ConsultationFormModal from "../components/ConsultationFormModal";
 import kirren1 from "../assets/kirren1.jpg";
 import dubaiskyline from "../assets/Dubai-Skyline.jpg";
 import { Link } from "react-router-dom";
-import logoLight from "../assets/darklogo.webp";
+import logoLight from "../assets/white logo.webp";
+import PodcastHighlight2 from "../components/PodcastHighlight2";
 const Consult = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,7 +27,7 @@ const Consult = () => {
         </div>
 
         <div className="relative z-20 px-6 py-24 sm:px-12 lg:px-24 xl:px-32 text-white w-full max-w-7xl">
-          <div className="backdrop-blur-sm bg-black/20 p-8 rounded-2xl border border-white/10 shadow-2xl flex flex-col lg:flex-row gap-8">
+          <div className="backdrop-blur-sm bg-white/20 p-8 rounded-2xl border border-white/10 shadow-2xl flex flex-col lg:flex-row gap-8">
             <div className="flex-shrink-0 flex flex-col items-center">
               <div className="relative group">
                 <img
@@ -168,7 +169,7 @@ const Consult = () => {
             {/* Main Content */}
             <div className="flex-1">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                <span className="bg-gradient-to-r text-[rgb(0,104,80)] bg-clip-text [text-stroke:1px_#FFD700] [-webkit-text-stroke:1px_#FFD700]">
+                <span className="bg-gradient-to-r text-[rgb(0,104,80)] bg-clip-text ">
                   Your Expert Guide to Profitable Dubai Property Investments
                 </span>
                 <br />
@@ -280,7 +281,7 @@ const Consult = () => {
                   to="/"
                   className="max-sm:w-full text-center py-4 px-5 rounded-xl border-2 font-medium border-solid border-[rgb(0,104,80)] hover:bg-[rgb(0,104,80)] duration-150"
                 >
-                  Visit Our Website
+                  Visit My Website
                 </Link>
               </div>
             </div>
@@ -292,7 +293,7 @@ const Consult = () => {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleSubmitForm}
       />
-      <PodcastHighlight />
+      <PodcastHighlight2 />
     </main>
   );
 };
