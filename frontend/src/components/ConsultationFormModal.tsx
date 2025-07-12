@@ -94,7 +94,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
         });
         setLoading(false);
         onClose();
-      }, 10000);
+      }, 500000);
     } catch (error) {
       console.error("Failed to send email:", error);
       alert("Something went wrong. Please try again later.");
