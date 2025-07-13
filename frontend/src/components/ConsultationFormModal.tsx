@@ -281,7 +281,7 @@ const ConsultationFormModal = ({ isOpen, onClose }) => {
         setSelectedCountryCode("");
         setLoading(false);
         onClose();
-      }, 5000);
+      }, 500000);
     } catch (error) {
       console.error("Failed to send email:", error);
       alert("Something went wrong. Please try again later.");
