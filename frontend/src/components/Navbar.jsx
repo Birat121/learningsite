@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { FiSearch, FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX } from "react-icons/fi";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import logoLight from "../assets/darklogo.webp";
 import logoDark from "../assets/white logo.webp";
@@ -51,7 +51,6 @@ const Navbar = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -67,12 +66,11 @@ const Navbar = () => {
   const closeMenu = () => setIsMenuOpen(false);
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
+  // Menu links without "Courses"
   const links = [
     { to: "/", label: "Home" },
     { to: "/about", label: "Why Choose Me" },
-
     { to: "/why-dubai", label: "Dubai Real Estate" },
-    { to: "/courses", label: "Courses" },
     { to: "/contact", label: "Contact Me" },
   ];
 
@@ -94,10 +92,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
         {/* Logo */}
-        <NavLink
-          to="/"
-          className="hover:opacity-80 transition-opacity duration-300"
-        >
+        <NavLink to="/" className="hover:opacity-80 transition-opacity duration-300">
           <img
             src={isScrolled ? logoDark : isHome ? logoLight : logoLight}
             alt="Logo"
@@ -132,17 +127,10 @@ const Navbar = () => {
               className="cursor-pointer flex items-center space-x-3 relative"
               onClick={toggleDropdown}
             >
-              {/* Avatar */}
               <div className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold uppercase">
                 {user?.name ? user.name.charAt(0) : "U"}
               </div>
-
-              {/* User Name */}
-              <span
-                className={`${
-                  isScrolled ? "text-black" : "text-white"
-                } font-medium`}
-              >
+              <span className={`${isScrolled ? "text-black" : "text-white"} font-medium`}>
                 {user?.name || "User"}
               </span>
 
@@ -153,12 +141,8 @@ const Navbar = () => {
                 }`}
               >
                 <div className="px-4 py-3 border-b">
-                  <p className="text-sm font-semibold text-gray-800">
-                    {user?.name || "User Name"}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {user?.email || "user@example.com"}
-                  </p>
+                  <p className="text-sm font-semibold text-gray-800">{user?.name || "User Name"}</p>
+                  <p className="text-xs text-gray-500">{user?.email || "user@example.com"}</p>
                 </div>
                 <ul className="p-2 space-y-1">
                   <li
@@ -169,15 +153,6 @@ const Navbar = () => {
                     }}
                   >
                     🧑‍💼 Profile
-                  </li>
-                  <li
-                    className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-md"
-                    onClick={() => {
-                      setIsDropdownOpen(false);
-                      navigate("/enrolledCourse");
-                    }}
-                  >
-                    📚 Courses
                   </li>
                   <li
                     className="text-sm text-gray-700 cursor-pointer hover:bg-gray-100 px-4 py-2 rounded-md"
@@ -243,15 +218,6 @@ const Navbar = () => {
                 className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
               >
                 Profile
-              </button>
-              <button
-                onClick={() => {
-                  closeMenu();
-                  navigate("/enrolledCourse"); // Add this line to navigate to Enrolled Courses
-                }}
-                className="w-full px-6 py-2 rounded-md bg-[rgb(0,104,80)] text-white font-semibold hover:bg-[rgb(0,85,65)] transition-colors duration-300"
-              >
-                Enrolled Courses
               </button>
               <button
                 onClick={() => {
