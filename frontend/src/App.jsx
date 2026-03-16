@@ -37,24 +37,31 @@ import ModuleVideoManagementPage from "./components/ModuleManagement";
 import AddModulesPage from "./components/AddModule";
 import ResetPassword from "./components/ResetPassword";
 import ForgotPassword from "./components/ForgotPassword";
+import Privacypolicy from "./pages/Privacypolicy";
+import Consult from "./pages/Consult";
 
 function App() {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
+  const isNotConsultPage = !location.pathname.startsWith("/consult");
 
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <ScrollToTop />
-      {!isAdminPage && <Navbar />}
-
+      {isNotConsultPage && !isAdminPage && <Navbar />}
       <Routes>
-        {/* Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
+        <Route path="/consult" element={<Consult />} />
         <Route path="/contact" element={<ContactUs />} />
+<<<<<<< HEAD
         {/*<Route path="/courses" element={<Courses />} /> */}
+=======
+        <Route path="/privacy-policy" element={<Privacypolicy />} />
+        <Route path="/courses" element={<Courses />} />
+>>>>>>> 722aad9b054a5af7506912284e7d42693d3c6d90
         <Route path="/courses/:slug" element={<CourseDetails />} />
         <Route path="/why-dubai" element={<WhyUs />} />
         <Route path="/checkout/:slug" element={<CheckoutPage />} />

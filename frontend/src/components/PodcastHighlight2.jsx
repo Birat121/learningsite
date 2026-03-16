@@ -17,7 +17,7 @@ const staticVideos = [
   },
 ];
 
-const PodcastHighlight = () => {
+const PodcastHighlight2 = () => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const isConsultPage = location.pathname.startsWith("/consult");
@@ -47,7 +47,6 @@ const PodcastHighlight = () => {
         <p className="text-base sm:text-lg md:text-xl text-white mb-10">
           {!isConsultPage ? (
             <div>
-              {" "}
               Tune into my podcasts and videos for quick, actionable real estate
               tips and insights.
             </div>
@@ -59,7 +58,7 @@ const PodcastHighlight = () => {
           )}
         </p>
 
-        <div className="flex flex-col sm:flex-row justify-center gap-6 flex-wrap">
+        <div className="max-w-xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 place-items-center">
           {displayedVideos
             .filter(
               (video) =>
@@ -74,19 +73,17 @@ const PodcastHighlight = () => {
               <div
                 key={idx}
                 className="
-                  relative
-                  bg-white
-                  rounded-xl
-                  overflow-hidden
-                  shadow-lg
-                  hover:shadow-xl
-                  transition
-                  group
-                  w-full
-                  max-w-xs
-                  sm:w-[320px]
-                  mx-auto
-                "
+              relative
+              bg-white
+              rounded-xl
+              overflow-hidden
+              shadow-lg
+              hover:shadow-xl
+              transition
+              group
+              w-full
+              max-w-xs
+            "
               >
                 {video.comingSoon ? (
                   <img
@@ -121,4 +118,4 @@ const PodcastHighlight = () => {
   );
 };
 
-export default PodcastHighlight;
+export default PodcastHighlight2;

@@ -32,7 +32,6 @@ const About = () => {
 
       <section className="bg-gray-100 py-20 px-6 md:px-24 mt-20">
         <div className="max-w-7xl mx-auto space-y-24">
-          {/* Why Choose Me */}
           <motion.div
             variants={fadeInUp}
             initial="hidden"
@@ -46,10 +45,10 @@ const About = () => {
 
             <div className="flex flex-col-reverse md:flex-col items-center">
               <p className="text-lg sm:text-xl text-gray-700 leading-relaxed mt-6 md:mt-0 max-w-full">
-                My deep understanding of the real estate market is the foundation
-                of the value I bring to my clients, both local and international.
-                With over 26 years of experience, I offer comprehensive expertise
-                across all facets of the industry.
+                My deep understanding of the real estate market is the
+                foundation of the value I bring to my clients, both local and
+                international. With over 26 years of experience, I offer
+                comprehensive expertise across all facets of the industry.
               </p>
               <div className="max-w-full w-full max-w-md mx-auto rounded-lg shadow-md overflow-hidden mt-8 md:mt-12">
                 <img
@@ -115,7 +114,8 @@ const About = () => {
               <p className="text-lg text-gray-700 leading-relaxed">
                 Over 16 years, I refined my skills at a UK housing association,
                 gaining invaluable experience in managing the entire sales
-                process, working closely with developers, and leading a part of the sales team.
+                process, working closely with developers, and leading a part of
+                the sales team.
               </p>
             </div>
           </motion.div>
