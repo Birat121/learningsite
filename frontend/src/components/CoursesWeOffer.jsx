@@ -135,14 +135,7 @@ const Courses = () => {
         ))}
       </div>
 
-      <div className="mt-8">
-        <Link
-          to="/courses"
-          className="inline-block px-8 py-4 text-base sm:text-xl bg-[rgb(0,104,80)] text-white font-semibold rounded-lg shadow-md transition"
-        >
-          Explore Courses
-        </Link>
-      </div>
+      
     </motion.section>
   );
 };
