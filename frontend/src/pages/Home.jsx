@@ -2,7 +2,7 @@ import React from "react";
 import Hero from "../components/Hero";
 import Introduction from "../components/Introduction";
 import WhyChooseMe from "../components/ChooseMe";
-import Courses from "../components/CoursesWeOffer";
+//import Courses from "../components/CoursesWeOffer";
 import { Helmet } from "react-helmet";
 import PodcastHighlight from "../components/PodcastHighlight";
 
@@ -32,7 +32,7 @@ const Home = () => {
       <Introduction />
       <WhyChooseMe />
       <PodcastHighlight />
-      <Courses />
+      
     </>
   );
 };

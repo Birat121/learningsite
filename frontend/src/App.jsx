@@ -58,8 +58,8 @@ function App() {
         <Route path="/contact" element={<ContactUs />} />
         {/*<Route path="/courses" element={<Courses />} /> */}
         <Route path="/privacy-policy" element={<Privacypolicy />} />
-        <Route path="/courses" element={<Courses />} />
-        <Route path="/courses/:slug" element={<CourseDetails />} />
+        {/*<Route path="/courses" element={<Courses />} />*/}
+        {/*<Route path="/courses/:slug" element={<CourseDetails />} />*/}
         <Route path="/why-dubai" element={<WhyUs />} />
         <Route path="/checkout/:slug" element={<CheckoutPage />} />
         <Route path="/admin/login" element={<AdminLogin />} />
